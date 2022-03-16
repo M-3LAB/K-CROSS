@@ -21,6 +21,7 @@ def parse_arguments_federated():
     parser.add_argument('--target-domain', '-t', default='t2', choices=['t1', 't2', 'pd', 'flair'])
     parser.add_argument('--data-path', '-dp', type=str, default=None)
     parser.add_argument('--valid-path', '-vp', type=str, default=None)
+    parser.add_argument('--direction', '-dr', type=str, default=None, choices=['both', 'from_a_to_b', 'from_b_to_a'])
 
     parser.add_argument('--data_mode', '-dm', type=str, default='mixed', choices=['mixed', 'paired', 'unpaired'])
     parser.add_argument('--data-paired-weight', '-dpw', type=float, default=0.5, choices=[0., 0.1, 0.3, 0.5, 1.])
@@ -67,6 +68,7 @@ def parse_arguments_centralized():
     parser.add_argument('--target-domain', '-t', default='t2', choices=['t1', 't2', 'pd', 'flair'])
     parser.add_argument('--data-path', '-dp', type=str, default=None)
     parser.add_argument('--valid-path', '-vp', type=str, default=None)
+    parser.add_argument('--direction', '-dr', type=str, default=None, choices=['both', 'from_a_to_b', 'from_b_to_a'])
 
     parser.add_argument('--data_mode', '-dm', type=str, default='mixed', choices=['mixed', 'paired', 'unpaired'])
     parser.add_argument('--data-paired-weight', '-dpw', type=float, default=0.5, choices=[0., 0.1, 0.3, 0.5, 1.])
