@@ -2,10 +2,8 @@ from fnmatch import translate
 from re import I
 import torch
 import torch.nn.functional as F
-import random
 import numpy as np
 
-from torch.autograd.variable import Variable
 from evaluation.common import concate_tensor_lists, average
 from tools.utilize import *
 from metrics.metrics import mae, psnr, ssim, fid
@@ -15,7 +13,6 @@ import matplotlib.pyplot as plt
 import matplotlib
 matplotlib.use('Agg')
 
-import kornia.geometry.transform as kt
 
 __all__ = ['Base']
 
