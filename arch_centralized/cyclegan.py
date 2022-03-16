@@ -5,7 +5,6 @@ from arch_centralized.base import Base
 from model.reg.loss import smooothing_loss
 from model.cyclegan.cyclegan import CycleGen, CycleDis
 from tools.utilize import *
-from model.contraD.contraD import ContraD
 
 import matplotlib.pyplot as plt
 import matplotlib
@@ -93,14 +92,6 @@ class CycleGAN(Base):
             loss_pixel_from_a_to_b = self.criterion_pixelwise_from_a_to_b(fake_fake_a, real_a)
             loss_pixel_from_b_to_a = self.criterion_pixelwise_from_b_to_a(fake_fake_b, real_b)
 
-            # reg loss
-            #if self.config['reg_gan']:
-                #self.optimizer_reg.zero_grad()
-                #reg_trans = self.reg(fake_b, real_b)
-                #sysregist_from_a_to_b = self.spatial_transformer(fake_b, reg_trans, self.device)
-                #loss_sr = self.criterion_sr(sysregist_from_a_to_b, real_b)
-                #loss_sm = smooothing_loss(reg_trans)
-
             # gan loss
             loss_generator_from_a_to_b = (self.config['lambda_gan'] * loss_gan_from_a_to_b +
                                           self.config['lambda_cyc'] * loss_pixel_from_a_to_b)
@@ -115,10 +106,6 @@ class CycleGAN(Base):
                 loss_identity = self.config['lambda_identity'] * (loss_identity_fake_a + loss_identity_fake_b)
                 loss_generator_total += loss_identity
 
-            # if self.config['reg_gan']:
-            #     loss_reg = self.config['lambda_corr'] * loss_sr + self.config['lambda_smooth'] * loss_sm
-            #     loss_generator_total += loss_reg
-
             loss_generator_total.backward()
 
             # differential privacy
@@ -128,9 +115,6 @@ class CycleGAN(Base):
 
             self.optimizer_generator_from_a_to_b.step()
             self.optimizer_generator_from_b_to_a.step()
-
-            # if self.config['reg_gan']:
-                # self.optimizer_reg.step()
 
             """
             Train Discriminator
@@ -169,9 +153,6 @@ class CycleGAN(Base):
 
             if self.config['identity']:
                 infor = '{} [Idn Loss: {:.4f}]'.format(infor, loss_identity.item())
-
-            # if self.config['reg_gan']:
-            #     infor = '{} [Reg Loss: {:.4f}]'.format(infor, loss_reg.item())
 
             print(infor, flush=True, end=' ')
             
