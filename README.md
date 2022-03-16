@@ -1,4 +1,5 @@
-# FedMed-GAN
+# fedmed-light
+This is the basic version for implementing new work.
 
 ## Preliminary
 > Dependency
@@ -14,9 +15,6 @@ pip3 install -r requirements.txt
 ```bash
 python3 data_preprecess/brats2021.py
 ```
-> Test data loader
-```bash
-python3 legacy_code/example_dataset_loader.py
 ```
 > Prepare Statistics for FID Calculate statistics. See [./fid_stats.py](fid_stats.py) for details.
 ```bash
@@ -32,7 +30,7 @@ python3 fid_stats.py --dataset 'ixi'  --source-domain 't2' --target-domain 'pd' 
 --noise-type 'slight'/'severe' [default='normal'] 
 --identity [default=true]
 --diff-privacy [default=true]
---auxiliary-rotation --auxiliary-translation --auxiliary-scaling
+--auxiliary-rotation --auxiliary-translation --auxiliary-scaling [default=false]
 ```
 ```bash
 --debug --save-img --single-img-infer 
