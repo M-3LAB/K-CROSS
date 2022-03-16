@@ -7,7 +7,7 @@ def centralized_training():
     
     for key_arg in ['dataset', 'model', 'source_domain', 'target_domain']:
         if not vars(args)[key_arg]:
-            raise ValueError('Parameter {} must be refered!'.format(key_arg))
+            raise ValueError('Parameter {} Rust Be Refered!'.format(key_arg))
 
     work = CentralizedTrain(args=args)
     work.run_work_flow()

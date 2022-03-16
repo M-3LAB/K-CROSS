@@ -85,23 +85,6 @@ class CentralizedTrain():
 
 
     def load_data(self):
-        if self.para_dict['auxiliary_rotation']:
-            convert_list_float_type(self.para_dict['angle_list'])
-            #TODO: Automatically enlarge the number of rotation labels
-            assert len(self.para_dict['angle_list']) == 3
-
-        if self.para_dict['auxiliary_translation']:
-            convert_list_float_type(self.para_dict['translation_list'])
-            assert max(self.para_dict['translation_list']) <= 30
-            #TODO: Automatically enlarge the number of translation labels
-            assert len(self.para_dict['translation_list']) == 1
-
-        if self.para_dict['auxiliary_scaling']:
-            convert_list_float_type(self.para_dict['scaling_list'])
-            assert max(self.para_dict['scaling_list']) <= 1.2        
-            #TODO: Automatically enlarge the number of scaling labels
-            assert len(self.para_dict['scaling_list']) == 3
-
         self.normal_transform = [{'degrees':0, 'translate':[0.00, 0.00],
                                      'scale':[1.00, 1.00], 
                                      'size':(self.para_dict['size'], self.para_dict['size'])},

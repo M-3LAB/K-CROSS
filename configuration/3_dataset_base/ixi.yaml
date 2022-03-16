@@ -20,5 +20,16 @@ assigned_images: [['IXI002-Guys-0828', 'IXI002-Guys-0828', 80],
                   ['IXI151-Guys-0793', 'IXI151-Guys-0793', 60],
                   ['IXI297-Guys-0886', 'IXI297-Guys-0886', 77],
                   ['IXI252-HH-1693', 'IXI252-HH-1693', 56]]
-
+# noise
+noise_type: normal 
+a_mu: 0.0
+a_sigma: 1.0
+b_mu: 0.0
+b_sigma: 1.0
+severe_rotation: 90
+severe_translation: 0.12
+severe_scaling: 0.1
+angle_list: [90., 180., 270.]
+translation_list: [30.] 
+scaling_list: [0.9, 1.1, 1.2]
 

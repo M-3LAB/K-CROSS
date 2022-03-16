@@ -23,4 +23,15 @@ assigned_images: [['BraTS2021_00001', 'BraTS2021_00001', 70],
                   ['BraTS2021_00585', 'BraTS2021_00585', 70],
                   ['BraTS2021_01679', 'BraTS2021_01679', 70],
                   ['BraTS2021_01763', 'BraTS2021_01763', 70]]
-
+# noise
+noise_type: normal 
+a_mu: 0.0
+a_sigma: 1.0
+b_mu: 0.0
+b_sigma: 1.0
+severe_rotation: 90
+severe_translation: 0.12
+severe_scaling: 0.1
+angle_list: [90., 180., 270.]
+translation_list: [30.] 
+scaling_list: [0.9, 1.1, 1.2]
