@@ -1,5 +1,5 @@
 # fedmed-light
-This is the basic version for implementing new works.
+This is the BASIC version for implementing new works.
 
 We only achieve the foundamental models, i.e. CycleGAN, MUnit, and Unit, in federated learning.
 
