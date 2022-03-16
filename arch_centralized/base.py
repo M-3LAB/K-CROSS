@@ -6,9 +6,7 @@ import random
 import numpy as np
 
 from torch.autograd.variable import Variable
-from model.reg.reg import Reg
-from model.reg.transformer import Reg_Transformer
-from tools.utilize import *
+from evaluation.common import concate_tensor_lists, average
 from model.unit.unit import *
 from metrics.metrics import mae, psnr, ssim, fid
 from tools.visualize import plot_sample
@@ -44,10 +42,6 @@ class Base():
             self.config['fid_dir'], self.config['dataset'], self.config['source_domain'], self.config['target_domain'])
         self.fid_stats_from_b_to_a = '{}/{}/{}_{}_fid_stats.npz'.format(
             self.config['fid_dir'], self.config['dataset'], self.config['target_domain'], self.config['source_domain'])
-
-        if self.config['reg_gan']:
-            self.reg = Reg(self.config['size'], self.device).to(self.device)
-            self.spatial_transformer = Reg_Transformer().to(self.device)
 
         # differential privacy
         if self.config['diff_privacy']:

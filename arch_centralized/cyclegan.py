@@ -2,7 +2,6 @@ import torch
 import numpy as np
 
 from arch_centralized.base import Base
-from model.reg.loss import smooothing_loss
 from model.cyclegan.cyclegan import CycleGen, CycleDis
 from tools.utilize import *
 
