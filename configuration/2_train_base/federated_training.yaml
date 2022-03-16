@@ -44,13 +44,6 @@ batch_size_inceptionV3: 8
 # optimizer
 beta1: 0.5
 beta2: 0.999
-# reg loss
-reg_gan: false 
-noise_level: 3
-lambda_corr: 20
-lambda_smooth: 10
-lambda_content: 1.0
-lambda_style: 1.0
 # identity loss
 identity: true
 lambda_identity: 10.0
