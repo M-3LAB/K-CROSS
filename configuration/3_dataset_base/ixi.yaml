@@ -22,6 +22,7 @@ assigned_images: [['IXI002-Guys-0828', 'IXI002-Guys-0828', 80],
                   ['IXI252-HH-1693', 'IXI252-HH-1693', 56]]
 # noise
 noise_type: normal 
+noise_level: 3
 a_mu: 0.0
 a_sigma: 1.0
 b_mu: 0.0

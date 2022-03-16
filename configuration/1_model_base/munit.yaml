@@ -5,7 +5,7 @@ n_downsample: 2 # number of downsample blocks
 style_dim: 8
 n_res: 3 # number of residual blocks
 n_upsample: 2 # number of upsample blocks
-lambda_gan: 1
-lambda_kl: 0.1 # KL (encode_image)
-lambda_kl_translated: 0.1 # KL (encoded translated image)
+lambda_gan: 1.0
+lambda_style: 1.0
+lambda_content: 1.0
 lambda_cycle: 10.0

@@ -25,6 +25,7 @@ assigned_images: [['BraTS2021_00001', 'BraTS2021_00001', 70],
                   ['BraTS2021_01763', 'BraTS2021_01763', 70]]
 # noise
 noise_type: normal 
+noise_level: 3
 a_mu: 0.0
 a_sigma: 1.0
 b_mu: 0.0
