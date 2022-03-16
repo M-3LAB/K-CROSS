@@ -7,7 +7,7 @@ def parse_arguments_federated():
     parser = argparse.ArgumentParser()
     # federated setting
     parser.add_argument('--fed-aggregate-method', '-fam', type=str, default=None)
-    parser.add_argument('--num-round', type=int, default=10)
+    parser.add_argument('--num-round', type=int, default=None)
     parser.add_argument('--num-clients', type=int, default=None)
     parser.add_argument('--clients-data-weight', type=float, default=None, nargs='+')
     parser.add_argument('--clip-bound', type=float, default=None)
@@ -54,10 +54,7 @@ def parse_arguments_federated():
     parser.add_argument('--plot-distribution', action='store_true', default=False)
     parser.add_argument('--save-img', action='store_true', default=False)
     parser.add_argument('--num-img-save', type=int, default=None)
-    parser.add_argument('--single-img-infer', action="store_true", default=True)
-
-    # self-supervised augmentation
-    parser.add_argument('--num-augmentation', '-na', type=str, default=None, choices=['four', 'one', 'two'])
+    parser.add_argument('--single-img-infer', action="store_true", default=False)
 
     args = parser.parse_args()
     return args
@@ -75,13 +72,15 @@ def parse_arguments_centralized():
     parser.add_argument('--data-paired-weight', '-dpw', type=float, default=0.5, choices=[0., 0.1, 0.3, 0.5, 1.])
 
     parser.add_argument('--gpu-id', '-g', type=str, default=None)
-    parser.add_argument('--num-epoch', type=int, default=30)
+    parser.add_argument('--num-epoch', type=int, default=None)
     parser.add_argument('--debug', action='store_true', default=False)
 
     parser.add_argument('--diff-privacy', action='store_true', default=False) 
     parser.add_argument('--identity', action='store_true', default=False)
     parser.add_argument('--fid', action='store_true', default=True)
 
+    # self-supervised augmentation
+    parser.add_argument('--num-augmentation', '-na', type=str, default=None, choices=['four', 'one', 'two'])
     parser.add_argument('--auxiliary-rotation', '-ar', action='store_true', default=False)
     parser.add_argument('--auxiliary-translation', '-at', action='store_true', default=False)
     parser.add_argument('--auxiliary-scaling', '-as', action='store_true', default=False)
@@ -94,8 +93,6 @@ def parse_arguments_centralized():
     parser.add_argument('--severe-translation', '-st', type=float, default=None, choices=[0.09, 0.1, 0.11])
     parser.add_argument('--severe-scaling', '-sc', type=float, default=None, choices=[0.9, 1.1, 1.2])
 
-    # self-supervised augmentation
-    parser.add_argument('--num-augmentation', '-na', type=str, default=None, choices=['four', 'one', 'two'])
 
     parser.add_argument('--plot-distribution', action='store_true', default=False)
     parser.add_argument('--save-model', action='store_true', default=False)
@@ -104,7 +101,7 @@ def parse_arguments_centralized():
 
     parser.add_argument('--save-img', action='store_true', default=False)
     parser.add_argument('--num-img-save', type=int, default=None)
-    parser.add_argument('--single-img-infer', action='store_true', default=True)
+    parser.add_argument('--single-img-infer', action='store_true', default=False)
 
     args = parser.parse_args()
     return args
