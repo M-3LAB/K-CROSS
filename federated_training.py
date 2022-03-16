@@ -1,7 +1,7 @@
 from configuration.config import parse_arguments_federated
-from arch_federated.fed_cyclegan import FedCycleGAN
-from arch_federated.fed_munit import FedMunit
-from arch_federated.fed_unit import FedUnit
+from arch_federated.cyclegan import FedCycleGAN
+from arch_federated.munit import FedMunit
+from arch_federated.unit import FedUnit
 
 
 

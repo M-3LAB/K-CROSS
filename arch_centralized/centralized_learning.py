@@ -32,8 +32,6 @@ class CentralizedTrain():
         self.para_dict = merge_config(config, self.args)
         self.args = extract_config(self.args)
 
-        if not self.para_dict['contraD']:
-            self.para_dict['num_augmentation'] == 'all'
 
     def preliminary(self):
         print('---------------------')
@@ -53,7 +51,8 @@ class CentralizedTrain():
             save_script(__file__, self.file_path)
 
         # save model
-        self.best_psnr = 0
+        self.best_psnr_a = 0.
+        self.best_psnr_b = 0.
         self.load_model_path = self.para_dict['load_model_dir']
 
         self.fid_stats_from_a_to_b = '{}/{}/{}_{}_fid_stats.npz'.format(
@@ -255,47 +254,53 @@ class CentralizedTrain():
             discr_from_b_to_a = load_model(self.trainer.discriminator_from_b_to_a, self.para_dict['load_model_dir'], 'd_from_b_to_a')
             self.trainer.set_model(gener_from_a_to_b_enc, gener_from_a_to_b_dec, gener_from_b_to_a_enc, gener_from_b_to_a_dec, discr_from_a_to_b, discr_from_b_to_a)
 
-    def save_models(self, psnr):
+    def save_models(self):
         if self.para_dict['model'] == 'cyclegan':
             gener_from_a_to_b, gener_from_b_to_a, discr_from_a_to_b, discr_from_b_to_a = self.trainer.get_model()
-            save_model(gener_from_a_to_b, '{}/checkpoint/g_from_a_to_b'.format(self.file_path), self.para_dict, psnr)
-            save_model(gener_from_b_to_a, '{}/checkpoint/g_from_b_to_a'.format(self.file_path), self.para_dict, psnr)
-            save_model(discr_from_a_to_b, '{}/checkpoint/d_from_a_to_b'.format(self.file_path), self.para_dict, psnr)
-            save_model(discr_from_b_to_a, '{}/checkpoint/d_from_b_to_a'.format(self.file_path), self.para_dict, psnr)
+            save_model(gener_from_a_to_b, '{}/checkpoint/g_from_a_to_b'.format(self.file_path), 'epoch_{}'.format(self.epoch+1))
+            save_model(gener_from_b_to_a, '{}/checkpoint/g_from_b_to_a'.format(self.file_path), 'epoch_{}'.format(self.epoch+1))
+            save_model(discr_from_a_to_b, '{}/checkpoint/d_from_a_to_b'.format(self.file_path), 'epoch_{}'.format(self.epoch+1))
+            save_model(discr_from_b_to_a, '{}/checkpoint/d_from_b_to_a'.format(self.file_path), 'epoch_{}'.format(self.epoch+1))
 
         elif self.para_dict['model'] == 'munit' or self.para_dict['model'] == 'unit':
             gener_from_a_to_b_enc, gener_from_a_to_b_dec, gener_from_b_to_a_enc, gener_from_b_to_a_dec, discr_from_a_to_b, discr_from_b_to_a = self.trainer.get_model()
-            save_model(gener_from_a_to_b_enc, '{}/checkpoint/g_from_a_to_b_enc'.format(self.file_path), self.para_dict, psnr)
-            save_model(gener_from_a_to_b_dec, '{}/checkpoint/g_from_a_to_b_dec'.format(self.file_path), self.para_dict, psnr)
-            save_model(gener_from_b_to_a_enc, '{}/checkpoint/g_from_b_to_a_enc'.format(self.file_path), self.para_dict, psnr)
-            save_model(gener_from_b_to_a_dec, '{}/checkpoint/g_from_b_to_a_dec'.format(self.file_path), self.para_dict, psnr)
-            save_model(discr_from_a_to_b, '{}/checkpoint/d_from_a_to_b'.format(self.file_path), self.para_dict, psnr)
-            save_model(discr_from_b_to_a, '{}/checkpoint/d_from_b_to_a'.format(self.file_path), self.para_dict, psnr)
+            save_model(gener_from_a_to_b_enc, '{}/checkpoint/g_from_a_to_b_enc'.format(self.file_path), 'epoch_{}'.format(self.epoch+1))
+            save_model(gener_from_a_to_b_dec, '{}/checkpoint/g_from_a_to_b_dec'.format(self.file_path), 'epoch_{}'.format(self.epoch+1))
+            save_model(gener_from_b_to_a_enc, '{}/checkpoint/g_from_b_to_a_enc'.format(self.file_path), 'epoch_{}'.format(self.epoch+1))
+            save_model(gener_from_b_to_a_dec, '{}/checkpoint/g_from_b_to_a_dec'.format(self.file_path), 'epoch_{}'.format(self.epoch+1))
+            save_model(discr_from_a_to_b, '{}/checkpoint/d_from_a_to_b'.format(self.file_path), 'epoch_{}'.format(self.epoch+1))
+            save_model(discr_from_b_to_a, '{}/checkpoint/d_from_b_to_a'.format(self.file_path), 'epoch_{}'.format(self.epoch+1))
 
     def work_flow(self):
         self.trainer.train_epoch()
+
+        fake_b_value, fake_a_value = self.trainer.evaluation(direction=self.para_dict['direction'])
+        psnr_b, psnr_a = 0., 0.
+
         # evaluation from a to b
-        mae, psnr, ssim, fid = self.trainer.evaluation(direction='from_a_to_b')
+        if self.para_dict['direction'] == 'from_a_to_b' or self.para_dict['direction'] == 'both':
+            mae_b, psnr_b, ssim_b, fid_b = fake_b_value
 
-        infor = '[Epoch {}/{}] [{} -> {}] mae: {:.4f} psnr: {:.4f} ssim: {:.4f}'.format(
-            self.epoch+1, self.para_dict['num_epoch'], self.para_dict['source_domain'], self.para_dict['target_domain'], mae, psnr, ssim)
+            infor = '[Epoch {}/{}] [{} -> {}] mae: {:.4f} psnr: {:.4f} ssim: {:.4f}'.format(
+                self.epoch+1, self.para_dict['num_epoch'], self.para_dict['source_domain'], self.para_dict['target_domain'], mae_b, psnr_b, ssim_b)
 
-        if self.para_dict['fid']:
-            infor = '{} fid: {:.4f}'.format(infor, fid)
-        print(infor)
+            if self.para_dict['fid']:
+                infor = '{} fid: {:.4f}'.format(infor, fid_b)
+            print(infor)
         
-        if self.para_dict['save_log']:
-            save_log(infor, self.file_path, description='_model_from_a_to_b')
+            if self.para_dict['save_log']:
+                save_log(infor, self.file_path, description='_model_from_a_to_b')
 
         # evaluation from b to a
-        mae, psnr, ssim, fid = self.trainer.evaluation(direction='from_b_to_a')
+        if self.para_dict['direction'] == 'from_b_to_a' or self.para_dict['direction'] == 'both':
+            mae_a, psnr_a, ssim_a, fid_a = fake_a_value
 
-        infor = '[Epoch {}/{}] [{} -> {}] mae: {:.4f} psnr: {:.4f} ssim: {:.4f}'.format(
-            self.epoch+1, self.para_dict['num_epoch'], self.para_dict['target_domain'], self.para_dict['source_domain'], mae, psnr, ssim)
+            infor = '[Epoch {}/{}] [{} -> {}] mae: {:.4f} psnr: {:.4f} ssim: {:.4f}'.format(
+                self.epoch+1, self.para_dict['num_epoch'], self.para_dict['target_domain'], self.para_dict['source_domain'], mae_a, psnr_a, ssim_a)
 
-        if self.para_dict['fid']:
-            infor = '{} fid: {:.4f}'.format(infor, fid)
-        print(infor)
+            if self.para_dict['fid']:
+                infor = '{} fid: {:.4f}'.format(infor, fid_a)
+            print(infor)
 
         if self.para_dict['save_log']:
             save_log(infor, self.file_path, description='_model_from_b_to_a')
@@ -307,11 +312,6 @@ class CentralizedTrain():
                 os.makedirs(save_img_path)
             save_img_path = '{}/epoch_{}.png'.format(save_img_path, self.epoch+1)
             self.trainer.visualize_feature(self.epoch+1, save_img_path, self.train_loader)
-
-        if self.para_dict['save_model']:
-            if psnr > self.best_psnr:
-                self.save_models(psnr)
-                self.best_psnr = psnr
 
         if self.para_dict['save_img']:
             save_img_path = '{}/images/epoch_{}'.format(self.file_path, self.epoch+1)
@@ -325,6 +325,11 @@ class CentralizedTrain():
                 os.makedirs(save_img_path)
             self.trainer.infer_images(save_img_path, self.assigned_loader)
 
+        if self.para_dict['save_model']:
+            if psnr_b > self.best_psnr_b and psnr_a > self.best_psnr_a:
+                self.save_models()
+                self.best_psnr_b = psnr_b
+                self.best_psnr_a = psnr_a
 
     def run_work_flow(self):
         self.load_config()

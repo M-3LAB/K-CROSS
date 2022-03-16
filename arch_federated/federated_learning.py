@@ -36,7 +36,8 @@ class FederatedTrain():
         # save and log
         self.file_path = None
         # save model
-        self.best_psnr = 0
+        self.best_psnr_a = 0.
+        self.best_psnr_b = 0.
 
     def load_config(self):
         with open('./configuration/3_dataset_base/{}.yaml'.format(self.args.dataset), 'r') as f:
@@ -50,9 +51,6 @@ class FederatedTrain():
         config = override_config(config, config_dataset)
         self.para_dict = merge_config(config, self.args)
         self.args = extract_config(self.args)
-
-        if not self.para_dict['contraD']:
-            self.para_dict['num_augmentation'] == 'all'
 
     def preliminary(self):
         print('---------------------')
@@ -223,32 +221,36 @@ class FederatedTrain():
 
                 self.clients[i].train_epoch(inf=infor)
 
-            psnr = 0
+            psnr_b, psnr_a = 0., 0.
             if not self.para_dict['not_test_client']:
-                # evaluation from a to b
-                mae, psnr, ssim, fid = self.clients[i].evaluation(direction='from_a_to_b')
-                infor_1 = '{} [{} -> {}] mae: {:.4f} psnr: {:.4f} ssim: {:.4f}'.format(
-                    infor, self.para_dict['source_domain'], self.para_dict['target_domain'], mae, psnr, ssim)
-                if self.para_dict['fid']:
-                    infor_1 = '{} fid: {:.4f}'.format(infor_1, fid)
-                print(infor_1)
+                fake_b_value, fake_a_value = self.clients[i].evaluation(direction=self.para_dict['direction'])
 
-                if self.para_dict['save_log']:
-                    save_log(infor_1, self.file_path, description='_clients_from_a_to_b')
+                # evaluation from a to b
+                if self.para_dict['direction'] == 'from_a_to_b' or self.para_dict['direction'] == 'both':
+                    mae_b, psnr_b, ssim_b, fid_b = fake_b_value
+                    infor_b = '{} [{} -> {}] mae: {:.4f} psnr: {:.4f} ssim: {:.4f}'.format(
+                        infor, self.para_dict['source_domain'], self.para_dict['target_domain'], mae_b, psnr_b, ssim_b)
+                    if self.para_dict['fid']:
+                        infor_b = '{} fid: {:.4f}'.format(infor_b, fid_b)
+                    print(infor_b)
+
+                    if self.para_dict['save_log']:
+                        save_log(infor_b, self.file_path, description='_clients_from_a_to_b')
 
                 # evaluation from b to a
-                mae, psnr_2, ssim, fid = self.clients[i].evaluation(direction='from_b_to_a')
-                infor_2 = '{} [{} -> {}] mae: {:.4f} psnr: {:.4f} ssim: {:.4f}'.format(
-                    infor, self.para_dict['target_domain'], self.para_dict['source_domain'], mae, psnr_2, ssim)
-                if self.para_dict['fid']:
-                    infor_2 = '{} fid: {:.4f}'.format(infor_2, fid)
-                print(infor_2)
+                if self.para_dict['direction'] == 'from_b_to_a' or self.para_dict['direction'] == 'both':
+                    mae_a, psnr_a, ssim_a, fid_a = fake_a_value
+                    infor_a = '{} [{} -> {}] mae: {:.4f} psnr: {:.4f} ssim: {:.4f}'.format(
+                        infor, self.para_dict['target_domain'], self.para_dict['source_domain'], mae_a, psnr_a, ssim_a)
+                    if self.para_dict['fid']:
+                        infor_a = '{} fid: {:.4f}'.format(infor_a, fid_a)
+                    print(infor_a)
 
-                if self.para_dict['save_log']:
-                    save_log(infor_2, self.file_path, description='_clients_from_b_to_a')
+                    if self.para_dict['save_log']:
+                        save_log(infor_a, self.file_path, description='_clients_from_b_to_a')
 
             # save resuts of psnr for aggregating models 
-            self.client_psnr_list.append(psnr)
+            self.client_psnr_list.append(psnr_b)
 
     def collect_model(self, description='server and clients'):
         pass
@@ -259,43 +261,48 @@ class FederatedTrain():
     def transmit_model(self):
         pass
 
-    def save_models(self, psnr):
+    def save_models(self):
         if self.para_dict['model'] == 'cyclegan':
-            save_model(self.server_gener['from_a_to_b'], '{}/checkpoint/g_from_a_to_b'.format(self.file_path), self.para_dict, psnr)
-            save_model(self.server_gener['from_b_to_a'], '{}/checkpoint/g_from_b_to_a'.format(self.file_path), self.para_dict, psnr)
-            save_model(self.server_discr['from_a_to_b'], '{}/checkpoint/d_from_a_to_b'.format(self.file_path), self.para_dict, psnr)
-            save_model(self.server_discr['from_b_to_a'], '{}/checkpoint/d_from_b_to_a'.format(self.file_path), self.para_dict, psnr)
+            save_model(self.server_gener['from_a_to_b'], '{}/checkpoint/g_from_a_to_b'.format(self.file_path), 'round_{}'.format(self.round+1))
+            save_model(self.server_gener['from_b_to_a'], '{}/checkpoint/g_from_b_to_a'.format(self.file_path), 'round_{}'.format(self.round+1))
+            save_model(self.server_discr['from_a_to_b'], '{}/checkpoint/d_from_a_to_b'.format(self.file_path), 'round_{}'.format(self.round+1))
+            save_model(self.server_discr['from_b_to_a'], '{}/checkpoint/d_from_b_to_a'.format(self.file_path), 'round_{}'.format(self.round+1))
 
         elif self.para_dict['model'] == 'munit' or self.para_dict['model'] == 'unit':
-            save_model(self.client_gener_list['from_a_to_b_enc'], '{}/checkpoint/g_from_a_to_b_enc'.format(self.file_path), self.para_dict, psnr)
-            save_model(self.client_gener_list['from_a_to_b_dec'], '{}/checkpoint/g_from_a_to_b_dec'.format(self.file_path), self.para_dict, psnr)
-            save_model(self.client_gener_list['from_b_to_a_enc'], '{}/checkpoint/g_from_b_to_a_enc'.format(self.file_path), self.para_dict, psnr)
-            save_model(self.client_gener_list['from_b_to_a_dec'], '{}/checkpoint/g_from_b_to_a_dec'.format(self.file_path), self.para_dict, psnr)
-            save_model(self.client_discr_list['from_a_to_b'], '{}/checkpoint/d_from_a_to_b'.format(self.file_path), self.para_dict, psnr)
-            save_model(self.client_discr_list['from_b_to_a'], '{}/checkpoint/d_from_a_to_b'.format(self.file_path), self.para_dict, psnr)
+            save_model(self.client_gener_list['from_a_to_b_enc'], '{}/checkpoint/g_from_a_to_b_enc'.format(self.file_path), 'round_{}'.format(self.round+1))
+            save_model(self.client_gener_list['from_a_to_b_dec'], '{}/checkpoint/g_from_a_to_b_dec'.format(self.file_path), 'round_{}'.format(self.round+1))
+            save_model(self.client_gener_list['from_b_to_a_enc'], '{}/checkpoint/g_from_b_to_a_enc'.format(self.file_path), 'round_{}'.format(self.round+1))
+            save_model(self.client_gener_list['from_b_to_a_dec'], '{}/checkpoint/g_from_b_to_a_dec'.format(self.file_path), 'round_{}'.format(self.round+1))
+            save_model(self.client_discr_list['from_a_to_b'], '{}/checkpoint/d_from_a_to_b'.format(self.file_path), 'round_{}'.format(self.round+1))
+            save_model(self.client_discr_list['from_b_to_a'], '{}/checkpoint/d_from_a_to_b'.format(self.file_path), 'round_{}'.format(self.round+1))
 
     def server_inference(self):
-        # evaluation from a to b
-        mae, psnr, ssim, fid = self.server.evaluation(direction='from_a_to_b')
-        infor = '[Round {}/{}] [{} -> {}] mae: {:.4f} psnr: {:.4f} ssim: {:.4f}'.format(
-                        self.round+1, self.para_dict['num_round'], self.para_dict['source_domain'], self.para_dict['target_domain'], mae, psnr, ssim)
-        if self.para_dict['fid']:
-            infor = '{} fid: {:.4f}'.format(infor, fid)
-        print(infor)
+        fake_b_value, fake_a_value = self.server.evaluation(direction=self.para_dict['direction'])
+        psnr_b, psnr_a = 0., 0.
 
-        if self.para_dict['save_log']:
-            save_log(infor, self.file_path, description='_server_from_a_to_b')
+        # evaluation from a to b
+        if self.para_dict['direction'] == 'from_a_to_b' or self.para_dict['direction'] == 'both':
+            mae_b, psnr_b, ssim_b, fid_b = fake_b_value
+            infor_a = '[Round {}/{}] [{} -> {}] mae: {:.4f} psnr: {:.4f} ssim: {:.4f}'.format(
+                            self.round+1, self.para_dict['num_round'], self.para_dict['source_domain'], self.para_dict['target_domain'], mae_b, psnr_b, ssim_b)
+            if self.para_dict['fid']:
+                infor_a = '{} fid: {:.4f}'.format(infor_a, fid_b)
+            print(infor_a)
+
+            if self.para_dict['save_log']:
+                save_log(infor_a, self.file_path, description='_server_from_a_to_b')
 
         # evaluation from b to a
-        mae, psnr, ssim, fid = self.server.evaluation(direction='from_b_to_a')
-        infor = '[Round {}/{}] [{} -> {}] mae: {:.4f} psnr: {:.4f} ssim: {:.4f}'.format(
-                        self.round+1, self.para_dict['num_round'], self.para_dict['target_domain'], self.para_dict['source_domain'], mae, psnr, ssim)
-        if self.para_dict['fid']:
-            infor = '{} fid: {:.4f}'.format(infor, fid)
-        print(infor)
+        if self.para_dict['direction'] == 'from_b_to_a' or self.para_dict['direction'] == 'both':
+            mae_a, psnr_a, ssim_a, fid_a = fake_a_value
+            infor_a = '[Round {}/{}] [{} -> {}] mae: {:.4f} psnr: {:.4f} ssim: {:.4f}'.format(
+                            self.round+1, self.para_dict['num_round'], self.para_dict['target_domain'], self.para_dict['source_domain'], mae_a, psnr_a, ssim_a)
+            if self.para_dict['fid']:
+                infor_a = '{} fid: {:.4f}'.format(infor_a, fid_a)
+            print(infor_a)
 
-        if self.para_dict['save_log']:
-            save_log(infor, self.file_path, description='_server_from_b_to_a')
+            if self.para_dict['save_log']:
+                save_log(infor_a, self.file_path, description='_server_from_b_to_a')
 
 
         if self.para_dict['plot_distribution']:
@@ -318,9 +325,10 @@ class FederatedTrain():
             self.server.infer_images(save_img_path, self.assigned_loader)
 
         if self.para_dict['save_model']:
-            if psnr > self.best_psnr:
-                self.save_models(psnr)
-                self.best_psnr = psnr
+            if psnr_b > self.best_psnr_b and psnr_a > self.best_psnr_a:
+                self.save_models()
+                self.best_psnr_b = psnr_b
+                self.best_psnr_a = psnr_a
 
     def collect_feature(self, batch):
         pass
