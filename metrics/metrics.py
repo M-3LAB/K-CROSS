@@ -57,7 +57,7 @@ def ssim(image_true, image_generated, C1=0.01, C2=0.03):
 
 def fid(image_generated, batch_size, target_domain, fid_stats, device):
 
-    acts = get_inception_feature(image_generated, batch_size, dims_list=[2048],
+    acts, = get_inception_feature(image_generated, batch_size, dims_list=[2048],
                                   target_domain=target_domain, device=device)
 
     f = np.load(fid_stats)
