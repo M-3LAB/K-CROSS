@@ -9,7 +9,7 @@ import shutil
 import glob
 import torchvision
 
-__all__ = ['seed_everything', 'parse_device_list', 'allocate_gpus', 'average', 'save_model_per_epoch', 
+__all__ = ['seed_everything', 'parse_device_list', 'allocate_gpus', 'average', 
            'merge_config', 'convert_list_float_type', 'create_folders', 'concate_tensor_lists',
            'weights_init_normal', 'LambdaLR', 'load_model', 'merge_config', 'override_config', 'extract_config',
            'record_path', 'save_arg', 'save_log', 'save_script', 'save_image', 'save_model']
@@ -148,15 +148,15 @@ def save_model(model, file_path, infor):
     model_path = '{}/{}.pth'.format(file_path, infor)
     torch.save({'model_state_dict': model.state_dict()}, model_path)
 
-def save_model_per_epoch(model, file_path, para_dict, epoch):
-    if not os.path.exists(file_path):
-        os.makedirs(file_path)
-    for file in glob.glob('{}/*.pth'.format(file_path)):
-        os.remove(file)      
+# def save_model_per_epoch(model, file_path, para_dict, epoch):
+#     if not os.path.exists(file_path):
+#         os.makedirs(file_path)
+#     for file in glob.glob('{}/*.pth'.format(file_path)):
+#         os.remove(file)      
 
-    model_path = '{}/{}_{}_{}.pth'.format(
-        file_path, para_dict['source_domain'], para_dict['target_domain'], epoch)
-    torch.save({'model_state_dict': model.state_dict()}, model_path)
+#     model_path = '{}/{}_{}_{}.pth'.format(
+#         file_path, para_dict['source_domain'], para_dict['target_domain'], epoch)
+#     torch.save({'model_state_dict': model.state_dict()}, model_path)
 
 def load_model(model, file_path, description):
     if not os.path.exists(file_path):
