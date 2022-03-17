@@ -4,11 +4,11 @@ import os
 from tools.utilize import *
 from data_io.brats import BraTS2021
 from data_io.ixi import IXI
-from torch.utils.data import DataLoader
-from torch.utils.data.sampler import SubsetRandomSampler
 from architecture.centralized.cyclegan import CycleGAN
 from architecture.centralized.munit import Munit
 from architecture.centralized.unit import Unit
+from torch.utils.data import DataLoader
+from torch.utils.data.sampler import SubsetRandomSampler
 
 import warnings
 warnings.filterwarnings("ignore")

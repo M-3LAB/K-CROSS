@@ -1,4 +1,5 @@
 import torch
+import argparse
 import os
 import yaml
 import sys
@@ -9,7 +10,6 @@ from data_io.brats import BraTS2021
 from data_io.ixi import IXI
 from tools.utilize import *
 from torch.utils.data import DataLoader
-from configuration.config import parse_arguments_fid_stats
 
 
 def fid_stats(args):
@@ -71,6 +71,22 @@ def fid_stats(args):
     get_stats(test_loader, para_dict['batch_size'], output_path, para_dict['target_domain'], para_dict['source_domain'], device)
 
 
+def parse_arguments_fid_stats():
+    parser = argparse.ArgumentParser("Pre-Calculate Statistics of Images")
+    parser.add_argument('--fid-dir', default='./fid_stats/stats_npz', type=str, help='the output path for statistics storage')
+    parser.add_argument('--batch-size', type=int, default=50, help='the batchsize for InceptionNetV3')
+    parser.add_argument('--dataset', '-d', type=str, default='brats2021', choices=['ixi', 'brats2021'])
+    parser.add_argument('--gpu-id', '-g', type=str, default=None)
+    parser.add_argument('--source-domain', '-s', default='t1', choices=['t1', 't2', 'pd', 'flair'])
+    parser.add_argument('--target-domain', '-t', default='t2', choices=['t1', 't2', 'pd', 'flair'])
+    parser.add_argument('--data-path', type=str, default=None)
+    parser.add_argument('--valid-path', type=str, default=None)
+
+    args = parser.parse_args()   
+    return args
+
+
 if __name__ == '__main__':
+
     args = parse_arguments_fid_stats()
     fid_stats(args)
