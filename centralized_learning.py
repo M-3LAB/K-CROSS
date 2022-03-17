@@ -2,7 +2,7 @@ from configuration.architecture.config import parse_arguments_centralized
 from architecture.centralized.train import CentralizedTrain
 
 
-def centralized_training():
+def centralized_learning():
     args = parse_arguments_centralized()
     
     for key_arg in ['dataset', 'model', 'source_domain', 'target_domain']:
@@ -15,4 +15,4 @@ def centralized_training():
 
 
 if __name__ == '__main__':
-    centralized_training()
+    centralized_learning()

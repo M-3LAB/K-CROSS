@@ -5,7 +5,7 @@ from architecture.federated.unit import FedUnit
 
 
 
-def federated_training():
+def federated_learning():
     args = parse_arguments_federated()
 
     for key_arg in ['dataset', 'model', 'source_domain', 'target_domain']:
@@ -28,4 +28,4 @@ def federated_training():
 
 
 if __name__ == '__main__':
-    federated_training()
+    federated_learning()
