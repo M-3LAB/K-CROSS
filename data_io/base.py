@@ -15,7 +15,7 @@ class ToTensor():
         tensor = (tensor - np.min(tensor)) / (np.max(tensor) - np.min(tensor) + 1e-8)
         return torch.from_numpy(tensor)
 
-class BASE_DATASET(torch.utils.data.Dataset):
+class BASE(torch.utils.data.Dataset):
     """Dataset utility class.
 
     Args:

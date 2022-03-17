@@ -1,9 +1,9 @@
 import glob
-from data_io.base_class import BASE_DATASET
+from data_io.base import BASE
 
 __all__ = ['IXI']
 
-class IXI(BASE_DATASET):
+class IXI(BASE):
     def __init__(self, root, modalities=["t1", "t2"], learn_mode="train", extract_slice=[29, 100], noise_type='normal',
                  transform_data=None, client_weights=[1.0], data_mode='paired', data_num=6000, data_paired_weight=0.2, seed=3, 
                  data_moda_ratio=0.5, data_moda_case='case1', dataset_splited=True, assigned_data=False, assigned_images=None):

@@ -1,9 +1,9 @@
 import glob
-from data_io.base_class import BASE_DATASET
+from data_io.base import BASE
 
 __all__ = ['BraTS2019', 'BraTS2021']
 
-class BraTS2019(BASE_DATASET):
+class BraTS2019(BASE):
     def __init__(self, root, modalities=["t1", "t2"], learn_mode='train', extract_slice=[29, 100], noise_type='normal',
                  transform_data=None, client_weights=[1.0], data_mode='mixed', data_num=6000, data_paired_weight=0.2,
                  data_moda_ratio=0.5, data_moda_case='case1', assigned_data=False, assigned_images=None, seed=3):
