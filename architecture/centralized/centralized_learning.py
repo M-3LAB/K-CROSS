@@ -8,9 +8,9 @@ from data_io.brats import BraTS2021
 from data_io.ixi import IXI
 from torch.utils.data import DataLoader
 from torch.utils.data.sampler import SubsetRandomSampler
-from arch_centralized.cyclegan import CycleGAN
-from arch_centralized.munit import Munit
-from arch_centralized.unit import Unit
+from centralized.cyclegan import CycleGAN
+from centralized.munit import Munit
+from centralized.unit import Unit
 
 import warnings
 warnings.filterwarnings("ignore")
