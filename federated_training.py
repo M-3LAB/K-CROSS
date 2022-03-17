@@ -1,4 +1,4 @@
-from configuration.config import parse_arguments_federated
+from configuration.architecture.config import parse_arguments_federated
 from architecture.federated.cyclegan import FedCycleGAN
 from architecture.federated.munit import FedMunit
 from architecture.federated.unit import FedUnit

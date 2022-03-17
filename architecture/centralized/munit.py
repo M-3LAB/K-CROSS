@@ -1,8 +1,8 @@
 import torch
 import itertools
 
+from architecture.centralized.base import Base
 from model.munit.munit import *
-from arch_centralized.base import Base
 from tools.utilize import *
 
 __all__ = ['Munit']

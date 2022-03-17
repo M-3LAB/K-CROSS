@@ -1,9 +1,9 @@
 from re import X
 import torch
 
-from tools.utilize import *
+from architecture.centralized.base import Base
 from model.unit.unit import *
-from arch_centralized.base import Base
+from tools.utilize import *
 
 import itertools
 import matplotlib.pyplot as plt

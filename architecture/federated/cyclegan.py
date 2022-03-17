@@ -1,9 +1,9 @@
-from arch_federated.federated_learning import FederatedTrain
-from arch_centralized.cyclegan import CycleGAN
+from architecture.federated.federated_learning import FederatedTrain
+from architecture.centralized.cyclegan import CycleGAN
+from architecture.federated.server import aggregate_from_client_to_server, update_server_from_best_psnr_client
+from architecture.federated.client import send_from_server_to_client
 from torch.utils.data import DataLoader
 from torch.utils.data.sampler import SubsetRandomSampler
-from federated.server import aggregate_from_client_to_server, update_server_from_best_psnr_client
-from federated.client import send_from_server_to_client
 
 __all__ = ['FedCycleGAN']
 class FedCycleGAN(FederatedTrain):

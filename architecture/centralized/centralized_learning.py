@@ -8,9 +8,9 @@ from data_io.brats import BraTS2021
 from data_io.ixi import IXI
 from torch.utils.data import DataLoader
 from torch.utils.data.sampler import SubsetRandomSampler
-from centralized.cyclegan import CycleGAN
-from centralized.munit import Munit
-from centralized.unit import Unit
+from architecture.centralized.cyclegan import CycleGAN
+from architecture.centralized.munit import Munit
+from architecture.centralized.unit import Unit
 
 import warnings
 warnings.filterwarnings("ignore")
@@ -20,11 +20,11 @@ class CentralizedTrain():
         self.args = args
 
     def load_config(self):
-        with open('./configuration/3_dataset_base/{}.yaml'.format(self.args.dataset), 'r') as f:
+        with open('./configuration/architecture/3_dataset_base/{}.yaml'.format(self.args.dataset), 'r') as f:
             config_model = yaml.load(f, Loader=yaml.SafeLoader)
-        with open('./configuration/2_train_base/centralized_training.yaml', 'r') as f:
+        with open('./configuration/architecture/2_train_base/centralized_training.yaml', 'r') as f:
             config_train = yaml.load(f, Loader=yaml.SafeLoader)
-        with open('./configuration/1_model_base/{}.yaml'.format(self.args.model), 'r') as f:
+        with open('./configuration/architecture/1_model_base/{}.yaml'.format(self.args.model), 'r') as f:
             config_dataset = yaml.load(f, Loader=yaml.SafeLoader)
 
         config = override_config(config_model, config_train)
