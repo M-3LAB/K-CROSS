@@ -1,6 +1,8 @@
 import torch
 import os
 import yaml
+import sys
+sys.path.append('.')
 
 from metrics.fid_is.fid import get_stats
 from data_io.brats import BraTS2021 
@@ -11,7 +13,7 @@ from configuration.config import parse_arguments_fid_stats
 
 
 def fid_stats(args):
-    with open('./configuration/fid_stats/fid_stats_{}.yaml'.format(args.dataset), 'r') as f:
+    with open('./configuration/fid_stats/{}.yaml'.format(args.dataset), 'r') as f:
        para_dict = yaml.load(f, Loader=yaml.SafeLoader)
     para_dict = merge_config(para_dict, args)
     print(para_dict)
