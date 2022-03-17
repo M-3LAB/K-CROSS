@@ -11,7 +11,7 @@ import matplotlib
 matplotlib.use('Agg')
 
 
-__all__ = ['Base']
+__all__ = ['BASE']
 
 class BASE():
     def __init__(self, config, train_loader, valid_loader, assigned_loader,
@@ -32,10 +32,10 @@ class BASE():
         self.fake = 0
 
         # fid stats
-        self.fid_stats_from_a_to_b = '{}/{}/{}_fid_stats.npz'.format(
-            self.config['fid_dir'], self.config['dataset'], self.config['source_domain'], self.config['target_domain'])
-        self.fid_stats_from_b_to_a = '{}/{}/{}_fid_stats.npz'.format(
-            self.config['fid_dir'], self.config['dataset'], self.config['target_domain'], self.config['source_domain'])
+        self.fid_stats_from_a_to_b = '{}/{}/{}.npz'.format(
+            self.config['fid_dir'], self.config['dataset'], self.config['target_domain'])
+        self.fid_stats_from_b_to_a = '{}/{}/{}.npz'.format(
+            self.config['fid_dir'], self.config['dataset'], self.config['source_domain'])
 
         # differential privacy
         if self.config['diff_privacy']:
