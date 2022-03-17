@@ -111,7 +111,7 @@ def parse_arguments_centralized():
 
 def parse_arguments_fid_stats():
     parser = argparse.ArgumentParser("Pre-Calculate Statistics of Images")
-    parser.add_argument('--fid-dir', default='./fid_stats', type=str, help='the output path for statistics storage')
+    parser.add_argument('--fid-dir', default='./fid_stats/stats_npz', type=str, help='the output path for statistics storage')
     parser.add_argument('--batch-size', type=int, default=50, help='the batchsize for InceptionNetV3')
     parser.add_argument('--dataset', '-d', type=str, default='brats2021', choices=['ixi', 'brats2021'])
     parser.add_argument('--gpu-id', '-g', type=str, default=None)

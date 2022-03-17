@@ -21,6 +21,7 @@ def fid_stats(args):
     output_path = os.path.join(para_dict['fid_dir'], para_dict['dataset'])
     if not os.path.exists(output_path):
         os.makedirs(output_path)
+    print(output_path)
         
     seed_everything(para_dict['seed'])
 

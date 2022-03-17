@@ -17,15 +17,14 @@ pip3 install -r requirements.txt
 ```bash
 python3 data_preprecess/brats2021.py
 ```
-```
-> Prepare Statistics for FID Calculate statistics. See [./fid_stats.py](fid_stats.py) for details.
+> Prepare Statistics for FID Calculate statistics. See [./fid_stats/gen_fid_stats.py](fid_stats/gen_fid_stats.py) for details.
 ```bash
-python3 fid_stats.py --dataset 'ixi'  --source-domain 't2' --target-domain 'pd' --gpu-id 0
+python3 ./fid_stats/gen_fid_stats.py --dataset 'ixi'  --source-domain 't2' --target-domain 'pd' --gpu-id 0
 ```
 
 > Options. See [./configuration/config.py](configuration/config.py) for details.
 ```bash
---fed-aggregate-method 'fed-avg'/'fed-psnr' --num-epoch 20 --num-round 10 --gpu-id 1
+--fed-aggregate-method 'fed-avg'/'fed-psnr' --num-epoch 30 --num-round 10 --gpu-id 0
 ```
 ```bash
 --fid [default=true]

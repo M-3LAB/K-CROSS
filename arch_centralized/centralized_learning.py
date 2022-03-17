@@ -62,7 +62,7 @@ class CentralizedTrain():
 
         if self.para_dict['fid']:
             if not os.path.exists(self.fid_stats_from_a_to_b):
-                os.system(r'python3 fid_stats.py --dataset {} --source-domain {} --target-domain {} --gpu-id {} --valid-path {}'.format(
+                os.system(r'python3 ./fid_stats/gen_fid_stats.py --dataset {} --source-domain {} --target-domain {} --gpu-id {} --valid-path {}'.format(
                     self.para_dict['dataset'], self.para_dict['source_domain'], self.para_dict['target_domain'], self.para_dict['gpu_id'], self.para_dict['valid_path']))
             if not os.path.exists(self.fid_stats_from_a_to_b):
                 raise NotImplementedError('FID Still Not be Implemented Yet')
@@ -70,7 +70,7 @@ class CentralizedTrain():
                 print('fid stats from a to b: {}'.format(self.fid_stats_from_a_to_b))
 
             if not os.path.exists(self.fid_stats_from_b_to_a):
-                os.system(r'python3 fid_stats.py --dataset {} --source-domain {} --target-domain {} --gpu-id {} --valid-path {}'.format(
+                os.system(r'python3 ./fid_stats/gen_fid_stats.py --dataset {} --source-domain {} --target-domain {} --gpu-id {} --valid-path {}'.format(
                     self.para_dict['dataset'], self.para_dict['target_domain'], self.para_dict['source_domain'], self.para_dict['gpu_id'], self.para_dict['valid_path']))
             if not os.path.exists(self.fid_stats_from_b_to_a):
                 raise NotImplementedError('FID Still Not be Implemented Yet')
