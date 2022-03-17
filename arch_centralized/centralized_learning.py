@@ -55,11 +55,12 @@ class CentralizedTrain():
         self.best_psnr_b = 0.
         self.load_model_path = self.para_dict['load_model_dir']
 
-        self.fid_stats_from_a_to_b = '{}/{}/{}_{}_fid_stats.npz'.format(
-            self.para_dict['fid_dir'], self.para_dict['dataset'], self.para_dict['source_domain'], self.para_dict['target_domain'])
-        self.fid_stats_from_b_to_a = '{}/{}/{}_{}_fid_stats.npz'.format(
-            self.para_dict['fid_dir'], self.para_dict['dataset'], self.para_dict['target_domain'], self.para_dict['source_domain'])
+        self.fid_stats_from_a_to_b = '{}/{}/{}_fid_stats.npz'.format(
+            self.para_dict['fid_dir'], self.para_dict['dataset'], self.para_dict['target_domain'])
+        self.fid_stats_from_b_to_a = '{}/{}/{}_fid_stats.npz'.format(
+            self.para_dict['fid_dir'], self.para_dict['dataset'], self.para_dict['source_domain'])
 
+        # check fid stats
         if self.para_dict['fid']:
             if not os.path.exists(self.fid_stats_from_a_to_b):
                 os.system(r'python3 ./fid_stats/gen_fid_stats.py --dataset {} --source-domain {} --target-domain {} --gpu-id {} --valid-path {}'.format(
