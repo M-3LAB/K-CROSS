@@ -10,7 +10,7 @@ We only achieve the foundamental models, i.e. CycleGAN, MUnit, and Unit, in fede
 conda install pytorch=1.8.1 torchvision torchaudio cudatoolkit=10.1 -c pytorch
 ```
 ```bash
-pip3 install -r ./documents/requirements.txt
+pip3 install -r requirements.txt
 ```
 
 > Generate dataset
