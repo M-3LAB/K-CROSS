@@ -1,13 +1,13 @@
 import torch
 import itertools
 
-from architecture.centralized.base import Base
+from architecture.centralized.base import BASE
 from model.munit.munit import *
 from tools.utilize import *
 
 __all__ = ['Munit']
 
-class Munit(Base):
+class Munit(BASE):
     def __init__(self, config, train_loader, valid_loader, assigned_loader, 
                  device, file_path, batch_limit_weight=1.0):
         super(Munit, self).__init__(config=config, train_loader=train_loader, valid_loader=valid_loader, assigned_loader=assigned_loader, 

@@ -1,6 +1,6 @@
 import torch
 
-from architecture.centralized.base import Base
+from architecture.centralized.base import BASE
 from model.unit.unit import *
 from tools.utilize import *
 
@@ -12,7 +12,7 @@ matplotlib.use('Agg')
 
 __all__ = ['Unit']
 
-class Unit(Base):
+class Unit(BASE):
     def __init__(self, config, train_loader, valid_loader, assigned_loader, 
                  device, file_path, batch_limit_weight=1.0):
         super(Unit, self).__init__(config=config, train_loader=train_loader, valid_loader=valid_loader, assigned_loader=assigned_loader, 
