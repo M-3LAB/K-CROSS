@@ -67,8 +67,8 @@ def fid_stats(args):
     test_loader = DataLoader(test_dataset, num_workers=0, batch_size=para_dict['batch_size'], shuffle=False)
 
 
-    get_stats(test_loader, para_dict['batch_size'], output_path,
-              para_dict['source_domain'], para_dict['target_domain'], device)
+    get_stats(test_loader, para_dict['batch_size'], output_path, para_dict['source_domain'], para_dict['target_domain'], device)
+    get_stats(test_loader, para_dict['batch_size'], output_path, para_dict['target_domain'], para_dict['source_domain'], device)
 
 
 if __name__ == '__main__':
