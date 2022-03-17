@@ -1,4 +1,3 @@
-from collections import OrderedDict 
 
 __all__ = ['send_from_server_to_client']
 

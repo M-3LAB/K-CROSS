@@ -1,7 +1,4 @@
-from fnmatch import translate
-from re import I
 import torch
-import torch.nn.functional as F
 import numpy as np
 
 from evaluation.common import concate_tensor_lists, average
