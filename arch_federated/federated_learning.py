@@ -70,9 +70,9 @@ class FederatedTrain():
             save_arg(self.para_dict, self.file_path)
             save_script(__file__, self.file_path)
 
-        self.fid_stats_from_a_to_b = '{}/{}/{}_fid_stats.npz'.format(
+        self.fid_stats_from_a_to_b = '{}/{}/{}.npz'.format(
             self.para_dict['fid_dir'], self.para_dict['dataset'], self.para_dict['target_domain'])
-        self.fid_stats_from_b_to_a = '{}/{}/{}_fid_stats.npz'.format(
+        self.fid_stats_from_b_to_a = '{}/{}/{}.npz'.format(
             self.para_dict['fid_dir'], self.para_dict['dataset'], self.para_dict['source_domain'])
 
         # check fid stats

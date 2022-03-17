@@ -55,9 +55,9 @@ class CentralizedTrain():
         self.best_psnr_b = 0.
         self.load_model_path = self.para_dict['load_model_dir']
 
-        self.fid_stats_from_a_to_b = '{}/{}/{}_fid_stats.npz'.format(
+        self.fid_stats_from_a_to_b = '{}/{}/{}.npz'.format(
             self.para_dict['fid_dir'], self.para_dict['dataset'], self.para_dict['target_domain'])
-        self.fid_stats_from_b_to_a = '{}/{}/{}_fid_stats.npz'.format(
+        self.fid_stats_from_b_to_a = '{}/{}/{}.npz'.format(
             self.para_dict['fid_dir'], self.para_dict['dataset'], self.para_dict['source_domain'])
 
         # check fid stats
