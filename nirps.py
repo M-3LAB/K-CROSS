@@ -1,8 +1,6 @@
 import torch
 import yaml
 import os
-import sys
-sys.path.append('.')
 
 from configuration.nirps.config import parse_arguments_nirps
 from architecture.centralized.train import CentralizedTrain
