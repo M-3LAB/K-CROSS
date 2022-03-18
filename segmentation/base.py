@@ -82,7 +82,7 @@ class SegmentationNetwork(NeuralNetwork):
         :param pad_kwargs: leave this alone
         :param all_in_gpu: experimental. You probably want to leave this as is it
         :param verbose: Do you want a wall of text? If yes then set this to True
-        :return:
+        :return: Tuple[np.ndarray, np.ndarray]
         """
         torch.cuda.empty_cache()
 
