@@ -1,6 +1,6 @@
 import torch
 
-__all__ = ['no_op', 'maybe_to_torch']
+__all__ = ['no_op', 'maybe_to_torch', 'to_cuda']
 
 class no_op(object):
     def __enter__(self):
