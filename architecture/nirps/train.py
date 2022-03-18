@@ -5,8 +5,8 @@ from tools.utilize import *
 from data_io.brats import BraTS2021
 from data_io.ixi import IXI
 from torch.utils.data import DataLoader
-from torch.utils.data.sampler import SubsetRandomSampler
 from architecture.centralized.train import CentralizedTrain
+from architecture.nirps.cyclegan import NIRPSCycleGAN
 
 import warnings
 warnings.filterwarnings("ignore")
@@ -140,21 +140,23 @@ class NIRPS(CentralizedTrain):
         self.assigned_loader = None
 
     def init_model(self):
-        return super().init_model()
+        if self.para_dict['model'] == 'cyclegan':
+            self.trainer = NIRPSCycleGAN(self.para_dict, self.train_loader, self.valid_loader,
+                                    self.assigned_loader, self.device, self.file_path)
+        else:
+            raise ValueError('Model is invalid!')
 
+        if self.para_dict['load_model']:
+            self.load_models()
+            print('load model: {}'.format(self.para_dict['load_model_dir']))
 
     def save_models(self, fp=None, epoch=None):
         if self.para_dict['model'] == 'cyclegan':
             gener_from_a_to_b, gener_from_b_to_a, discr_from_a_to_b, discr_from_b_to_a = self.trainer.get_model()
             save_model(gener_from_a_to_b, '{}/checkpoint/g_from_a_to_b'.format(self.file_path), 'epoch_{}'.format(self.epoch+1))
             save_model(gener_from_b_to_a, '{}/checkpoint/g_from_b_to_a'.format(self.file_path), 'epoch_{}'.format(self.epoch+1))
-           
-        elif self.para_dict['model'] == 'munit' or self.para_dict['model'] == 'unit':
-            gener_from_a_to_b_enc, gener_from_a_to_b_dec, gener_from_b_to_a_enc, gener_from_b_to_a_dec, discr_from_a_to_b, discr_from_b_to_a = self.trainer.get_model()
-            save_model(gener_from_a_to_b_enc, '{}/checkpoint/g_from_a_to_b_enc'.format(self.file_path), 'epoch_{}'.format(self.epoch+1))
-            save_model(gener_from_a_to_b_dec, '{}/checkpoint/g_from_a_to_b_dec'.format(self.file_path), 'epoch_{}'.format(self.epoch+1))
-            save_model(gener_from_b_to_a_enc, '{}/checkpoint/g_from_b_to_a_enc'.format(self.file_path), 'epoch_{}'.format(self.epoch+1))
-            save_model(gener_from_b_to_a_dec, '{}/checkpoint/g_from_b_to_a_dec'.format(self.file_path), 'epoch_{}'.format(self.epoch+1))
+        else:
+            raise ValueError('Model is invalid!')
 
     def work_flow(self):
         self.trainer.train_epoch()

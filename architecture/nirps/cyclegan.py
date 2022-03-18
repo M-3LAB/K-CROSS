@@ -12,10 +12,10 @@ matplotlib.use('Agg')
 
 __all__ = ['CycleGAN']
 
-class KAIDCycleGAN(CycleGAN):
+class NIRPSCycleGAN(CycleGAN):
     def __init__(self, config, train_loader, valid_loader, assigned_loader, 
                  device, file_path, batch_limit_weight=1.0):
-        super(KAIDCycleGAN, self).__init__(config=config, train_loader=train_loader, valid_loader=valid_loader, assigned_loader=assigned_loader, 
+        super(NIRPSCycleGAN, self).__init__(config=config, train_loader=train_loader, valid_loader=valid_loader, assigned_loader=assigned_loader, 
                  device=device, file_path=file_path, batch_limit_weight=batch_limit_weight)
      
     @torch.no_grad()
