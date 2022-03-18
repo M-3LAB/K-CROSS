@@ -35,7 +35,7 @@ def get_inception_feature(images, batch_size, dims_list, target_domain, device):
     features = [np.empty((num_images, dim)) for dim in dims_list]
 
     pbar = tqdm(total=num_images, dynamic_ncols=True, leave=False,
-                disable=False, desc="get_inception_feature")
+                disable=False, desc="Get_inception_feature")
     
     looper = iter(images)
     start = 0

@@ -14,7 +14,7 @@ def get_stats(data_loader, batch_size, output_path, source_domain, target_domain
     mu = np.mean(acts, axis=0)
     sigma = np.cov(acts, rowvar=False)
 
-    output = os.path.join(output_path, f'{source_domain}_{target_domain}_fid_stats')
+    output = os.path.join(output_path, f'{target_domain}')
     np.savez_compressed(output, mu=mu, sigma=sigma)
 
 def calculate_fid(acts, mu2, sigma2, eps=1e-6):

@@ -1,28 +1,29 @@
 import torch
 import yaml
-from configuration.config import parse_arguments_kaid
+import os
+import numpy as np
+
+from torch.utils.data import DataLoader
 from data_io.ixi import IXI
 from data_io.brats import BraTS2021
-from torch.utils.data import DataLoader
 from tools.utilize import *
-from model.FT.fourier_transform import * 
-from model.FT.power_spectrum import *
-from metrics.kaid.stats import mask_stats, best_msl_list 
-import numpy as np
-from model.ae.kaid_ae import *
 from model.cyclegan.cyclegan import CycleGen 
 from model.munit.munit import Encoder as MUE
 from model.munit.munit import Decoder as MUD
 from model.unit.unit import Encoder as UE 
 from model.unit.unit import Generator as UG
-from tools.utilize import create_folders
-import os
-from loss_function.distance import l1_diff, l2_diff, cosine_similiarity
+
+from configuration.kaid.config import parse_arguments_kaid
+from loss_function.kaid.distance import l1_diff, l2_diff, cosine_similiarity
+from model.kaid.FT.fourier_transform import * 
+from model.kaid.FT.power_spectrum import *
+from metrics.kaid.stats import mask_stats, best_msl_list 
+from model.kaid.ae.kaid_ae import KAIDAE
 
 
 if __name__ == '__main__':
     args = parse_arguments_kaid()
-    with open('./configuration/kaid/kaid_{}.yaml'.format(args.dataset), 'r') as f:
+    with open('./configuration/kaid/{}.yaml'.format(args.dataset), 'r') as f:
         para_dict = yaml.load(f, Loader=yaml.SafeLoader)
     para_dict = merge_config(para_dict, args)
     print(para_dict)
@@ -194,7 +195,6 @@ if __name__ == '__main__':
     msl: the half of mask side length
     """ 
     msl_path = os.path.join(para_dict['msl_path'], para_dict['dataset']) 
-
     create_folders(msl_path) 
 
     if para_dict['msl_stats']:
@@ -302,16 +302,14 @@ if __name__ == '__main__':
     if para_dict['test_model'] == 'cyclegan':
         generator_from_a_to_b = CycleGen().to(device) 
         generator_from_b_to_a = CycleGen().to(device)
-    elif para_dict['test_model'] == 'munit':
 
+    elif para_dict['test_model'] == 'munit':
         encoder_from_a_to_b = MUE().to(device)
         decoder_from_a_to_b = MUD().to(device)
-
         encoder_from_b_to_a = MUE().to(device)
         decoder_from_b_to_a = MUD().to(device)
 
     elif para_dict['test_model'] == 'unit':
-
         encoder_from_a_to_b = UE().to(device)
         generator_from_a_to_b = UG().to(device) 
         encoder_from_b_to_a = UE().to(device)
@@ -363,5 +361,5 @@ if __name__ == '__main__':
         print(f"The mean diff of Modality {para_dict['target_domain']} : {torch.mean(diff_b)}")
 
 
-        
+    #TODO: Comparision on NIRPS 
     

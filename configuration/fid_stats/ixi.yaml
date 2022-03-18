@@ -1,0 +1,13 @@
+dataset: ixi
+fid_dir: ./fid_stats/stats_npz
+data_path: /disk1/medical/ixi
+batch_size: 8 
+size: 256
+source_domain: t2
+target_domain: pd
+es_higher_limit: 80 
+es_lower_limit: 50
+gpu_id: 0
+gpu_ids:
+- '01234567'
+seed: 3

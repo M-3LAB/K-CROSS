@@ -1,4 +1,7 @@
-# FedMed-GAN
+# fedmed-light
+This is the BASIC version for implementing new works.
+
+We only achieve the foundamental models, i.e. CycleGAN, MUnit, and Unit, in federated learning.
 
 ## Preliminary
 > Dependency
@@ -14,26 +17,21 @@ pip3 install -r requirements.txt
 ```bash
 python3 data_preprecess/brats2021.py
 ```
-> Test data loader
+> Prepare statistics for FID metric. See [./fid_stats/gen_fid_stats.py](fid_stats/gen_fid_stats.py) for details.
 ```bash
-python3 legacy_code/example_dataset_loader.py
-```
-> Prepare Statistics for FID Calculate statistics. See [./fid_stats.py](fid_stats.py) for details.
-```bash
-python3 fid_stats.py --dataset 'ixi'  --source-domain 't2' --target-domain 'pd' --gpu-id 0
+python3 ./fid_stats/gen_fid_stats.py --dataset 'ixi'  --source-domain 't2' --target-domain 'pd' --gpu-id 0
 ```
 
 > Options. See [./configuration/config.py](configuration/config.py) for details.
 ```bash
---fed-aggregate-method 'fed-avg'/'fed-psnr' --num-epoch 20 --num-round 10 --gpu-id 1
+--fed-aggregate-method 'fed-avg'/'fed-psnr' --num-epoch 30 --num-round 10 --gpu-id 0
 ```
 ```bash
 --fid [default=true]
 --noise-type 'slight'/'severe' [default='normal'] 
 --identity [default=true]
 --diff-privacy [default=true]
---reg-gan 
---auxiliary-rotation --auxiliary-translation --auxiliary-scaling
+--auxiliary-rotation --auxiliary-translation --auxiliary-scaling [default=false]
 ```
 ```bash
 --debug --save-img --single-img-infer 
@@ -62,27 +60,6 @@ python3 centralized_training.py --dataset 'brats2021' --model 'cyclegan' --sourc
 > IXI  ['t2', 'pd']
 ```bash
 python3 centralized_training.py --dataset 'ixi' --model 'cyclegan' --source-domain 'pd' --target-domain 't2' --data-path '/disk1/medical/ixi' --valid-path '/disk1/medical/ixi'  
-```
-
-## KAID Training
-> IXI  ['t2', 'pd']
-```bash
-python3 kaid.py --dataset 'ixi' --source-domain 't2' --target-domain 'pd' -g 0 --msl-assigned
-```
-
-> BraTS2021 ['t1', 't2', 'flair']
-```bash
-python3 kaid.py --dataset 'brats2021' --source-domain 't1' --target-domain 't2' -g 0 --msl-assigned
-```
-
-## KAID Debug 
-```bash
-python3 kaid.py --dataset 'ixi' --source-domain 't2' --target-domain 'pd' -g 0 --msl-assigned --msl-assigned-value 10 --debug --num-epochs 2
-```
-
-## NIRPS Dataset Build Up
-```bash
-python3 nirps.py --dataset 'ixi' --source-domain 't2' --target-domain 'pd' -g 0 --msl-assigned --msl-assigned-value 10 --debug --num-epochs 2
 ```
 
 ## Implementations of Data Processing
