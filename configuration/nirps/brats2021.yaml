@@ -1,0 +1,13 @@
+dataset: brats2021
+source_domain: t1
+target_domain: t2
+data_path: /disk1/medical/brats2021/training
+valid_path: /disk1/medical/brats2021/validation
+data_num: 6000 
+es_higher_limit: 80 
+es_lower_limit: 50
+size: 256 
+num_img_save: 5 
+data_mode: unpaired
+#general evaluation
+general_evaluation: false
