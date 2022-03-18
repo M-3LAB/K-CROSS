@@ -2,6 +2,8 @@ import torch
 import torch.nn as nn
 from torch.cuda.amp import autocast
 from segmentation.common import no_op
+from typing import Union, Tuple, List
+import numpy as np
 
 __all__ = ['NeuralNetwork', 'SegmentationNetwork']
 
@@ -128,3 +130,42 @@ class SegmentationNetwork(NeuralNetwork):
                     raise RuntimeError("Invalid conv op, cannot determine what dimensionality (2d/3d) the network is")
 
         return res
+    
+    def _internal_predict_2D_2Dconv(self, x: np.ndarray, min_size: Tuple[int, int], do_mirroring: bool,
+                                    mirror_axes: tuple = (0, 1, 2), regions_class_order: tuple = None,
+                                    pad_border_mode: str = "constant", pad_kwargs: dict = None,
+                                    verbose: bool = True):
+
+        """
+        This one does fully convolutional inference. No sliding window
+        return: Tuple[np.ndarray, np.ndarray]
+        """
+
+        assert len(x.shape) == 3, "x must be (c, x, y)"
+
+        assert self.input_shape_must_be_divisible_by is not None, 'input_shape_must_be_divisible_by must be set to ' \
+                                                                  'run _internal_predict_2D_2Dconv'
+        if verbose: print("do mirror:", do_mirroring)
+
+        data, slicer = pad_nd_image(x, min_size, pad_border_mode, pad_kwargs, True,
+                                    self.input_shape_must_be_divisible_by)
+
+        predicted_probabilities = self._internal_maybe_mirror_and_pred_2D(data[None], mirror_axes, do_mirroring,
+                                                                          None)[0]
+
+        slicer = tuple(
+            [slice(0, predicted_probabilities.shape[i]) for i in range(len(predicted_probabilities.shape) -
+                                                                       (len(slicer) - 1))] + slicer[1:])
+        predicted_probabilities = predicted_probabilities[slicer]
+
+        if regions_class_order is None:
+            predicted_segmentation = predicted_probabilities.argmax(0)
+            predicted_segmentation = predicted_segmentation.detach().cpu().numpy()
+            predicted_probabilities = predicted_probabilities.detach().cpu().numpy()
+        else:
+            predicted_probabilities = predicted_probabilities.detach().cpu().numpy()
+            predicted_segmentation = np.zeros(predicted_probabilities.shape[1:], dtype=np.float32)
+            for i, c in enumerate(regions_class_order):
+                predicted_segmentation[predicted_probabilities[i] > 0.5] = c
+
+        return predicted_segmentation, predicted_probabilities
