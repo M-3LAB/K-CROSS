@@ -1,6 +1,7 @@
 import torch
 import torch.nn as nn
 from copy import deepcopy
+from segmentation.modules.block import ConvDropNorm
 
 __all__ = ['StackedConvLayers']
 
@@ -9,7 +10,7 @@ class StackedConvLayers(nn.Module):
                  conv_op=nn.Conv2d, conv_kwargs=None,
                  norm_op=nn.BatchNorm2d, norm_op_kwargs=None,
                  dropout_op=nn.Dropout2d, dropout_op_kwargs=None,
-                 nonlin=nn.LeakyReLU, nonlin_kwargs=None, first_stride=None, basic_block=ConvDropoutNormNonlin):
+                 nonlin=nn.LeakyReLU, nonlin_kwargs=None, first_stride=None, basic_block=ConvDropNorm):
         '''
         stacks ConvDropoutNormLReLU layers. initial_stride will only be applied to first layer in the stack. The other parameters affect all layers
         :param input_feature_channels:
