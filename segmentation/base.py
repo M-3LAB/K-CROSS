@@ -1,6 +1,7 @@
 import torch
 import torch.nn as nn
 from torch.cuda.amp import autocast
+from segmentation.common import no_op
 
 __all__ = ['NeuralNetwork', 'SegmentationNetwork']
 
