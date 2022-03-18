@@ -1,13 +1,5 @@
-import torch
-import yaml
-import os
-
 from configuration.nirps.config import parse_arguments_nirps
 from architecture.nirps.train import NIRPS
-from tools.utilize import *
-from data_io.brats import BraTS2021
-from data_io.ixi import IXI
-from torch.utils.data import DataLoader
 
 import warnings
 warnings.filterwarnings("ignore")
