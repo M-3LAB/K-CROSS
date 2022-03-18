@@ -5,6 +5,7 @@ from segmentation.common import no_op
 from typing import Union, Tuple, List
 import numpy as np
 from data_io.augmentation.common import pad_nd_image
+from scipy.ndimage.filters import gaussian_filter
 
 __all__ = ['NeuralNetwork', 'SegmentationNetwork']
 
@@ -304,3 +305,98 @@ class SegmentationNetwork(NeuralNetwork):
 
         if verbose: print("prediction done")
         return predicted_segmentation, class_probabilities
+    
+    @staticmethod
+    def _get_gaussian(patch_size, sigma_scale=1. / 8) -> np.ndarray:
+        tmp = np.zeros(patch_size)
+        center_coords = [i // 2 for i in patch_size]
+        sigmas = [i * sigma_scale for i in patch_size]
+        tmp[tuple(center_coords)] = 1
+        gaussian_importance_map = gaussian_filter(tmp, sigmas, 0, mode='constant', cval=0)
+        gaussian_importance_map = gaussian_importance_map / np.max(gaussian_importance_map) * 1
+        gaussian_importance_map = gaussian_importance_map.astype(np.float32)
+
+        # gaussian_importance_map cannot be 0, otherwise we may end up with nans!
+        gaussian_importance_map[gaussian_importance_map == 0] = np.min(
+            gaussian_importance_map[gaussian_importance_map != 0])
+
+        return gaussian_importance_map
+
+    @staticmethod
+    def _compute_steps_for_sliding_window(patch_size: Tuple[int, ...], image_size: Tuple[int, ...], step_size: float) -> List[List[int]]:
+        assert [i >= j for i, j in zip(image_size, patch_size)], "image size must be as large or larger than patch_size"
+        assert 0 < step_size <= 1, 'step_size must be larger than 0 and smaller or equal to 1'
+
+        # our step width is patch_size*step_size at most, but can be narrower. For example if we have image size of
+        # 110, patch size of 64 and step_size of 0.5, then we want to make 3 steps starting at coordinate 0, 23, 46
+        target_step_sizes_in_voxels = [i * step_size for i in patch_size]
+
+        num_steps = [int(np.ceil((i - k) / j)) + 1 for i, j, k in zip(image_size, target_step_sizes_in_voxels, patch_size)]
+
+        steps = []
+        for dim in range(len(patch_size)):
+            # the highest step value for this dimension is
+            max_step_value = image_size[dim] - patch_size[dim]
+            if num_steps[dim] > 1:
+                actual_step_size = max_step_value / (num_steps[dim] - 1)
+            else:
+                actual_step_size = 99999999999  # does not matter because there is only one step at 0
+
+            steps_here = [int(np.round(actual_step_size * i)) for i in range(num_steps[dim])]
+
+            steps.append(steps_here)
+
+        return steps
+    
+    def _internal_maybe_mirror_and_pred_2D(self, x: Union[np.ndarray, torch.tensor], mirror_axes: tuple,
+                                           do_mirroring: bool = True,
+                                           mult: np.ndarray or torch.tensor = None):
+        """
+        return: torch.tensor
+        """
+        # if cuda available:
+        #   everything in here takes place on the GPU. If x and mult are not yet on GPU this will be taken care of here
+        #   we now return a cuda tensor! Not numpy array!
+        
+        assert len(x.shape) == 4, 'x must be (b, c, x, y)'
+
+        x = maybe_to_torch(x)
+        result_torch = torch.zeros([x.shape[0], self.num_classes] + list(x.shape[2:]), dtype=torch.float)
+
+        if torch.cuda.is_available():
+            x = to_cuda(x, gpu_id=self.get_device())
+            result_torch = result_torch.cuda(self.get_device(), non_blocking=True)
+
+        if mult is not None:
+            mult = maybe_to_torch(mult)
+            if torch.cuda.is_available():
+                mult = to_cuda(mult, gpu_id=self.get_device())
+
+        if do_mirroring:
+            mirror_idx = 4
+            num_results = 2 ** len(mirror_axes)
+        else:
+            mirror_idx = 1
+            num_results = 1
+
+        for m in range(mirror_idx):
+            if m == 0:
+                pred = self.inference_apply_nonlin(self(x))
+                result_torch += 1 / num_results * pred
+
+            if m == 1 and (1 in mirror_axes):
+                pred = self.inference_apply_nonlin(self(torch.flip(x, (3, ))))
+                result_torch += 1 / num_results * torch.flip(pred, (3, ))
+
+            if m == 2 and (0 in mirror_axes):
+                pred = self.inference_apply_nonlin(self(torch.flip(x, (2, ))))
+                result_torch += 1 / num_results * torch.flip(pred, (2, ))
+
+            if m == 3 and (0 in mirror_axes) and (1 in mirror_axes):
+                pred = self.inference_apply_nonlin(self(torch.flip(x, (3, 2))))
+                result_torch += 1 / num_results * torch.flip(pred, (3, 2))
+
+        if mult is not None:
+            result_torch[:, :] *= mult
+
+        return result_torch
