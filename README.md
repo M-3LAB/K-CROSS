@@ -1,8 +1,6 @@
-# fedmed-light
-This is the BASIC version for implementing new works.
+# KAID
 
-We only achieve the foundamental models, i.e. CycleGAN, MUnit, and Unit, in federated learning.
-
+KAID implementation
 ## Preliminary
 > Dependency
 
@@ -24,9 +22,6 @@ python3 ./fid_stats/gen_fid_stats.py --dataset 'ixi'  --source-domain 't2' --tar
 
 > Options. See [./configuration/config.py](configuration/config.py) for details.
 ```bash
---fed-aggregate-method 'fed-avg'/'fed-psnr' --num-epoch 30 --num-round 10 --gpu-id 0
-```
-```bash
 --fid [default=true]
 --noise-type 'slight'/'severe' [default='normal'] 
 --identity [default=true]
@@ -40,16 +35,6 @@ python3 ./fid_stats/gen_fid_stats.py --dataset 'ixi'  --source-domain 't2' --tar
 --save-model --load-model --load-model-dir './work_dir/centralized/ixi/Tue Jan 11 20:18:31 2022'
  ```
 
-## Federated Training 
-> BraTS2021 ['t1', 't2', 'flair']
-```bash
-python3 federated_training.py --dataset 'brats2021' --model 'cyclegan' --source-domain 't1' --target-domain 'flair' --data-path '/disk1/medical/brats2021/training' --valid-path '/disk1/medical/brats2021/validation'
-```
-
-> IXI  ['t2', 'pd']
-```bash
-python3 federated_training.py --dataset 'ixi'  --model 'cyclegan' --source-domain 'pd' --target-domain 't2' --data-path '/disk1/medical/ixi' --valid-path '/disk1/medical/ixi'
-```
 
 ## Centralized Training
 > BraTS2021 ['t1', 't2', 'flair']
