@@ -14,7 +14,10 @@ class BraTS2019(BASE):
                                         data_moda_ratio=data_moda_ratio, data_moda_case=data_moda_case, seed=seed)
 
         # infer assigned images
+        if assigned_data and not assigned_images:
+            raise ValueError('Please Provide Image Indices in Assigned Images!')
         self.fedmed_dataset = assigned_images
+            
         self._get_transform_modalities()
 
         if not assigned_data:

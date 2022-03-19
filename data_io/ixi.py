@@ -14,7 +14,10 @@ class IXI(BASE):
                                   dataset_splited=dataset_splited, seed=seed)
 
         # infer assigned images
+        if assigned_data and not assigned_images:
+            raise ValueError('Please Provide Image Indices in Assigned Images!')
         self.fedmed_dataset = assigned_images
+
         self._get_transform_modalities()
 
         if not assigned_data:

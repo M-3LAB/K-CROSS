@@ -31,6 +31,13 @@ class BASE(torch.utils.data.Dataset):
                 noise_type='normal', transform_data=None, client_weights=[1.0], dataset_splited=False,
                 data_mode='mixed', data_num=6000, data_paired_weight=0.2, data_moda_ratio=0.5, data_moda_case='case1', seed=3):
 
+        if data_mode == 'paired':
+            data_paired_weight = 1.0
+        elif data_mode == 'unpaired':
+            data_paired_weight = 0.
+        else:
+            data_mode = 'mixed'
+
         self.seed = seed 
         self.dataset_path = root
         self.extract_slice = extract_slice

@@ -1,5 +1,4 @@
 from operator import gt
-import torch
 import yaml
 import os
 import shutil
@@ -58,23 +57,15 @@ class NIRPS(CentralizedTrain):
                                            noise_type='normal',
                                            learn_mode='train',
                                            transform_data=self.normal_transform,
-                                           client_weights=[1.0],
-                                           data_mode=self.para_dict['data_mode'],
-                                           data_num=self.para_dict['data_num'],
-                                           data_paired_weight=1.0,
-                                           data_moda_ratio=1.0,
-                                           data_moda_case='case1')
-
+                                           data_mode='unpaired',
+                                           data_num=self.para_dict['data_num'])
             self.valid_dataset = BraTS2021(root=self.para_dict['valid_path'],
                                            modalities=[self.para_dict['source_domain'], self.para_dict['target_domain']],
                                            noise_type='normal',
                                            learn_mode='test',
                                            extract_slice=[self.para_dict['es_lower_limit'], self.para_dict['es_higher_limit']],
                                            transform_data=self.normal_transform,
-                                           data_mode='paired',
-                                           assigned_data=True,
-                                           assigned_images=None) 
-            
+                                           data_mode='paired')
         elif self.para_dict['dataset'] == 'ixi':
             assert self.para_dict['source_domain'] in ['t2', 'pd']
             assert self.para_dict['target_domain'] in ['t2', 'pd']
@@ -85,14 +76,9 @@ class NIRPS(CentralizedTrain):
                                      noise_type='normal',
                                      learn_mode='train',
                                      transform_data=self.normal_transform,
-                                     data_mode=self.para_dict['data_mode'],
+                                     data_mode='unpaired',
                                      data_num=self.para_dict['data_num'],
-                                     data_paired_weight=1.0,
-                                     client_weights=[1.0],
-                                     dataset_splited=True,
-                                     data_moda_ratio=1.0,
-                                     data_moda_case='case1')
-
+                                     dataset_splited=True)
             self.valid_dataset = IXI(root=self.para_dict['data_path'],
                                      modalities=[self.para_dict['source_domain'], self.para_dict['target_domain']],
                                      extract_slice=[self.para_dict['es_lower_limit'], self.para_dict['es_higher_limit']],
@@ -108,13 +94,10 @@ class NIRPS(CentralizedTrain):
                                        batch_size=self.para_dict['batch_size'],
                                        num_workers=self.para_dict['num_workers'],
                                        shuffle=True)
-
         self.valid_loader = DataLoader(self.valid_dataset, 
-                                       num_workers=self.para_dict['num_workers'],
                                        batch_size=1, 
+                                       num_workers=self.para_dict['num_workers'],
                                        shuffle=False)
-        
-        self.assigned_loader = None
 
     def init_model(self):
         if self.para_dict['model'] == 'cyclegan':
@@ -162,28 +145,25 @@ class NIRPS(CentralizedTrain):
         self.trainer.infer_nirps_dataset(save_a_path=save_a_path, save_b_path=save_b_path, 
                                             gt_a_path=gt_a_path, gt_b_path=gt_b_path,
                                             data_loader=self.valid_loader)
-        # not save model
+        # save model
         # self.save_models()
 
-    def copy_img_into_nirps_dataset(self):
-        source_path = '{}/nirps_dataset/{}'.format(self.file_path, self.para_dict['dataset'])
-        target_path = '{}/{}'.format(self.para_dict['nirps_dataset'], self.para_dict['dataset'])
+    def copy_img_into_nirps_dataset(self, data_moda):
+        source_path = '{}/nirps_dataset/{}/{}'.format(self.file_path, self.para_dict['dataset'], data_moda)
+        target_path = '{}/{}'.format(self.para_dict['nirps_dataset'], self.para_dict['dataset'], data_moda)
 
         if not os.path.exists(target_path):
             os.makedirs(target_path)
-
         if os.path.exists(source_path):
             shutil.rmtree(target_path)
 
         shutil.copytree(source_path, target_path)
-
         print('copy dataset finished, nirps dataset dir: '.format(target_path))
 
 
     def run_work_flow(self):
         self.load_config()
         self.preliminary()
-        # self.setup_folder()
         self.load_data()
         self.init_model()
         print('---------------------')
@@ -193,7 +173,8 @@ class NIRPS(CentralizedTrain):
             self.work_flow()
 
         # copy generated images to target nirps dataset
-        self.copy_img_into_nirps_dataset() 
+        self.copy_img_into_nirps_dataset(self.para_dict['source_domain']) 
+        self.copy_img_into_nirps_dataset(self.para_dict['target_domain']) 
 
         print('work dir: {}'.format(self.file_path))
         with open('{}/log_finished.txt'.format(self.para_dict['work_dir']), 'a') as f:
