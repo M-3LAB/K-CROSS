@@ -40,4 +40,17 @@ class UNet2D(SegmentationNetwork):
         self.num_classes = num_classes
         self.final_nonlin = final_nonlin
         self.do_ds = deep_supervision
+
+        upsample_mode = 'bilinear'
+        
+        if self.conv_op == nn.Conv2d:
+            pool_op = nn.MaxPool2d
+            transpconv = nn.ConvTranspose2d
+            if pool_op_kernel_sizes is None:
+                pool_op_kernel_sizes = [(2, 2)] * num_pool
+            if conv_kernel_sizes is None:
+                conv_kernel_sizes = [(3, 3)] * (num_pool + 1) 
+        
+        else:
+            raise NotImplementedError('The Convolutional Operator Has Not Been Implemented Yet')
     
