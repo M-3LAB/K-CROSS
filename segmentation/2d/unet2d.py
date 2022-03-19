@@ -26,4 +26,18 @@ class UNet2D(SegmentationNetwork):
             dropout_op_kwargs = {'p': 0.5, 'inplace': True}
         if norm_op_kwargs is None:
             norm_op_kwargs = {'eps': 1e-5, 'affine': True, 'momentum': 0.1}
+        
+        self.conv_kwargs = {'stride': 1, 'dilation': 1, 'bias': True}
+
+        self.nonlin = nonlin
+        self.nonlin_kwargs = nonlin_kwargs
+        self.dropout_op_kwargs = dropout_op_kwargs
+        self.norm_op_kwargs = norm_op_kwargs
+        self.weightInitializer = weightInitializer
+        self.conv_op = conv_op
+        self.norm_op = norm_op
+        self.dropout_op = dropout_op
+        self.num_classes = num_classes
+        self.final_nonlin = final_nonlin
+        self.do_ds = deep_supervision
     
