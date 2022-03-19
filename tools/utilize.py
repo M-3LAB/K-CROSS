@@ -148,15 +148,6 @@ def save_model(model, file_path, infor):
     model_path = '{}/{}.pth'.format(file_path, infor)
     torch.save({'model_state_dict': model.state_dict()}, model_path)
 
-# def save_model_per_epoch(model, file_path, para_dict, epoch):
-#     if not os.path.exists(file_path):
-#         os.makedirs(file_path)
-#     for file in glob.glob('{}/*.pth'.format(file_path)):
-#         os.remove(file)      
-
-#     model_path = '{}/{}_{}_{}.pth'.format(
-#         file_path, para_dict['source_domain'], para_dict['target_domain'], epoch)
-#     torch.save({'model_state_dict': model.state_dict()}, model_path)
 
 def load_model(model, file_path, description):
     if not os.path.exists(file_path):

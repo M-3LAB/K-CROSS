@@ -1,3 +1,4 @@
+from operator import gt
 import torch
 import yaml
 import os
@@ -150,7 +151,7 @@ class NIRPS(CentralizedTrain):
             self.load_models()
             print('load model: {}'.format(self.para_dict['load_model_dir']))
 
-    def save_models(self, fp=None, epoch=None):
+    def save_models(self):
         if self.para_dict['model'] == 'cyclegan':
             gener_from_a_to_b, gener_from_b_to_a, discr_from_a_to_b, discr_from_b_to_a = self.trainer.get_model()
             save_model(gener_from_a_to_b, '{}/checkpoint/g_from_a_to_b'.format(self.file_path), 'epoch_{}'.format(self.epoch+1))
@@ -162,37 +163,34 @@ class NIRPS(CentralizedTrain):
         self.trainer.train_epoch()
         # evaluation from a to b
         if self.para_dict['general_evaluation']:
-            (source_mae, source_psnr, source_ssim, source_fid, target_mae, target_psnr, target_ssim, target_fid) = self.trainer.evaluation(direction='both')
+            [[mae_b, psnr_b, ssim_b, fid_b], [mae_a, psnr_a, ssim_a, fid_a]]= self.trainer.evaluation(direction='both')
 
-            src_infor = '[Epoch {}/{}] [{}] mae: {:.4f} psnr: {:.4f} ssim: {:.4f} fid: {:.4f}'.format(
-                self.epoch+1, self.para_dict['num_epoch'], self.para_dict['source_domain'], source_mae, source_psnr, source_ssim, source_fid)
-
-            tag_infor = '[Epoch {}/{}] [{}] mae: {:.4f} psnr: {:.4f} ssim: {:.4f} fid: {:.4f}'.format(
-                self.epoch+1, self.para_dict['num_epoch'], self.para_dict['target_domain'], target_mae, target_psnr, target_ssim, target_fid)
+            infor_a = '[Epoch {}/{}] [{}] mae: {:.4f} psnr: {:.4f} ssim: {:.4f} fid: {:.4f}'.format(
+                self.epoch+1, self.para_dict['num_epoch'], self.para_dict['source_domain'], mae_a, psnr_a, ssim_a, fid_a)
+            infor_b = '[Epoch {}/{}] [{}] mae: {:.4f} psnr: {:.4f} ssim: {:.4f} fid: {:.4f}'.format(
+                self.epoch+1, self.para_dict['num_epoch'], self.para_dict['target_domain'], mae_b, psnr_b, ssim_b, fid_b)
         
-            print(src_infor)
-            print(tag_infor)
+            print(infor_a)
+            print(infor_b)
         
-            save_log(src_infor, self.file_path, description='both')
-            save_log(tag_infor, self.file_path, description='both')
+            save_log(infor_a, self.file_path, description='both')
+            save_log(infor_b, self.file_path, description='both')
         
-        for i in range(int(self.para_dict['num_epoch'])):
-            epoch_model_source_fp = os.path.join(self.model_source_fp, str(i)) 
-            epoch_model_target_fp = os.path.join(self.model_target_fp, str(i)) 
-            self.save_models(fp=epoch_model_source_fp, epoch=i)
-            self.save_models(fp=epoch_model_target_fp, epoch=i)
-            self.trainer.infer_nirps_generated(src_epoch_path=epoch_model_source_fp,
-                                               tag_epoch_path=epoch_model_target_fp,
-                                               data_loader=self.valid_loader)
+        for i in range(self.para_dict['num_epoch']):
+            self.save_models()
+            gt_a_path = '{}/nirps_dataset/{}/gt_{}'.format(self.file_path, self.para_dict['dataset'], self.para_dict['source_domain'])
+            gt_b_path = '{}/nirps_dataset/{}/gt_{}'.format(self.file_path, self.para_dict['dataset'], self.para_dict['target_domain'])
+            save_a_path = '{}/nirps_dataset/{}/{}/epoch_{}'.format(self.file_path, self.para_dict['dataset'], self.para_dict['source_domain'], self.epoch+1)
+            save_b_path = '{}/nirps_dataset/{}/{}/epoch_{}'.format(self.file_path, self.para_dict['dataset'], self.para_dict['target_domain'], self.epoch+1)
+            self.trainer.infer_nirps_dataset(save_a_path=save_a_path, save_b_path=save_b_path, 
+                                             gt_a_path=gt_a_path, gt_b_path=gt_b_path,
+                                             data_loader=self.valid_loader)
         
-        self.trainer.infer_nirps_gt(src_gt_path=self.model_source_gt_fp,
-                                    tag_gt_path=self.model_target_gt_fp,
-                                    data_loader=self.valid_loader)
             
     def run_work_flow(self):
         self.load_config()
         self.preliminary()
-        self.setup_folder()
+        # self.setup_folder()
         self.load_data()
         self.init_model()
         print('---------------------')
