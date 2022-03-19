@@ -1,7 +1,7 @@
 import torch
 import torch.nn as nn
 from torch.cuda.amp import autocast
-from segmentation.common import no_op
+from segmentation.common import no_op, maybe_to_torch, to_cuda
 from typing import Union, Tuple, List
 import numpy as np
 from data_io.augmentation.common import pad_nd_image

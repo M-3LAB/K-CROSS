@@ -1,6 +1,8 @@
 import torch
+import torch.nn.functional as F
+import torch.nn as nn
 
-__all__ = ['no_op', 'maybe_to_torch']
+__all__ = ['no_op', 'maybe_to_torch', 'to_cuda', 'softmax_helper', 'InitWeights_He']
 
 class no_op(object):
     def __enter__(self):
@@ -23,4 +25,16 @@ def to_cuda(data, non_blocking=True, gpu_id=0):
     else:
         data = data.cuda(gpu_id, non_blocking=non_blocking)
     return data
+
+softmax_helper = lambda x: F.softmax(x, 1)
+
+class InitWeights_He(object):
+    def __init__(self, neg_slope=1e-2):
+        self.neg_slope = neg_slope
+
+    def __call__(self, module):
+        if isinstance(module, nn.Conv3d) or isinstance(module, nn.Conv2d) or isinstance(module, nn.ConvTranspose2d) or isinstance(module, nn.ConvTranspose3d):
+            module.weight = nn.init.kaiming_normal_(module.weight, a=self.neg_slope)
+            if module.bias is not None:
+                module.bias = nn.init.constant_(module.bias, 0)
 

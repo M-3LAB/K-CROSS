@@ -47,6 +47,16 @@ python3 centralized_training.py --dataset 'brats2021' --model 'cyclegan' --sourc
 python3 centralized_training.py --dataset 'ixi' --model 'cyclegan' --source-domain 'pd' --target-domain 't2' --data-path '/disk1/medical/ixi' --valid-path '/disk1/medical/ixi'  
 ```
 
+## KAID Debug 
+```bash
+python3 kaid.py --dataset 'ixi' --source-domain 't2' --target-domain 'pd' -g 0 --msl-assigned --msl-assigned-value 10 --debug --num-epochs 2
+```
+
+## NIRPS Dataset Build Up
+```bash
+python3 nirps.py --dataset 'ixi' --model 'cyclegan' --source-domain 't2' --target-domain 'pd' -g 0 --num-epoch 2 --debug 
+```
+
 ## Implementations of Data Processing
 Sereval modes are described in the new settings of FedMed.
 

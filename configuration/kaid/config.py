@@ -1,4 +1,5 @@
 import argparse
+from random import choices
 
 __all__ = ['parse_arguments_kaid']
 
@@ -32,6 +33,11 @@ def parse_arguments_kaid():
     parser.add_argument('--beta1', type=float, default=None, help='Adam Optimizer parameter')
     parser.add_argument('--beta2', type=float, default=None, help='Adam Optimizer parameter')
     parser.add_argument('--fid', action='store_true', default=True)
+    #segmentation
+    parser.add_argument('--segment', action='store_true', default=None, help='segmentation method evaluation or not')
+    parser.add_argument('--seg-method', type=str, choices=['2d', '3d'])
+    parser.add_argument('--seg-model', type=str, choices=['ex_unet', 'unet'])
+    parser.add_argument('--max-filters-2d', type=int, default=999)
 
     args = parser.parse_args()
     return args
