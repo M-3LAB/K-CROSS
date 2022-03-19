@@ -1,6 +1,7 @@
 import torch
+import torch.nn.functional as F
 
-__all__ = ['no_op', 'maybe_to_torch', 'to_cuda']
+__all__ = ['no_op', 'maybe_to_torch', 'to_cuda', 'softmax_helper']
 
 class no_op(object):
     def __enter__(self):
@@ -23,4 +24,6 @@ def to_cuda(data, non_blocking=True, gpu_id=0):
     else:
         data = data.cuda(gpu_id, non_blocking=non_blocking)
     return data
+
+softmax_helper = lambda x: F.softmax(x, 1)
 
