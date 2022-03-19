@@ -7,9 +7,9 @@ data_num: 6000
 es_higher_limit: 80 
 es_lower_limit: 50
 size: 256 
-num_img_save: 5 
+num_img_save: 10 
 data_mode: unpaired
 # general evaluation
 general_evaluation: false
 # generate dataset
-generated_dataset_dir: ./nirps_dataset
+nirps_dataset: ./nirps_dataset

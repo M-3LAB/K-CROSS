@@ -39,9 +39,11 @@ class NIRPSCycleGAN(CycleGAN):
 
                 path_a = '{}/{}-slice-{}'.format(save_a_path, batch['name_a'][0], batch['slice_num'].numpy()[0])
                 path_b = '{}/{}-slice-{}'.format(save_b_path, batch['name_b'][0], batch['slice_num'].numpy()[0])
-                
-                save_image(real_a, 'gt.png', gt_a_path)
-                save_image(real_b, 'gt.png', gt_b_path)
+                path_a_gt = '{}/{}-slice-{}'.format(gt_a_path, batch['name_a'][0], batch['slice_num'].numpy()[0])
+                path_b_gt = '{}/{}-slice-{}'.format(gt_b_path, batch['name_b'][0], batch['slice_num'].numpy()[0])
+
+                save_image(real_a, 'gt.png', path_a_gt)
+                save_image(real_b, 'gt.png', path_b_gt)
                 save_image(fake_a, 'm_{:.4f}_p_{:.4f}_s_{:.4f}.png'.format(mae_a, psnr_a, ssim_a), path_a)
                 save_image(fake_b, 'm_{:.4f}_p_{:.4f}_s_{:.4f}.png'.format(mae_b, psnr_b, ssim_b), path_b)
     

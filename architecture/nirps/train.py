@@ -2,6 +2,7 @@ from operator import gt
 import torch
 import yaml
 import os
+import shutil
 from tools.utilize import *
 from data_io.brats import BraTS2021
 from data_io.ixi import IXI
@@ -38,31 +39,6 @@ class NIRPS(CentralizedTrain):
 
     def preliminary(self):
         return super().preliminary()
-
-    def setup_folder(self):
-        # fp: file path
-        self.dataset_fp = os.path.join(self.para_dict['generated_dataset_dir'], self.para_dict['dataset'])
-        create_folders(self.dataset_fp)
-
-        self.source_modality_fp = os.path.join(self.dataset_fp, self.para_dict['source_domain'])
-        create_folders(self.source_modality_fp)
-
-        self.target_modality_fp = os.path.join(self.dataset_fp, self.para_dict['target_domain'])
-        create_folders(self.target_modality_fp)
-
-        self.model_source_fp = os.path.join(self.source_modality_fp, self.para_dict['model']) 
-        self.model_target_fp = os.path.join(self.target_modality_fp, self.para_dict['model'])
-        create_folders(self.model_source_fp)
-        create_folders(self.model_target_fp)
-
-        self.model_source_gt_fp = os.path.join(self.model_source_fp, 'gt')
-        self.model_target_gt_fp = os.path.join(self.model_target_fp, 'gt')
-
-        for i in range(self.para_dict['num_epoch']):
-            epoch_model_source_fp = os.path.join(self.model_source_fp, str(i)) 
-            epoch_model_target_fp = os.path.join(self.model_target_fp, str(i)) 
-            create_folders(epoch_model_source_fp)
-            create_folders(epoch_model_target_fp)
             
     def load_data(self):
         self.normal_transform = [{'degrees':0, 'translate':[0.00, 0.00],
@@ -145,7 +121,7 @@ class NIRPS(CentralizedTrain):
             self.trainer = NIRPSCycleGAN(self.para_dict, self.train_loader, self.valid_loader,
                                     self.assigned_loader, self.device, self.file_path)
         else:
-            raise ValueError('Model is invalid!')
+            raise ValueError('Model is Invalid!')
 
         if self.para_dict['load_model']:
             self.load_models()
@@ -157,11 +133,12 @@ class NIRPS(CentralizedTrain):
             save_model(gener_from_a_to_b, '{}/checkpoint/g_from_a_to_b'.format(self.file_path), 'epoch_{}'.format(self.epoch+1))
             save_model(gener_from_b_to_a, '{}/checkpoint/g_from_b_to_a'.format(self.file_path), 'epoch_{}'.format(self.epoch+1))
         else:
-            raise ValueError('Model is invalid!')
+            raise ValueError('Model is Invalid!')
 
     def work_flow(self):
+        # train model
         self.trainer.train_epoch()
-        # evaluation from a to b
+        # evaluation
         if self.para_dict['general_evaluation']:
             [[mae_b, psnr_b, ssim_b, fid_b], [mae_a, psnr_a, ssim_a, fid_a]]= self.trainer.evaluation(direction='both')
 
@@ -176,17 +153,33 @@ class NIRPS(CentralizedTrain):
             save_log(infor_a, self.file_path, description='both')
             save_log(infor_b, self.file_path, description='both')
         
-        for i in range(self.para_dict['num_epoch']):
-            self.save_models()
-            gt_a_path = '{}/nirps_dataset/{}/gt_{}'.format(self.file_path, self.para_dict['dataset'], self.para_dict['source_domain'])
-            gt_b_path = '{}/nirps_dataset/{}/gt_{}'.format(self.file_path, self.para_dict['dataset'], self.para_dict['target_domain'])
-            save_a_path = '{}/nirps_dataset/{}/{}/epoch_{}'.format(self.file_path, self.para_dict['dataset'], self.para_dict['source_domain'], self.epoch+1)
-            save_b_path = '{}/nirps_dataset/{}/{}/epoch_{}'.format(self.file_path, self.para_dict['dataset'], self.para_dict['target_domain'], self.epoch+1)
-            self.trainer.infer_nirps_dataset(save_a_path=save_a_path, save_b_path=save_b_path, 
-                                             gt_a_path=gt_a_path, gt_b_path=gt_b_path,
-                                             data_loader=self.valid_loader)
-        
-            
+        # generate nirps dataset
+        gt_a_path = '{}/nirps_dataset/{}/{}/gt'.format(self.file_path, self.para_dict['dataset'], self.para_dict['source_domain'])
+        gt_b_path = '{}/nirps_dataset/{}/{}/gt'.format(self.file_path, self.para_dict['dataset'], self.para_dict['target_domain'])
+        save_a_path = '{}/nirps_dataset/{}/{}/{}/epoch_{}'.format(self.file_path, self.para_dict['dataset'], self.para_dict['source_domain'], self.para_dict['model'], self.epoch+1)
+        save_b_path = '{}/nirps_dataset/{}/{}/{}/epoch_{}'.format(self.file_path, self.para_dict['dataset'], self.para_dict['target_domain'], self.para_dict['model'], self.epoch+1)
+
+        self.trainer.infer_nirps_dataset(save_a_path=save_a_path, save_b_path=save_b_path, 
+                                            gt_a_path=gt_a_path, gt_b_path=gt_b_path,
+                                            data_loader=self.valid_loader)
+        # not save model
+        # self.save_models()
+
+    def copy_img_into_nirps_dataset(self):
+        source_path = '{}/nirps_dataset/{}'.format(self.file_path, self.para_dict['dataset'])
+        target_path = '{}/{}'.format(self.para_dict['nirps_dataset'], self.para_dict['dataset'])
+
+        if not os.path.exists(target_path):
+            os.makedirs(target_path)
+
+        if os.path.exists(source_path):
+            shutil.rmtree(target_path)
+
+        shutil.copytree(source_path, target_path)
+
+        print('copy dataset finished, nirps dataset dir: '.format(target_path))
+
+
     def run_work_flow(self):
         self.load_config()
         self.preliminary()
@@ -198,7 +191,10 @@ class NIRPS(CentralizedTrain):
         for epoch in range(self.para_dict['num_epoch']):
             self.epoch = epoch
             self.work_flow()
-            
+
+        # copy generated images to target nirps dataset
+        self.copy_img_into_nirps_dataset() 
+
         print('work dir: {}'.format(self.file_path))
         with open('{}/log_finished.txt'.format(self.para_dict['work_dir']), 'a') as f:
             print('\n---> work dir {}'.format(self.file_path), file=f)
