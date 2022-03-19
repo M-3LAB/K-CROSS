@@ -60,4 +60,6 @@ class UNet2D(SegmentationNetwork):
         self.conv_pad_sizes = []
         for krnl in self.conv_kernel_sizes:
             self.conv_pad_sizes.append([1 if i == 3 else 0 for i in krnl])
+
+        self.max_num_features = max_num_features 
     
