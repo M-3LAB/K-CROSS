@@ -17,6 +17,7 @@ class BraTS2019(BASE):
         if assigned_data and not assigned_images:
             raise ValueError('Please Provide Image Indices in Assigned Images!')
         self.fedmed_dataset = assigned_images
+
             
         self._get_transform_modalities()
 
