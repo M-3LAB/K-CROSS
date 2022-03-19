@@ -149,9 +149,9 @@ class NIRPS(CentralizedTrain):
         # save model
         # self.save_models()
 
-    def copy_img_into_nirps_dataset(self, data_moda):
-        source_path = '{}/nirps_dataset/{}/{}'.format(self.file_path, self.para_dict['dataset'], data_moda)
-        target_path = '{}/{}'.format(self.para_dict['nirps_dataset'], self.para_dict['dataset'], data_moda)
+    def copy_img_into_nirps_dataset(self, data_moda, model_dir):
+        source_path = '{}/nirps_dataset/{}/{}/{}'.format(self.file_path, self.para_dict['dataset'], data_moda, model_dir)
+        target_path = '{}/{}/{}'.format(self.para_dict['nirps_dataset'], self.para_dict['dataset'], data_moda, model_dir)
 
         if not os.path.exists(target_path):
             os.makedirs(target_path)
@@ -174,8 +174,9 @@ class NIRPS(CentralizedTrain):
             self.work_flow()
 
         # copy generated images to target nirps dataset
-        self.copy_img_into_nirps_dataset(self.para_dict['source_domain']) 
-        self.copy_img_into_nirps_dataset(self.para_dict['target_domain']) 
+        self.copy_img_into_nirps_dataset(self.para_dict['source_domain'], self.para_dict['model']) 
+        self.copy_img_into_nirps_dataset(self.para_dict['target_domain'], self.para_dict['model']) 
+        self.copy_img_into_nirps_dataset(self.para_dict['target_domain'], 'gt') 
 
         print('work dir: {}'.format(self.file_path))
         with open('{}/log_finished.txt'.format(self.para_dict['work_dir']), 'a') as f:
