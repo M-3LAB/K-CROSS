@@ -20,4 +20,10 @@ class UNet2D(SegmentationNetwork):
         super(UNet2D, self).__init__()
         self.convolutional_upsampling = convolutional_upsampling
         self.convolutional_pooling = convolutional_pooling
+        if nonlin_kwargs is None:
+            nonlin_kwargs = {'negative_slope': 1e-2, 'inplace': True}
+        if dropout_op_kwargs is None:
+            dropout_op_kwargs = {'p': 0.5, 'inplace': True}
+        if norm_op_kwargs is None:
+            norm_op_kwargs = {'eps': 1e-5, 'affine': True, 'momentum': 0.1}
     
