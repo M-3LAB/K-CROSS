@@ -98,6 +98,7 @@ class NIRPS(CentralizedTrain):
                                        batch_size=1, 
                                        num_workers=self.para_dict['num_workers'],
                                        shuffle=False)
+        self.assigned_loader = None
 
     def init_model(self):
         if self.para_dict['model'] == 'cyclegan':
@@ -158,7 +159,7 @@ class NIRPS(CentralizedTrain):
             shutil.rmtree(target_path)
 
         shutil.copytree(source_path, target_path)
-        print('copy dataset finished, nirps dataset dir: '.format(target_path))
+        print('nirps dataset dir: {}'.format(target_path))
 
 
     def run_work_flow(self):
