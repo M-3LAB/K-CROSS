@@ -17,5 +17,7 @@ class UNet2D(SegmentationNetwork):
                 max_num_features=None, basic_block=ConvDropNorm,
                 seg_output_use_bias=False):
 
-        pass
+        super(UNet2D, self).__init__()
+        self.convolutional_upsampling = convolutional_upsampling
+        self.convolutional_pooling = convolutional_pooling
     
