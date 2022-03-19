@@ -62,4 +62,41 @@ class UNet2D(SegmentationNetwork):
             self.conv_pad_sizes.append([1 if i == 3 else 0 for i in krnl])
 
         self.max_num_features = max_num_features 
-    
+
+        self.conv_blocks_context = []
+        self.conv_blocks_localization = []
+        self.td = []
+        self.tu = []
+        self.seg_outputs = []
+
+        output_features = base_num_features
+        input_features = input_channels
+
+        for d in range(num_pool):
+            # determine the first stride
+            if d != 0 and self.convolutional_pooling:
+                first_stride = pool_op_kernel_sizes[d - 1]
+            else:
+                first_stride = None
+
+            self.conv_kwargs['kernel_size'] = self.conv_kernel_sizes[d]
+            self.conv_kwargs['padding'] = self.conv_pad_sizes[d]
+            # add convolutions
+            self.conv_blocks_context.append(StackedConvLayers(input_features, output_features, num_conv_per_stage,
+                                                              self.conv_op, self.conv_kwargs, self.norm_op,
+                                                              self.norm_op_kwargs, self.dropout_op,
+                                                              self.dropout_op_kwargs, self.nonlin, self.nonlin_kwargs,
+                                                              first_stride, basic_block=basic_block))
+            if not self.convolutional_pooling:
+                self.td.append(self.pool_op(pool_op_kernel_sizes[d]))
+            input_features = output_features
+            output_features = int(np.round(output_features * feat_map_mul_on_downscale))
+
+            output_features = min(output_features, self.max_num_features)
+        
+        # now the bottleneck.
+        # determine the first stride
+        if self.convolutional_pooling:
+            first_stride = self.pool_op_kernel_sizes[-1]
+        else:
+            first_stride = None
