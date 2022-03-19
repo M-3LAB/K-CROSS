@@ -4,6 +4,7 @@ from segmentation.base import SegmentationNetwork
 from segmentation.modules.block import ConvDropNorm
 from segmentation.modules.stackedconv import StackedConvLayers
 from segmentation.common import softmax_helper, InitWeights_He
+import numpy as np
 
 class UNet2D(SegmentationNetwork):
     def __init__(self, input_channels, base_num_features, num_classes, num_pool, num_conv_per_stage=2,
@@ -44,13 +45,15 @@ class UNet2D(SegmentationNetwork):
         upsample_mode = 'bilinear'
         
         if self.conv_op == nn.Conv2d:
-            pool_op = nn.MaxPool2d
-            transpconv = nn.ConvTranspose2d
+            self.pool_op = nn.MaxPool2d
+            self.transpconv = nn.ConvTranspose2d
             if pool_op_kernel_sizes is None:
-                pool_op_kernel_sizes = [(2, 2)] * num_pool
+                self.pool_op_kernel_sizes = [(2, 2)] * num_pool
             if conv_kernel_sizes is None:
-                conv_kernel_sizes = [(3, 3)] * (num_pool + 1) 
+                self.conv_kernel_sizes = [(3, 3)] * (num_pool + 1) 
         
         else:
             raise NotImplementedError('The Convolutional Operator Has Not Been Implemented Yet')
+        
+        self.input_shape_must_be_divisible_by = np.prod(self.pool_op_kernel_sizes, 0, dtype=np.int64)
     
