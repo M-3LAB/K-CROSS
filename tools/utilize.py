@@ -31,20 +31,17 @@ def seed_everything(seed):
     # unless you tell it to be deterministic
     torch.backends.cudnn.deterministic = True
 
-
 def parse_client_data_weights(l):
     for i in range(len(l)):
         l[i] = float(l[i])
         assert isinstance(l[i], float)
     return l
 
-
 def parse_device_list(device_ids_string, id_choice=None):
     device_ids = [int(i) for i in device_ids_string[0]]
     id_choice = 0 if id_choice is None else id_choice
     device = device_ids[id_choice]
     return device, device_ids
-
 
 def allocate_gpus(id, num_disc, num_gpus):
     partitions = np.linspace(0, 1, num_gpus, endpoint=False)[1:]
@@ -88,7 +85,6 @@ def weights_init_normal(m):
         torch.nn.init.normal_(m.weight.data, 1.0, 0.02)
         torch.nn.init.constant_(m.bias.data, 0.0)
 
-
 class LambdaLR:
     def __init__(self, n_epochs, offset, decay_start_epoch):
         assert (
@@ -100,7 +96,6 @@ class LambdaLR:
     def step(self, epoch):
         return 1.0 - max(0, epoch + self.offset - self.decay_start_epoch) / (self.n_epochs - self.decay_start_epoch)
 
-
 def record_path(para_dict):
     # mkdir ./work_dir/fed/brats/time-dir
     localtime = time.asctime(time.localtime(time.time()))
@@ -109,16 +104,13 @@ def record_path(para_dict):
 
     if para_dict['federated']:
         file_path = file_path.replace('centralized', 'federated')
-
     os.makedirs(file_path)
 
     return file_path
 
-
 def save_arg(para_dict, file_path):
     with open('{}/config.yaml'.format(file_path), 'w') as f:
         yaml.dump(para_dict, f)
-
 
 def save_log(infor, file_path, description=None):
     localtime = time.asctime(time.localtime(time.time()))
@@ -127,10 +119,8 @@ def save_log(infor, file_path, description=None):
     with open('{}/log{}.txt'.format(file_path, description), 'a') as f:
         print(infor, file=f)
 
-
 def save_script(src_file, file_path):
     shutil.copy2(src_file, file_path)
-
 
 def save_image(image, name, image_path):
     if not os.path.exists(image_path):
@@ -138,12 +128,13 @@ def save_image(image, name, image_path):
 
     torchvision.utils.save_image(image, '{}/{}'.format(image_path, name), normalize=False)
 
-
-def save_model(model, file_path, infor):
+def save_model(model, file_path, infor, rm_previous=False):
     if not os.path.exists(file_path):
         os.makedirs(file_path)
-    for file in glob.glob('{}/*.pth'.format(file_path)):
-        os.remove(file)      
+
+    if not rm_previous:
+        for file in glob.glob('{}/*.pth'.format(file_path)):
+            os.remove(file)      
 
     model_path = '{}/{}.pth'.format(file_path, infor)
     torch.save({'model_state_dict': model.state_dict()}, model_path)
