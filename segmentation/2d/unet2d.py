@@ -55,7 +55,7 @@ class UNet2D(SegmentationNetwork):
         else:
             raise NotImplementedError('The Convolutional Operator Has Not Been Implemented Yet')
         
-        self.input_shape_must_be_divisible_by = np.prod(self.pool_op_kernel_sizes, 0, dtype=np.int64)
+        #self.input_shape_must_be_divisible_by = np.prod(self.pool_op_kernel_sizes, 0, dtype=np.int64)
 
         self.conv_pad_sizes = []
         for krnl in self.conv_kernel_sizes:
