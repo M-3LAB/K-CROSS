@@ -6,7 +6,8 @@ __all__ = ['RobustCE']
 
 class RobustCE(nn.CrossEntropyLoss):
     """
-    this is just a compatibility layer because my target tensor is float and has an extra dimension
+    Robust Cross Entropy Loss
+    This is just a compatibility layer because my target tensor is float and has an extra dimension
     """
     def forward(self, input: Tensor, target: Tensor):
         if len(target.shape) == len(input.shape):
