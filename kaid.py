@@ -136,11 +136,7 @@ if __name__ == '__main__':
                                          learn_mode='train', # train or test is meaningless if dataset_spilited is false
                                          transform_data=normal_transform,
                                          data_mode='paired',
-                                         data_num=para_dict['pair_num'],
-                                         data_paired_weight=1.0,
-                                         client_weights=[1.0],
-                                         data_moda_ratio=1.0,
-                                         data_moda_case='case1')
+                                         data_num=para_dict['pair_num'])
 
         brats_noise_dataset = BraTS2021(root=para_dict['data_path'],
                                         modalities=[para_dict['source_domain'], para_dict['target_domain']],
@@ -149,11 +145,7 @@ if __name__ == '__main__':
                                         extract_slice=[para_dict['es_lower_limit'], para_dict['es_higher_limit']],
                                         transform_data=noise_transform,
                                         data_mode='paired',
-                                        data_num=para_dict['pair_num'],
-                                        client_weights=[1.0],
-                                        data_paired_weight=1.0,
-                                        data_moda_ratio=1.0,
-                                        data_moda_case='case1')
+                                        data_num=para_dict['pair_num'])
         
         #TODO: make sure normal and nosiy loader release the same order of dataset
         normal_loader = DataLoader(brats_normal_dataset, num_workers=para_dict['num_workers'],
