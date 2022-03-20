@@ -3,7 +3,7 @@ import torch.nn as nn
 from loss_function.segment.cross_entropy import RobustCE
 from segmentation.common import softmax_helper, sum_tensor
 
-__all__ = ['DC_CE_loss']
+__all__ = ['DC_CE_Loss', 'SoftDiceLoss']
 
 def get_tp_fp_fn_tn(net_output, gt, axes=None, mask=None, square=False):
     """
@@ -157,7 +157,7 @@ class SoftDiceLossSquared(nn.Module):
 
         return -dc
 
-class DC_CE_loss(nn.Module):
+class DC_CE_Loss(nn.Module):
     def __init__(self, soft_dice_kwargs, ce_kwargs, aggregate="sum", square_dice=False, weight_ce=1, weight_dice=1,
                  log_dice=False, ignore_label=None):
         """
@@ -169,7 +169,7 @@ class DC_CE_loss(nn.Module):
         :param weight_ce:
         :param weight_dice:
         """
-        super(DC_CE_loss, self).__init__()
+        super(DC_CE_Loss, self).__init__()
         if ignore_label is not None:
             assert not square_dice, 'not implemented'
             ce_kwargs['reduction'] = 'none'
