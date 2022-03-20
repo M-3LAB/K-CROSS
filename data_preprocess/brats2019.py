@@ -6,39 +6,40 @@ from common import *
 
 
 
-def read_multimodal(data_path, series, annotation_path=None, read_annotation=True):
+def read_multimodal(data_path, series, annotation_path=None, read_annotation=False):
     suffixes = ['_t1.nii.gz', '_t1ce.nii.gz', '_t2.nii.gz', '_flair.nii.gz']
+    if read_annotation:
+        suffixes.append('_seg.nii.gz')
 
-    affine = read_nii_header(os.path.join(data_path, series, series + suffixes[0])).affine
     files = [read_img_sitk(os.path.join(data_path, series, series + s)) for s in suffixes]
     data = np.stack(files, axis=0).astype(np.float32)
-    annotation = None
-    if read_annotation:
-        p = os.path.join(data_path, series, series + '_seg.nii.gz')
-        if annotation_path is not None and not os.path.isfile(p):
-            p = os.path.join(annotation_path, series + '.nii.gz')
-        annotation = read_nii(p)
-        annotation[annotation == 4] = 3
 
-    return data, annotation, affine
+    return data
 
-def save_image_to_numpy(data, path, name):
+def save_image_to_numpy(data, path, name, read_annotation=False):
     np.save(path + '/T1/' + name, data[0, :, :, :])
     np.save(path + '/T1CE/' + name, data[1, :, :,:])
     np.save(path + '/T2/' + name, data[2, :, :,:])
     np.save(path + '/FLAIR/' + name, data[3, :, :,:])
 
-def dataset_preprocess(src_path, dst_path):
+    if read_annotation:
+        np.save(path + '/Seg/' + name, data[4, :, :,:])
+
+def dataset_preprocess(src_path, dst_path, read_annotation=False):
     series = [f for f in os.listdir(src_path) if os.path.isdir(os.path.join(src_path, f))]
-    for mode in ['T1', 'T1CE', 'T2', 'FLAIR']:
+    level = ['T1', 'T1CE', 'T2', 'FLAIR']
+    if read_annotation:
+        level.append('Seg')
+
+    for mode in level:
         if not os.path.exists(dst_path + '/' + mode):
             os.mkdir(dst_path + '/' + mode)
 
     path_series = [(src_path, s) for s in series]
 
     for p, f in tqdm.tqdm(path_series):
-        data, annotation, affine = read_multimodal(p, f, annotation_path=None, read_annotation=None)
-        save_image_to_numpy(data, dst_path, f) # choose 100th slice
+        data = read_multimodal(p, f, read_annotation=read_annotation)
+        save_image_to_numpy(data, dst_path, f, read_annotation=read_annotation)
 
 
 if __name__ == '__main__':

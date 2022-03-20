@@ -6,19 +6,18 @@ __all__ = ['BraTS2019', 'BraTS2021']
 class BraTS2019(BASE):
     def __init__(self, root, modalities=["t1", "t2"], learn_mode='train', extract_slice=[29, 100], noise_type='normal',
                  transform_data=None, client_weights=[1.0], data_mode='mixed', data_num=6000, data_paired_weight=0.2,
-                 data_moda_ratio=0.5, data_moda_case='case1', assigned_data=False, assigned_images=None, seed=3):
+                 data_moda_ratio=0.5, data_moda_case='case1', assigned_data=False, assigned_images=None, seed=3, seg_annotation=False):
 
         super(BraTS2019, self).__init__(root, modalities=modalities, learn_mode=learn_mode, extract_slice=extract_slice, 
                                         noise_type=noise_type, transform_data=transform_data, client_weights=client_weights,
                                         data_mode=data_mode, data_num=data_num, data_paired_weight=data_paired_weight,
-                                        data_moda_ratio=data_moda_ratio, data_moda_case=data_moda_case, seed=seed)
+                                        data_moda_ratio=data_moda_ratio, data_moda_case=data_moda_case, seed=seed, seg_annotation=seg_annotation)
 
         # infer assigned images
         if assigned_data and not assigned_images:
             raise ValueError('Please Provide Image Indices in Assigned Images!')
         self.fedmed_dataset = assigned_images
 
-            
         self._get_transform_modalities()
 
         if not assigned_data:
@@ -58,11 +57,11 @@ class BraTS2019(BASE):
 class BraTS2021(BraTS2019):
     def __init__(self, root, modalities=["t1", "t2"], learn_mode='train', extract_slice=[29, 100], noise_type='normal',
                  transform_data=None, client_weights=[1.0], data_mode='mixed', data_num=6000, data_paired_weight=0.2,
-                 data_moda_ratio=0.5, data_moda_case='case1', assigned_data=False, assigned_images=None, seed=3):
+                 data_moda_ratio=0.5, data_moda_case='case1', assigned_data=False, assigned_images=None, seed=3, seg_annotation=False):
 
         super(BraTS2021, self).__init__(root, modalities=modalities, learn_mode=learn_mode, extract_slice=extract_slice, 
                                         noise_type=noise_type, transform_data=transform_data, client_weights=client_weights,
                                         data_mode=data_mode, data_num=data_num, data_paired_weight=data_paired_weight,
                                         data_moda_ratio=data_moda_ratio, data_moda_case=data_moda_case, 
-                                        assigned_data=assigned_data, assigned_images=assigned_images, seed=seed)
+                                        assigned_data=assigned_data, assigned_images=assigned_images, seed=seed, seg_annotation=seg_annotation)
 

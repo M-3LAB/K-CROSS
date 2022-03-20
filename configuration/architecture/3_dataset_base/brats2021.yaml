@@ -36,3 +36,5 @@ severe_scaling: 0.1
 angle_list: [90., 180., 270.]
 translation_list: [30.] 
 scaling_list: [0.9, 1.1, 1.2]
+# segmentation
+segmentation: True

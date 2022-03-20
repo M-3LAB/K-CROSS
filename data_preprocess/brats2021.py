@@ -25,8 +25,8 @@ if __name__ == '__main__':
         if not os.path.exists(dir):
             os.makedirs(dir)
 
-    dataset_preprocess(src_path=args.train_path, dst_path=args.train_generated_path)
-    dataset_preprocess(src_path=args.test_path, dst_path=args.test_generated_path)
+    dataset_preprocess(src_path=args.train_path, dst_path=args.train_generated_path, read_annotation=True)
+    dataset_preprocess(src_path=args.test_path, dst_path=args.test_generated_path, read_annotation=False)
 
 
 

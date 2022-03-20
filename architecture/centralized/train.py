@@ -135,7 +135,8 @@ class CentralizedTrain():
                                            data_num=self.para_dict['data_num'],
                                            data_paired_weight=self.para_dict['data_paired_weight'],
                                            data_moda_ratio=self.para_dict['data_moda_ratio'],
-                                           data_moda_case=self.para_dict['data_moda_case'])
+                                           data_moda_case=self.para_dict['data_moda_case'],
+                                           seg_annotation=self.para_dict['segmentation'])
             self.valid_dataset = BraTS2021(root=self.para_dict['valid_path'],
                                            modalities=[self.para_dict['source_domain'], self.para_dict['target_domain']],
                                            noise_type='normal',

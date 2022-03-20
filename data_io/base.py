@@ -1,4 +1,7 @@
+from __future__ import annotations
+from ossaudiodev import SNDCTL_SEQ_GETTIME
 from scipy import rand
+from scipy.fft import set_global_backend
 import torch
 import numpy as np
 import random
@@ -29,15 +32,18 @@ class BASE(torch.utils.data.Dataset):
     """
     def __init__(self, root, modalities=["t1", "t2"], learn_mode="train", extract_slice=[29, 100],
                 noise_type='normal', transform_data=None, client_weights=[1.0], dataset_splited=False,
-                data_mode='mixed', data_num=6000, data_paired_weight=0.2, data_moda_ratio=0.5, data_moda_case='case1', seed=3):
+                data_mode='mixed', data_num=6000, data_paired_weight=0.2, data_moda_ratio=0.5, 
+                data_moda_case='case1', seed=3, seg_annotation=False):
 
+        # check priority
         if data_mode == 'paired':
-            data_paired_weight = 1.0
+            data_paired_weight = 1.
         elif data_mode == 'unpaired':
             data_paired_weight = 0.
         else:
             data_mode = 'mixed'
-
+            
+        # common setting
         self.seed = seed 
         self.dataset_path = root
         self.extract_slice = extract_slice
@@ -57,6 +63,8 @@ class BASE(torch.utils.data.Dataset):
         self.modality_b = modalities[1]
         self.transform_a = None
         self.transform_b = None
+        # segmentation
+        self.seg_annotation = seg_annotation
         # data generation
         self.files = []  # volume name of whole dataset
         self.train_files = []  # volume id in trainset
@@ -74,14 +82,11 @@ class BASE(torch.utils.data.Dataset):
         moda_a = np.load('{}/{}/{}.npy'.format(self.dataset_path, self.modality_a.upper(), path_a))
         moda_b = np.load('{}/{}/{}.npy'.format(self.dataset_path, self.modality_b.upper(), path_b))
         
-        if len(moda_a.shape) == 2 and len(moda_b.shape) == 2:
-            moda_a = moda_a[:, :]
-            moda_b = moda_b[:, :]
-        elif len(moda_a.shape) == 3 and len(moda_b.shape) == 3:
-            moda_a = moda_a[i, :, :]
-            moda_b = moda_b[i, :, :]
-        else:
-            raise ValueError('load file failed!')
+        if len(moda_a.shape) != 3 or len(moda_b.shape) != 3:
+            raise ValueError('Load File Failed!')
+
+        moda_a = moda_a[i, :, :]
+        moda_b = moda_b[i, :, :]
 
         data_a = self.transform_a(moda_a.astype(np.float32))
         data_b = self.transform_b(moda_b.astype(np.float32))
@@ -95,8 +100,38 @@ class BASE(torch.utils.data.Dataset):
         # plt.imshow(data_a.squeeze(), cmap='gray') 
         # plt.savefig('./legacy_code/img_after_{}.jpg'.format(i))
 
-        return {self.modality_a: data_a, self.modality_b: data_b, 
-                'name_a': path_a, 'name_b': path_b, 'slice_num': i}
+        # segmentaion        
+        mask_a = None
+        mask_b = None
+        if self.seg_annotation:
+            annotation_a = np.load('{}/Seg/{}.npy'.format(self.dataset_path, path_a))
+            annotation_b = np.load('{}/Seg/{}.npy'.format(self.dataset_path, path_b))
+            annotation_a = annotation_a[i, :, :]
+            annotation_b = annotation_b[i, :, :]
+
+            mask_a = np.zeros((annotation_a.shape[0], annotation_a.shape[1],3))
+            mask_b = np.zeros((annotation_b.shape[0], annotation_b.shape[1],3))
+
+            mask_a[annotation_a==1] = [255, 0, 0] # Red (necrotic tumor core)
+            mask_a[annotation_a==2] = [0, 255, 0] # Green (peritumoral edematous/invaded tissue)
+            mask_a[annotation_a==4] = [0, 0, 255] # Blue (enhancing tumor)
+            mask_b[annotation_b==1] = [255, 0, 0] # Red (necrotic tumor core)
+            mask_b[annotation_b==2] = [0, 255, 0] # Green (peritumoral edematous/invaded tissue)
+            mask_b[annotation_b==4] = [0, 0, 255] # Blue (enhancing tumor)
+
+        # check mask resuts
+        # plt.subplot(121)
+        # plt.imshow(moda_a, cmap='gray') 
+        # plt.title('input')
+        # plt.subplot(122)
+        # plt.title('mask')
+        # plt.imshow(mask_a, cmap='gray') 
+        # plt.savefig('./work_dir/img_mask_{}.jpg'.format(i))
+
+        return {self.modality_a: data_a, self.modality_b: data_b,
+                'mask_a': mask_a, 'mask_b': mask_b,
+                'name_a': path_a, 'name_b': path_b,
+                'slice_num': i}
 
     def __len__(self):
         return len(self.fedmed_dataset)
