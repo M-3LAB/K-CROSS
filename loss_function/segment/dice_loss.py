@@ -1,7 +1,7 @@
 import torch
 import torch.nn as nn
 from loss_function.segment.cross_entropy import RobustCE
-from segmentation.common import softmax_helper
+from segmentation.common import softmax_helper, sum_tensor
 
 __all__ = ['DC_CE_loss']
 
@@ -89,6 +89,64 @@ class SoftDiceLoss(nn.Module):
         denominator = 2 * tp + fp + fn + self.smooth
 
         dc = nominator / (denominator + 1e-8)
+
+        if not self.do_bg:
+            if self.batch_dice:
+                dc = dc[1:]
+            else:
+                dc = dc[:, 1:]
+        dc = dc.mean()
+
+        return -dc
+
+class SoftDiceLossSquared(nn.Module):
+    def __init__(self, apply_nonlin=None, batch_dice=False, do_bg=True, smooth=1.):
+        """
+        squares the terms in the denominator as proposed by Milletari et al.
+        """
+        super(SoftDiceLossSquared, self).__init__()
+
+        self.do_bg = do_bg
+        self.batch_dice = batch_dice
+        self.apply_nonlin = apply_nonlin
+        self.smooth = smooth
+
+    def forward(self, x, y, loss_mask=None):
+        shp_x = x.shape
+        shp_y = y.shape
+
+        if self.batch_dice:
+            axes = [0] + list(range(2, len(shp_x)))
+        else:
+            axes = list(range(2, len(shp_x)))
+
+        if self.apply_nonlin is not None:
+            x = self.apply_nonlin(x)
+
+        with torch.no_grad():
+            if len(shp_x) != len(shp_y):
+                y = y.view((shp_y[0], 1, *shp_y[1:]))
+
+            if all([i == j for i, j in zip(x.shape, y.shape)]):
+                # if this is the case then gt is probably already a one hot encoding
+                y_onehot = y
+            else:
+                y = y.long()
+                y_onehot = torch.zeros(shp_x)
+                if x.device.type == "cuda":
+                    y_onehot = y_onehot.cuda(x.device.index)
+                y_onehot.scatter_(1, y, 1).float()
+
+        intersect = x * y_onehot
+        # values in the denominator get smoothed
+        denominator = x ** 2 + y_onehot ** 2
+
+        # aggregation was previously done in get_tp_fp_fn, but needs to be done here now (needs to be done after
+        # squaring)
+        intersect = sum_tensor(intersect, axes, False) + self.smooth
+        denominator = sum_tensor(denominator, axes, False) + self.smooth
+
+        dc = 2 * intersect / denominator
 
         if not self.do_bg:
             if self.batch_dice:

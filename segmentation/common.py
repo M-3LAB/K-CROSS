@@ -1,8 +1,10 @@
 import torch
 import torch.nn.functional as F
 import torch.nn as nn
+import numpy as np
 
-__all__ = ['no_op', 'maybe_to_torch', 'to_cuda', 'softmax_helper', 'InitWeights_He']
+__all__ = ['no_op', 'maybe_to_torch', 'to_cuda', 'softmax_helper', 'InitWeights_He',
+           'sum_tensor']
 
 class no_op(object):
     def __enter__(self):
@@ -27,6 +29,16 @@ def to_cuda(data, non_blocking=True, gpu_id=0):
     return data
 
 softmax_helper = lambda x: F.softmax(x, 1)
+
+def sum_tensor(inp, axes, keepdim=False):
+    axes = np.unique(axes).astype(int)
+    if keepdim:
+        for ax in axes:
+            inp = inp.sum(int(ax), keepdim=True)
+    else:
+        for ax in sorted(axes, reverse=True):
+            inp = inp.sum(int(ax))
+    return inp
 
 class InitWeights_He(object):
     def __init__(self, neg_slope=1e-2):
