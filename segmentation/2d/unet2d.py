@@ -185,3 +185,26 @@ class UNet2D(SegmentationNetwork):
         if self.weightInitializer is not None:
             self.apply(self.weightInitializer)
             # self.apply(print_module_training_status)
+    
+    def forward(self, x):
+        skips = []
+        seg_outputs = []
+        for d in range(len(self.conv_blocks_context) - 1):
+            x = self.conv_blocks_context[d](x)
+            skips.append(x)
+            if not self.convolutional_pooling:
+                x = self.td[d](x)
+
+        x = self.conv_blocks_context[-1](x)
+
+        for u in range(len(self.tu)):
+            x = self.tu[u](x)
+            x = torch.cat((x, skips[-(u + 1)]), dim=1)
+            x = self.conv_blocks_localization[u](x)
+            seg_outputs.append(self.final_nonlin(self.seg_outputs[u](x)))
+
+        if self._deep_supervision and self.do_ds:
+            return tuple([seg_outputs[-1]] + [i(j) for i, j in
+                                              zip(list(self.upscale_logits_ops)[::-1], seg_outputs[:-1][::-1])])
+        else:
+            return seg_outputs[-1]
