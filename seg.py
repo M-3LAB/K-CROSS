@@ -52,7 +52,7 @@ if __name__ == '__main__':
                               modalities=[para_dict['source_domain'], para_dict['target_domain']],
                               extract_slice=[para_dict['es_lower_limit'], para_dict['es_higher_limit']],
                               noise_type='normal',
-                              learn_mode='train', # train or test is meaningless if dataset_spilited is false
+                              learn_mode='train', 
                               transform_data=normal_transform,
                               data_mode='paired',
                               data_num=para_dict['data_num'],
@@ -61,7 +61,7 @@ if __name__ == '__main__':
 
     test_dataset = BraTS2021(root=para_dict['data_path'],
                               modalities=[para_dict['source_domain'], para_dict['target_domain']],
-                              noise_type=para_dict['noise_type'],
+                              noise_type='normal',
                               learn_mode='test',
                               extract_slice=[para_dict['es_lower_limit'], para_dict['es_higher_limit']],
                               transform_data=normal_transform,

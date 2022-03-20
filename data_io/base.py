@@ -33,7 +33,7 @@ class BASE(torch.utils.data.Dataset):
     def __init__(self, root, modalities=["t1", "t2"], learn_mode="train", extract_slice=[29, 100],
                 noise_type='normal', transform_data=None, client_weights=[1.0], dataset_splited=False,
                 data_mode='mixed', data_num=6000, data_paired_weight=0.2, data_moda_ratio=0.5, 
-                data_moda_case='case1', seed=3, seg_annotation=False):
+                data_moda_case='case1', seed=3, annotation=False):
 
         # check priority
         if data_mode == 'paired':
@@ -64,7 +64,7 @@ class BASE(torch.utils.data.Dataset):
         self.transform_a = None
         self.transform_b = None
         # segmentation
-        self.seg_annotation = seg_annotation
+        self.annotation = annotation
         # data generation
         self.files = []  # volume name of whole dataset
         self.train_files = []  # volume id in trainset
@@ -103,21 +103,21 @@ class BASE(torch.utils.data.Dataset):
         # segmentaion        
         mask_a = None
         mask_b = None
-        if self.seg_annotation:
-            annotation_a = np.load('{}/Seg/{}.npy'.format(self.dataset_path, path_a))
-            annotation_b = np.load('{}/Seg/{}.npy'.format(self.dataset_path, path_b))
-            annotation_a = annotation_a[i, :, :]
-            annotation_b = annotation_b[i, :, :]
+        if self.annotation:
+            ann_a = np.load('{}/Seg/{}.npy'.format(self.dataset_path, path_a))
+            ann_b = np.load('{}/Seg/{}.npy'.format(self.dataset_path, path_b))
+            ann_a = ann_a[i, :, :]
+            ann_b = ann_b[i, :, :]
 
-            mask_a = np.zeros((annotation_a.shape[0], annotation_a.shape[1],3))
-            mask_b = np.zeros((annotation_b.shape[0], annotation_b.shape[1],3))
+            mask_a = np.zeros((ann_a.shape[0], ann_a.shape[1],3))
+            mask_b = np.zeros((ann_b.shape[0], ann_b.shape[1],3))
 
-            mask_a[annotation_a==1] = [255, 0, 0] # Red (necrotic tumor core)
-            mask_a[annotation_a==2] = [0, 255, 0] # Green (peritumoral edematous/invaded tissue)
-            mask_a[annotation_a==4] = [0, 0, 255] # Blue (enhancing tumor)
-            mask_b[annotation_b==1] = [255, 0, 0] # Red (necrotic tumor core)
-            mask_b[annotation_b==2] = [0, 255, 0] # Green (peritumoral edematous/invaded tissue)
-            mask_b[annotation_b==4] = [0, 0, 255] # Blue (enhancing tumor)
+            mask_a[ann_a==1] = [255, 0, 0] # Red (necrotic tumor core)
+            mask_a[ann_a==2] = [0, 255, 0] # Green (peritumoral edematous/invaded tissue)
+            mask_a[ann_a==4] = [0, 0, 255] # Blue (enhancing tumor)
+            mask_b[ann_b==1] = [255, 0, 0] # Red (necrotic tumor core)
+            mask_b[ann_b==2] = [0, 255, 0] # Green (peritumoral edematous/invaded tissue)
+            mask_b[ann_b==4] = [0, 0, 255] # Blue (enhancing tumor)
 
         # check mask resuts
         # plt.subplot(121)
