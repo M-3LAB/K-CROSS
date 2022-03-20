@@ -7,7 +7,11 @@ __all__ = ['parse_arguments_seg']
 def parse_arguments_seg():
     parser = argparse.ArgumentParser()
 
-    parser.add_argument('--dataset', '-d', type=str, default='brats2021', choices=['ixi', 'brats2021'])
+    parser.add_argument('--dataset', '-d', type=str, default='brats2021', choices=['brats2021'])
+    parser.add_argument('--model', '-m', type=str, default='cyclegan', choices=['cyclegan', 'munit', 'unit'])
+    parser.add_argument('--source-domain', '-s', default='t1', choices=['t1', 't2', 'flair'])
+    parser.add_argument('--target-domain', '-t', default='t2', choices=['t1', 't2', 'flair'])
+
     parser.add_argument('--noise-type', type=str, default='gaussian', choices=['normal', 'gaussian', 'slight', 'severe'])
     parser.add_argument('--gpu-id', '-g', type=str, default=None)
     parser.add_argument('--debug', action='store_true', default=None)
@@ -25,8 +29,6 @@ def parse_arguments_seg():
     parser.add_argument('--test-model', type=str, default='cyclegan', choices=['cyclegan','munit','unit'])
     #parser.add_argument('--mode', type=str, default='train', choices=['train', 'pred', 'trainpred'])
     parser.add_argument('--diff-method', type=str, default=None, choices=['l1', 'l2', 'cos'])
-    parser.add_argument('--source-domain', '-s', type=str, default='t1', choices=['t1', 't2', 'pd', 'flair'])
-    parser.add_argument('--target-domain', '-t', type=str, default='t2', choices=['t1', 't2', 'pd', 'flair'])
     parser.add_argument('--lr', type=float, default=None, help='learning rate')
     parser.add_argument('--step-size', type=int, default=None, help='learning rate will be adjust for epoch numbers')
     parser.add_argument('--gamma', type=float, default=None, help='Multiplicative factor of learning rate decay')

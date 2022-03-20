@@ -89,7 +89,7 @@ if __name__ == '__main__':
                                  learn_mode='train', #train or test is meaningless if dataset_splited is false
                                  transform_data=normal_transform,
                                  data_mode='paired',
-                                 data_num=para_dict['pair_num'],
+                                 data_num=para_dict['data_num'],
                                  data_paired_weight=1.0,
                                  client_weights=[1.0],
                                  dataset_splited=False,
@@ -103,7 +103,7 @@ if __name__ == '__main__':
                                 learn_mode='train', #train or test is meaningless if dataset_splited is false
                                 transform_data=noise_transform,
                                 data_mode='paired',
-                                data_num=para_dict['pair_num'],
+                                data_num=para_dict['data_num'],
                                 data_paired_weight=1.0,
                                 client_weights=[1.0],
                                 dataset_splited=False,
