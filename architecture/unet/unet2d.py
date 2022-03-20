@@ -10,6 +10,7 @@ class Unet2DTrainer(CentralizedTrain):
     def __init__(self, args):
         super(Unet2DTrainer, self).__init__(args=args)
         self.args = args
+        assert self.args.dataset == 'brats2021', 'Only BraTS for Segmentation'
     
     def load_config(self):
        # load dataset 
