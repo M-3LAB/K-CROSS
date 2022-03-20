@@ -1,5 +1,7 @@
 import torch
 import torch.nn as nn
+from loss_function.segment.cross_entropy import RobustCE
+from segmentation.common import softmax_helper
 
 __all__ = ['DC_CE_loss']
 
@@ -23,7 +25,7 @@ class DC_CE_loss(nn.Module):
         self.weight_dice = weight_dice
         self.weight_ce = weight_ce
         self.aggregate = aggregate
-        self.ce = RobustCrossEntropyLoss(**ce_kwargs)
+        self.ce = RobustCE(**ce_kwargs)
 
         self.ignore_label = ignore_label
 
