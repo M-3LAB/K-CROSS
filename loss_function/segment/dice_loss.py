@@ -3,7 +3,7 @@ import torch.nn as nn
 from loss_function.segment.cross_entropy import RobustCE
 from segmentation.common import softmax_helper, sum_tensor
 
-__all__ = ['DC_CE_Loss', 'SoftDiceLoss']
+__all__ = ['DC_CE_Loss', 'SoftDiceLoss', 'SoftDiceLossSquared']
 
 def get_tp_fp_fn_tn(net_output, gt, axes=None, mask=None, square=False):
     """
