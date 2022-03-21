@@ -128,11 +128,11 @@ def save_image(image, name, image_path):
 
     torchvision.utils.save_image(image, '{}/{}'.format(image_path, name), normalize=False)
 
-def save_model(model, file_path, infor, rm_previous=False):
+def save_model(model, file_path, infor, save_previous=False):
     if not os.path.exists(file_path):
         os.makedirs(file_path)
 
-    if not rm_previous:
+    if not save_previous:
         for file in glob.glob('{}/*.pth'.format(file_path)):
             os.remove(file)      
 

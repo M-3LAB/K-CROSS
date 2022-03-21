@@ -20,6 +20,7 @@ class BraTS2019(BASE):
             raise ValueError('Please Provide Image Indices in Assigned Images!')
         self.fedmed_dataset = assigned_images
 
+        self.annotation = annotation
         self._get_transform_modalities()
 
         if not assigned_data:
@@ -39,15 +40,18 @@ class BraTS2019(BASE):
         files_t1ce = sorted(glob.glob("%s/%s/*" % (self.dataset_path, 'T1CE')))
         files_t2 = sorted(glob.glob("%s/%s/*" % (self.dataset_path, 'T2')))
         files_flair = sorted(glob.glob("%s/%s/*" % (self.dataset_path, 'FLAIR')))
+        files_seg = sorted(glob.glob("%s/%s/*" % (self.dataset_path, 'Seg')))
 
         t1 = [f.split('/')[-1][:-4] for f in files_t1]
         t1ce = [f.split('/')[-1][:-4] for f in files_t1ce]
         t2 = [f.split('/')[-1][:-4] for f in files_t2]
         flair = [f.split('/')[-1][:-4] for f in files_flair]
+        seg = [f.split('/')[-1][:-4] for f in files_seg]
 
         for x in t1:
             if x in t1ce and x in t2 and x in flair:
-                self.files.append(x)
+                if self.annotation and x in seg:
+                 self.files.append(x)
     
     def _generate_dataset(self):
         return super()._generate_dataset()
