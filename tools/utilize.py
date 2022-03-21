@@ -12,7 +12,8 @@ import torchvision
 __all__ = ['seed_everything', 'parse_device_list', 'allocate_gpus', 'average', 
            'merge_config', 'convert_list_float_type', 'create_folders', 'concate_tensor_lists',
            'weights_init_normal', 'LambdaLR', 'load_model', 'merge_config', 'override_config', 'extract_config',
-           'record_path', 'save_arg', 'save_log', 'save_script', 'save_image', 'save_model']
+           'record_path', 'save_arg', 'save_log', 'save_script', 'save_image', 'save_model',
+           'save_metric_result']
 
 def set_grad(model, flag=True):
     for p in model.parameters():
@@ -119,6 +120,10 @@ def save_log(infor, file_path, description=None):
     with open('{}/log{}.txt'.format(file_path, description), 'a') as f:
         print(infor, file=f)
 
+def save_metric_result(result, file_path, description=None):
+    with open('{}/{}.txt'.format(file_path, description), 'a') as f:
+        print(result, file=f)
+
 def save_script(src_file, file_path):
     shutil.copy2(src_file, file_path)
 
@@ -138,7 +143,6 @@ def save_model(model, file_path, infor, save_previous=False):
 
     model_path = '{}/{}.pth'.format(file_path, infor)
     torch.save({'model_state_dict': model.state_dict()}, model_path)
-
 
 def load_model(model, file_path, description):
     if not os.path.exists(file_path):

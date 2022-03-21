@@ -44,8 +44,13 @@ class NIRPSCycleGAN(CycleGAN):
 
                 save_image(real_a, 'gt.png', path_a_gt)
                 save_image(real_b, 'gt.png', path_b_gt)
-                save_image(fake_a, 'm_{:.4f}_p_{:.4f}_s_{:.4f}.png'.format(mae_a, psnr_a, ssim_a), path_a)
-                save_image(fake_b, 'm_{:.4f}_p_{:.4f}_s_{:.4f}.png'.format(mae_b, psnr_b, ssim_b), path_b)
                 save_image(fake_a, 'img.png'.format(mae_a, psnr_a, ssim_a), path_a)
                 save_image(fake_b, 'img.png'.format(mae_b, psnr_b, ssim_b), path_b)
+
+                save_metric_result(mae_a, path_a, 'mae')
+                save_metric_result(psnr_a, path_a, 'psnr')
+                save_metric_result(ssim_a, path_a, 'ssim')
+                save_metric_result(mae_b, path_b, 'mae')
+                save_metric_result(psnr_b, path_b, 'psnr')
+                save_metric_result(ssim_b, path_b, 'ssim')
     
