@@ -206,9 +206,18 @@ if __name__ == '__main__':
         print(f"{para_dict['source_domain']} msl: {msl_a}")
         print(f"{para_dict['target_domain']} msl: {msl_b}")
     
+    kaid_model_path = os.path.join('kaid', 'model')
+
+    if para_dict['train'] is False and para_dict['validation'] is False:
+        raise ValueError('train or validation need to be done')
     # Training 
     #TODO: Alternative Training for different training loader
     if para_dict['train']:
+        if para_dict['resume']:
+            # load model
+            load_model(model=kaid_ae, file_path=kaid_model_path, description='{}/{}_{}'.format(
+                para_dict['dataset'], para_dict['source_domain'], para_dict['target_domain']))
+        
         for epoch in range(para_dict['num_epochs']):
             for i, batch in enumerate(normal_loader): 
             #TODO: noisy loader
@@ -281,7 +290,7 @@ if __name__ == '__main__':
 
                 print(infor)         
 
-        kaid_model_path = os.path.join('kaid', 'model')
+        
         save_model(model=kaid_ae, file_path='{}/checkpoint'.format(kaid_model_path), infor='{}/{}_{}'.format(
                    para_dict['dataset'], para_dict['source_domain'], para_dict['target_domain'])) 
     

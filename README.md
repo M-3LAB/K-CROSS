@@ -53,8 +53,14 @@ python3 kaid.py --dataset 'ixi' --source-domain 't2' --target-domain 'pd' -g 0 -
 ```
 
 ## NIRPS Dataset Build Up
+> IXI ['t2', 'pd']
 ```bash
-python3 nirps.py --dataset 'ixi' --model 'cyclegan' --source-domain 't2' --target-domain 'pd' -g 0 --num-epoch 2 --debug 
+python3 nirps.py --dataset 'ixi' --data-path '/disk/medical/ixi' --valid-path '/disk/medical/ixi' --model 'cyclegan' --source-domain 't2' --target-domain 'pd' -g 3 --num-epoch 30
+```
+
+> BraTS2021 ['t1', 't2', 'flair']
+```bash
+python3 nirps.py --dataset 'brats2021' --data-path '/disk/medical/brats2021/training' --valid-path '/disk/medical/brats2021/validation' --model 'cyclegan' --source-domain 't1' --target-domain 't2' -g 2 --num-epoch 30
 ```
 
 ## Implementations of Data Processing
