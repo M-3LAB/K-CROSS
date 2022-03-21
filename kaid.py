@@ -155,7 +155,7 @@ if __name__ == '__main__':
     if para_dict['debug']:
         batch_limit = 2
     else:
-        batch_limit = int(para_dict['pair_num'] / para_dict['batch_size'])
+        batch_limit = int(para_dict['data_num'] / para_dict['batch_size'])
 
     # Model
     kaid_ae = KAIDAE().to(device)
