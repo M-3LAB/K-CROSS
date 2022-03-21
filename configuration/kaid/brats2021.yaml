@@ -46,3 +46,7 @@ test_model: cyclegan
 diff_method: l1
 # segmentation
 segmentation: True
+# train, validation, resume
+train: True
+validation: True
+resume: False
