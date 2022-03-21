@@ -28,7 +28,7 @@ class NIRPSCycleGAN(CycleGAN):
         for i, batch in enumerate(data_loader):
             imgs, _ = self.collect_generated_images(batch=batch)
             real_a, real_b, fake_a, fake_b, _, _, = imgs
-            if i <= self.config['num_img_save']:
+            if i < self.config['num_img_save']:
                 mae_b = mae(real_b, fake_b).item()
                 psnr_b = psnr(real_b, fake_b).item()
                 ssim_b = ssim(real_b, fake_b).item()

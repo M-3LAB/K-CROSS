@@ -67,3 +67,9 @@ python3 nirps.py --dataset 'brats2021' --data-path '/disk/medical/brats2021/trai
 Sereval modes are described in the new settings of FedMed.
 
 To reveal the real-world sitation in hosptials, datastream is organized as follows.
+
+
+## Load NIPRS dataset
+```bash
+python3 data_io/nirps.py
+```

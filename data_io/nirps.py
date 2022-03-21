@@ -35,7 +35,7 @@ class NIRPS(torch.utils.data.Dataset):
     def __getitem__(self, index):
         img = cv2.imread(self.nirps_dataset[index][0])
         gt = cv2.imread(self.nirps_dataset[index][1])
-        name = self.nirps_dataset[index][2]
+        name = self.nirps_dataset[index][0]
 
         return {'img': img, 'gt': gt, 'name': name}
 
@@ -48,8 +48,8 @@ class NIRPS(torch.utils.data.Dataset):
 if __name__ == '__main__':
 
     nirps_path = './nirps_dataset'
-    regions = ['brats2021']
-    modalities = {
+    regions = ['ixi', 'brats2021']
+    modalities = {'ixi': ['t2', 'pd'],
                   'brats2021': ['t1', 't2', 'flair']}
     models = ['cyclegan'] 
     epochs = [i for i in range(1, 3)]
@@ -66,4 +66,5 @@ if __name__ == '__main__':
         name = batch['name']
 
         print(name)
+        break
 
