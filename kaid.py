@@ -283,8 +283,8 @@ if __name__ == '__main__':
 
     kaid_model_path = os.path.join('kaid', 'model')
     save_model(model=kaid_ae, file_path='{}/checkpoint'.format(kaid_model_path), infor='{}/{}_{}'.format(
-                para_dict['dataset'], para_dict['source_domain'], para_dict['target_domain'])) 
-    load_model()
+               para_dict['dataset'], para_dict['source_domain'], para_dict['target_domain'])) 
+    load_model(model=kaid_ae, file_path=kaid_model_path, description=)
 
     # Score Prediction
     #TODO: Load GAN Model and KAID  
