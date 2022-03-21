@@ -280,7 +280,12 @@ if __name__ == '__main__':
                         '', i, batch_limit, loss_recon.item(), contrastive_loss.item())
 
             print(infor)         
-    
+
+    kaid_model_path = os.path.join('kaid', 'model')
+    save_model(model=kaid_ae, file_path='{}/checkpoint'.format(kaid_model_path), infor='{}/{}_{}'.format(
+                para_dict['dataset'], para_dict['source_domain'], para_dict['target_domain'])) 
+    load_model()
+
     # Score Prediction
     #TODO: Load GAN Model and KAID  
     if para_dict['test_model'] == 'cyclegan':
