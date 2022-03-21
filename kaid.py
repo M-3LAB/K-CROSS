@@ -208,6 +208,8 @@ if __name__ == '__main__':
     
     kaid_model_path = os.path.join('kaid', 'model')
 
+    if para_dict['train'] is False and para_dict['validation'] is False:
+        raise ValueError('train or validation need to be done')
     # Training 
     #TODO: Alternative Training for different training loader
     if para_dict['train']:
