@@ -23,7 +23,7 @@ save_log: true
 debug: False 
 federated: false
 kaid_stats: false
-pair_num: 10000
+data_num: 10000
 lr: 0.001
 #optimizer
 beta1: 0.5
