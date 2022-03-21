@@ -50,10 +50,14 @@ class BraTS2019(BASE):
 
         for x in t1:
             if x in t1ce and x in t2 and x in flair:
-                if self.annotation and x in seg:
-                    self.files.append(x)
+                if self.annotation:
+                    if x in seg:
+                        self.files.append(x)
                 else:
                     self.files.append(x)
+        
+        if not self.files:
+            raise ValueError('Load Origianl Data Filed!')
 
     
     def _generate_dataset(self):
