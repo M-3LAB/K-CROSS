@@ -30,7 +30,7 @@ class BASE(torch.utils.data.Dataset):
         splited: If True, we want to split the data into two parts, i.e, training data(0.8) and testing data(0.2)
 
     """
-    def __init__(self, root, modalities=["t1", "t2"], learn_mode="train", extract_slice=[29, 100],
+    def __init__(self, root, modalities=["t1", "t2"], learn_mode='train', extract_slice=[29, 100],
                 noise_type='normal', transform_data=None, client_weights=[1.0], dataset_splited=False,
                 data_mode='mixed', data_num=6000, data_paired_weight=0.2, data_moda_ratio=0.5, 
                 data_moda_case='case1', seed=3, annotation=False):
@@ -101,16 +101,13 @@ class BASE(torch.utils.data.Dataset):
         # plt.savefig('./legacy_code/img_after_{}.jpg'.format(i))
 
         # segmentaion        
-        mask_a = None
-        mask_b = None
+        mask_a = np.zeros((moda_a.shape[0], moda_a.shape[1], 3))
+        mask_b = np.zeros((moda_b.shape[0], moda_b.shape[1], 3))
         if self.annotation:
             ann_a = np.load('{}/Seg/{}.npy'.format(self.dataset_path, path_a))
             ann_b = np.load('{}/Seg/{}.npy'.format(self.dataset_path, path_b))
             ann_a = ann_a[i, :, :]
             ann_b = ann_b[i, :, :]
-
-            mask_a = np.zeros((ann_a.shape[0], ann_a.shape[1],3))
-            mask_b = np.zeros((ann_b.shape[0], ann_b.shape[1],3))
 
             mask_a[ann_a==1] = [255, 0, 0] # Red (necrotic tumor core)
             mask_a[ann_a==2] = [0, 255, 0] # Green (peritumoral edematous/invaded tissue)
@@ -130,8 +127,7 @@ class BASE(torch.utils.data.Dataset):
 
         return {self.modality_a: data_a, self.modality_b: data_b,
                 'mask_a': mask_a, 'mask_b': mask_b,
-                'name_a': path_a, 'name_b': path_b,
-                'slice_num': i}
+                'name_a': path_a, 'name_b': path_b, 'slice_num': i}
 
     def __len__(self):
         return len(self.fedmed_dataset)
