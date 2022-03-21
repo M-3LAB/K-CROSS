@@ -1,5 +1,5 @@
 from configuration.nirps.config import parse_arguments_nirps
-from architecture.nirps.train import NIRPS
+from architecture.nirps.train import NIRPSTrain
 
 import warnings
 warnings.filterwarnings("ignore")
@@ -12,5 +12,5 @@ if __name__ == '__main__':
         if not vars(args)[key_arg]:
             raise ValueError('Parameter {} Must Be Refered!'.format(key_arg))
 
-    work = NIRPS(args=args)
+    work = NIRPSTrain(args=args)
     work.run_work_flow()

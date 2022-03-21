@@ -1,4 +1,4 @@
-from operator import gt
+from operator import gt, mod
 import yaml
 import os
 import shutil
@@ -13,9 +13,9 @@ import warnings
 warnings.filterwarnings("ignore")
 
 
-class NIRPS(CentralizedTrain):
+class NIRPSTrain(CentralizedTrain):
     def __init__(self, args):
-        super(NIRPS, self).__init__(args=args)
+        super(NIRPSTrain, self).__init__(args=args)
         self.args = args
 
     def load_config(self):
@@ -160,7 +160,6 @@ class NIRPS(CentralizedTrain):
 
         shutil.copytree(source_path, target_path)
         print('nirps dataset dir: {}'.format(target_path))
-
 
     def run_work_flow(self):
         self.load_config()
