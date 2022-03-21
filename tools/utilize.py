@@ -13,7 +13,7 @@ __all__ = ['seed_everything', 'parse_device_list', 'allocate_gpus', 'average',
            'merge_config', 'convert_list_float_type', 'create_folders', 'concate_tensor_lists',
            'weights_init_normal', 'LambdaLR', 'load_model', 'merge_config', 'override_config', 'extract_config',
            'record_path', 'save_arg', 'save_log', 'save_script', 'save_image', 'save_model',
-           'save_metric_result']
+           'save_metric_result', 'load_metric_result']
 
 def set_grad(model, flag=True):
     for p in model.parameters():
@@ -123,6 +123,11 @@ def save_log(infor, file_path, description=None):
 def save_metric_result(result, file_path, description=None):
     with open('{}/{}.txt'.format(file_path, description), 'a') as f:
         print(result, file=f)
+
+def load_metric_result(file_path, description=None):
+    with open('{}/{}.txt'.format(file_path, description), 'r') as f:
+        data = f.read()
+    return data
 
 def save_script(src_file, file_path):
     shutil.copy2(src_file, file_path)

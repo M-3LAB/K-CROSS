@@ -1,8 +1,11 @@
 import torch
 import cv2
 import os
+import sys
+sys.path.append('.')
 
 from torch.utils.data import DataLoader
+from tools.utilize import load_metric_result
 
 __all__ = ['NIRPS']
 
@@ -35,7 +38,7 @@ class NIRPS(torch.utils.data.Dataset):
     def __getitem__(self, index):
         img = cv2.imread(self.nirps_dataset[index][0])
         gt = cv2.imread(self.nirps_dataset[index][1])
-        name = self.nirps_dataset[index][0]
+        name = self.nirps_dataset[index][0][:-8]
 
         return {'img': img, 'gt': gt, 'name': name}
 
@@ -65,6 +68,12 @@ if __name__ == '__main__':
         gt = batch['gt']
         name = batch['name']
 
-        print(name)
+        print(name[0])
+
+        mae = float(load_metric_result(name[0], 'mae')) 
+        psnr = float(load_metric_result(name[0], 'psnr')) 
+        ssim = float(load_metric_result(name[0], 'ssim')) 
+
+        print('mae: {:.4f} psnr: {:.4f} ssim: {:.4f}'.format(mae, psnr, ssim))
         break
 
