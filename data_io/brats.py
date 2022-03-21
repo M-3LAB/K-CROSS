@@ -51,7 +51,10 @@ class BraTS2019(BASE):
         for x in t1:
             if x in t1ce and x in t2 and x in flair:
                 if self.annotation and x in seg:
-                 self.files.append(x)
+                    self.files.append(x)
+                else:
+                    self.files.append(x)
+
     
     def _generate_dataset(self):
         return super()._generate_dataset()
