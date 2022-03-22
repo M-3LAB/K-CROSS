@@ -89,7 +89,7 @@ if __name__ == '__main__':
                                  learn_mode='train', #train or test is meaningless if dataset_splited is false
                                  transform_data=normal_transform,
                                  data_mode='paired',
-                                 data_num=para_dict['pair_num'],
+                                 data_num=para_dict['data_num'],
                                  dataset_splited=False)
         
         ixi_noise_dataset = IXI(root=para_dict['data_path'],
@@ -99,7 +99,7 @@ if __name__ == '__main__':
                                 learn_mode='train', #train or test is meaningless if dataset_splited is false
                                 transform_data=noise_transform,
                                 data_mode='paired',
-                                data_num=para_dict['pair_num'],
+                                data_num=para_dict['data_num'],
                                 dataset_splited=False)
 
         #TODO: make sure normal and nosiy loader release the same order of dataset
@@ -128,7 +128,7 @@ if __name__ == '__main__':
                                          learn_mode='train', # train or test is meaningless if dataset_spilited is false
                                          transform_data=normal_transform,
                                          data_mode='paired',
-                                         data_num=para_dict['pair_num'])
+                                         data_num=para_dict['data_num'])
 
         brats_noise_dataset = BraTS2021(root=para_dict['data_path'],
                                         modalities=[para_dict['source_domain'], para_dict['target_domain']],
@@ -137,7 +137,7 @@ if __name__ == '__main__':
                                         extract_slice=[para_dict['es_lower_limit'], para_dict['es_higher_limit']],
                                         transform_data=noise_transform,
                                         data_mode='paired',
-                                        data_num=para_dict['pair_num'])
+                                        data_num=para_dict['data_num'])
         
         #TODO: make sure normal and nosiy loader release the same order of dataset
         normal_loader = DataLoader(brats_normal_dataset, num_workers=para_dict['num_workers'],
@@ -207,6 +207,7 @@ if __name__ == '__main__':
         print(f"{para_dict['target_domain']} msl: {msl_b}")
     
     kaid_model_path = os.path.join('kaid', 'model')
+    create_folders(kaid_model_path)
 
     if para_dict['train'] is False and para_dict['validation'] is False:
         raise ValueError('train or validation need to be done')
@@ -291,8 +292,8 @@ if __name__ == '__main__':
                 print(infor)         
 
         
-        save_model(model=kaid_ae, file_path='{}/checkpoint'.format(kaid_model_path), infor='{}/{}_{}'.format(
-                   para_dict['dataset'], para_dict['source_domain'], para_dict['target_domain'])) 
+                save_model(model=kaid_ae, file_path='{}/checkpoint'.format(kaid_model_path), infor='{}/{}_{}_{}'.format(
+                   para_dict['dataset'], para_dict['source_domain'], para_dict['target_domain'], str(epoch))) 
     
     if para_dict['validate']:
         load_model(model=kaid_ae, file_path=kaid_model_path, description='{}/{}_{}'.format(para_dict['dataset'], para_dict['source_domain'], para_dict['target_domain']))
