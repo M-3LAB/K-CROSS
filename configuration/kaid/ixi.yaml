@@ -23,7 +23,7 @@ save_log: true
 debug: False 
 federated: false
 kaid_stats: false
-data_num: 10000
+data_num: 3000
 lr: 0.001
 #optimizer
 beta1: 0.5
@@ -39,7 +39,7 @@ msl_assigned_value: 10
 delta_diff: 1000
 #loss
 lambda_recon: 1.0
-lambda_contrastive: 1.0
+lambda_contrastive: 10.0
 lambda_hf: 1.0
 lambda_lf: 1.0
 #test_model

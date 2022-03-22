@@ -211,6 +211,13 @@ if __name__ == '__main__':
 
     if para_dict['train'] is False and para_dict['validation'] is False:
         raise ValueError('train or validation need to be done')
+    
+    print(f"lambda_recon: {para_dict['lambda_recon']}")
+    print(f"lambda_hf: {para_dict['lambda_hf']}")
+    print(f"lambda_lf: {para_dict['lambda_lf']}")
+    print(f"lambda_constrastive: {para_dict['lambda_contrastive']}")
+    print(f"lr: {para_dict['lr']}")
+
     # Training 
     #TODO: Alternative Training for different training loader
     if para_dict['train']:
@@ -272,27 +279,25 @@ if __name__ == '__main__':
                 loss_recon_real_a_lf = criterion_recon(real_a_lf_mag, real_a_lf_hat) 
                 loss_recon_real_b_lf = criterion_recon(real_b_lf_mag, real_b_lf_hat)
 
-                loss_recon = (loss_recon_real_a_hf + loss_recon_real_b_hf 
+                loss_recon = para_dict['lambda_recon']*(loss_recon_real_a_hf + loss_recon_real_b_hf 
                                     + loss_recon_real_a_lf + loss_recon_real_b_lf)
 
                 """
                 Contrastive Loss
                 """
-                loss_high_frequency = criterion_high_freq(real_a_hf_z, real_b_hf_z) 
-                loss_low_frequency = criterion_low_freq(real_a_lf_z, real_b_lf_z)
-                contrastive_loss = (para_dict['lambda_hf'] * loss_high_frequency -
-                                    para_dict['lambda_lf'] * loss_low_frequency)
+                loss_high_frequency = para_dict['lambda_hf'] * criterion_high_freq(real_a_hf_z, real_b_hf_z) 
+                loss_low_frequency = para_dict['lambda_lf'] * criterion_low_freq(real_a_lf_z, real_b_lf_z)
+                contrastive_loss = para_dict['lambda_contrastive'] * (loss_high_frequency - loss_low_frequency)
 
-                loss_total = (para_dict['lambda_contrastive'] * contrastive_loss + 
-                              para_dict['lambda_recon'] * loss_recon)
+                loss_total = contrastive_loss + loss_recon
 
                 loss_total.backward()
                 optimizer.step()
                 lr_scheduler.step()
 
                 # Print Log
-                infor = '\r{}[Batch {}/{}] [Recons loss: {:.4f}] [contrastive loss: {:.4f}]'.format(
-                            '', i, batch_limit, loss_recon.item(), contrastive_loss.item())
+                infor = '\r{}[Batch {}/{}] [Total loss: {:.4f}] [Recons loss: {:.4f}] [Contrastive loss: {:.4f}] [High Frequency Loss: {:.4f}] [Low Frequency Loss: {:.4f}]'.format(
+                            '', i, batch_limit, loss_total.item(), loss_recon.item(), contrastive_loss.item(), loss_high_frequency.item(), loss_low_frequency.item())
 
                 print(infor)         
 
