@@ -52,3 +52,6 @@ segmentation: false
 train: False 
 validate: False 
 resume: False
+# load model
+load_latest: False
+assigned_epoch: 50
