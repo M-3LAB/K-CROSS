@@ -47,6 +47,6 @@ diff_method: l1
 # segmentation
 segmentation: True
 # train, validation, resume
-train: True
-validation: True
+train: False 
+validation: False 
 resume: False
