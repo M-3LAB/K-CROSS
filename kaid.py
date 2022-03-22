@@ -292,8 +292,13 @@ if __name__ == '__main__':
                 print(infor)         
 
         
+            save_model(model=kaid_ae, file_path='{}/checkpoint'.format(kaid_model_path), infor='{}_{}_{}'.format(
+               para_dict['source_domain'], para_dict['target_domain'], str(epoch))) 
+            
+            if epoch == para_dict['num_epoch'] - 1:
                 save_model(model=kaid_ae, file_path='{}/checkpoint'.format(kaid_model_path), infor='{}_{}_{}'.format(
-                   para_dict['source_domain'], para_dict['target_domain'], str(epoch))) 
+                            para_dict['source_domain'], para_dict['target_domain'], 'latest')) 
+                 
     
     if para_dict['validate']:
         load_model(model=kaid_ae, file_path=kaid_model_path, description='{}/{}_{}'.format(para_dict['dataset'], para_dict['source_domain'], para_dict['target_domain']))
