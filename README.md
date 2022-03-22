@@ -49,7 +49,7 @@ python3 centralized_training.py --dataset 'ixi' --model 'cyclegan' --source-doma
 
 ## KAID Debug 
 ```bash
-python3 kaid.py --dataset 'ixi' --source-domain 't2' --target-domain 'pd' -g 0 --msl-assigned --msl-assigned-value 10 --train --debug --num-epochs 2
+python3 kaid.py --dataset 'ixi' --source-domain 't2' --target-domain 'pd' -g 1 --msl-assigned --msl-assigned-value 10 --train --num-epochs 30
 ```
 
 ## NIRPS Dataset Build Up
