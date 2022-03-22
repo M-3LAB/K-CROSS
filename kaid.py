@@ -206,7 +206,7 @@ if __name__ == '__main__':
         print(f"{para_dict['source_domain']} msl: {msl_a}")
         print(f"{para_dict['target_domain']} msl: {msl_b}")
     
-    kaid_model_path = os.path.join('kaid', 'model', para_dict['dataset'])
+    kaid_model_path = os.path.join('kaidae', para_dict['dataset'])
     create_folders(kaid_model_path)
 
     if para_dict['train'] is False and para_dict['validation'] is False:
@@ -296,13 +296,13 @@ if __name__ == '__main__':
 
                 print(infor)         
 
-        
-            save_model(model=kaid_ae, file_path='{}/checkpoint'.format(kaid_model_path), infor='{}_{}_{}'.format(
-               para_dict['source_domain'], para_dict['target_domain'], str(epoch))) 
-            
-            if epoch == para_dict['num_epochs'] - 1:
+            print(f'epoch: {epoch}') 
+            if epoch < para_dict['num_epochs'] - 1:
                 save_model(model=kaid_ae, file_path='{}/checkpoint'.format(kaid_model_path), infor='{}_{}_{}'.format(
-                            para_dict['source_domain'], para_dict['target_domain'], 'latest')) 
+                   para_dict['source_domain'], para_dict['target_domain'], str(epoch)), save_previous=True) 
+            else:
+                save_model(model=kaid_ae, file_path='{}/checkpoint'.format(kaid_model_path), infor='{}_{}_{}'.format(
+                            para_dict['source_domain'], para_dict['target_domain'], 'latest'), save_previous=True) 
                  
     
     if para_dict['validate']:
