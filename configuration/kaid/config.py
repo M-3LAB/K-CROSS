@@ -38,6 +38,8 @@ def parse_arguments_kaid():
     parser.add_argument('--resume', action='store_true', default=None, help='resume training or not')
     parser.add_argument('--train', action='store_true', default=None)
     parser.add_argument('--validation', action='store_true', default=None)
+    parser.add_argument('--load-latest', action='store_true', defalut=None, help='indiciate whether load the latest kaid model or not')
+    parser.add_argument('--assigned-epoch', type=int, default=None, help='load which epoch of kaid model')
     #segmentation
     parser.add_argument('--segment', action='store_true', default=None, help='segmentation method evaluation or not')
     parser.add_argument('--seg-method', type=str, choices=['2d', '3d'])
