@@ -37,7 +37,7 @@ def parse_arguments_kaid():
     parser.add_argument('--fid', action='store_true', default=True)
     parser.add_argument('--resume', action='store_true', default=None, help='resume training or not')
     parser.add_argument('--train', action='store_true', default=None)
-    parser.add_argument('--validate', action='store_true', default=None)
+    parser.add_argument('--validation', action='store_true', default=None)
     #segmentation
     parser.add_argument('--segment', action='store_true', default=None, help='segmentation method evaluation or not')
     parser.add_argument('--seg-method', type=str, choices=['2d', '3d'])
