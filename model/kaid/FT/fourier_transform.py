@@ -1,4 +1,5 @@
 import numpy as np
+from tools.utilize import concate_tensor_lists
 import torch
 
 """
@@ -40,11 +41,15 @@ def torch_fft(mri_img):
     """
     Convert image into K-space
     Args:
-        mri_img: torch tensor (BCHW) 
+        mri_img: torch tensor (BCHW), the input channel is 1 for medical image 
     Return:
         k-space: torch tensor 
     """
-    k_space = torch.fft.fftshift(torch.fft.fft2(mri_img)) 
+    k_space = torch.randn(mri_img.size())
+    for i in range(mri_img.size[0]): 
+        mri_2d_img = mri_img[i, 0, :, :]
+        k_space_2d = torch.fft.fftshift(torch.fft.fft2(mri_2d_img)) 
+        concate_tensor_lists(k_space, k_space_2d, i)
     return k_space
 
 def torch_ifft(k_space):
@@ -53,9 +58,13 @@ def torch_ifft(k_space):
     Args:
         k-space: torch tensor 
     Return:
-        mri_img: torch tensor 
+        mri_img_back: torch tensor (BCHW) 
     """
-    mri_img_back = torch.abs(torch.fft.ifft2(torch.fft.ifftshift(k_space))) 
+    mri_img_back = torch.randn(k_space.size())
+    for i in range(k_space.size[0]):
+        k_space_2d = k_space[i, 0, :, :]
+        mri_2d_img = torch.abs(torch.fft.ifft2(torch.fft.ifftshift(k_space_2d))) 
+        concate_tensor_lists(mri_img_back, mri_2d_img, i)
     return mri_img_back
 
 def np_fft(mri_img):
