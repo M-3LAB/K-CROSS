@@ -299,7 +299,7 @@ if __name__ == '__main__':
                 infor = '\r{}[Batch {}/{}] [Total loss: {:.4f}] [Recons loss: {:.4f}] [Contrastive loss: {:.4f}] [High Frequency Loss: {:.4f}] [Low Frequency Loss: {:.4f}]'.format(
                             '', i, batch_limit, loss_total.item(), loss_recon.item(), contrastive_loss.item(), loss_high_frequency.item(), loss_low_frequency.item())
 
-                print(infor)         
+                print(infor, flush=True, end=' ')         
 
             print(f'epoch: {epoch}') 
             if epoch < para_dict['num_epochs'] - 1:
