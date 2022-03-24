@@ -1,5 +1,4 @@
-*/__pycache__/
-*/*/__pycache__/
+__pycache__/
 work_dir/
 ./history
 fid_stats/stats_npz/
