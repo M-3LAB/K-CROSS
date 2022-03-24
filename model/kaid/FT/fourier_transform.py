@@ -124,7 +124,7 @@ def torch_low_pass_filter(k_space, msl):
     for i in range(k_space.size(0)):
         kspace_2d = k_space[i, 0, :, :]
         lf_2d_kspace = torch.zeros_like(kspace_2d)
-        lf_2d_kspace = kspace_2d[ch-msl:ch+msl,cw-msl:cw+msl]
+        lf_2d_kspace[ch-msl:ch+msl,cw-msl:cw+msl] = kspace_2d[ch-msl:ch+msl,cw-msl:cw+msl]
         lf_2d_kspace = torch.unsqueeze(torch.unsqueeze(lf_2d_kspace, dim=0), dim=0)
         concate_tensor_lists(low_freq_kspace, lf_2d_kspace, i)
         
