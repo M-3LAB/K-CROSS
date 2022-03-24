@@ -71,7 +71,7 @@ def np_ifft(k_space):
     mri_img_back = np.abs(ifft2(ifftshift(k_space))) 
     return mri_img_back
 
-def extract_ampl(mri_img):
+def extract_ampl(mri_img, normalized_method=None):
     """
     Convert image into K-space_abs 
     Args:
@@ -85,7 +85,7 @@ def extract_ampl(mri_img):
     #k_space_abs = torch.randn(k_space.size())
     #for i in range(k_space_abs.size(0)):
 
-    k_space = torch_fft(mri_img)
+    k_space = torch_fft(mri_img, norm=normalized_method)
     k_space_abs = torch.abs(k_space)
     return k_space_abs
 
