@@ -15,7 +15,7 @@ __all__ = ['torch_ifft','torch_fft', 'np_fft', 'np_ifft',
            'extract_ampl', 'torch_high_pass_filter', 'torch_low_pass_filter', 
            'np_high_pass_filter', 'np_low_pass_filter']
 
-def torch_fft(mri_img):
+def torch_fft(mri_img, normalized_method=None):
     """
     Convert image into K-space
     Args:
@@ -23,27 +23,31 @@ def torch_fft(mri_img):
     Return:
         k-space: torch tensor 
     """
-    k_space = torch.randn(mri_img.size())
-    for i in range(mri_img.size[0]): 
-        mri_2d_img = mri_img[i, 0, :, :]
-        k_space_2d = torch.fft.fftshift(torch.fft.fft2(mri_2d_img)) 
-        concate_tensor_lists(k_space, k_space_2d, i)
+    #k_space = torch.randn(mri_img.size())
+    #for i in range(mri_img.size[0]): 
+    #    mri_2d_img = mri_img[i, 0, :, :]
+    #    k_space_2d = torch.fft.fftshift(torch.fft.fft2(mri_2d_img)) 
+    #    concate_tensor_lists(k_space, k_space_2d, i)
+    
+    k_space = torch.fft.fftshift(torch.fft.fft2(mri_img, norm=normalized_method)) 
     return k_space
 
-def torch_ifft(k_space):
+def torch_ifft(k_space, normalized_method=None):
     """
     Convert K-space into image
     Args:
         k-space: torch tensor 
     Return:
-        mri_img_back: torch tensor (BCHW) 
+        mri_img: torch tensor (BCHW) 
     """
-    mri_img_back = torch.randn(k_space.size())
-    for i in range(k_space.size[0]):
-        k_space_2d = k_space[i, 0, :, :]
-        mri_2d_img = torch.abs(torch.fft.ifft2(torch.fft.ifftshift(k_space_2d))) 
-        concate_tensor_lists(mri_img_back, mri_2d_img, i)
-    return mri_img_back
+    #mri_img_back = torch.randn(k_space.size())
+    #for i in range(k_space.size[0]):
+    #    k_space_2d = k_space[i, 0, :, :]
+    #    mri_2d_img = torch.fft.ifft2(torch.fft.ifftshift(k_space_2d)) 
+    #    concate_tensor_lists(mri_img_back, mri_2d_img, i)
+
+    mri_img = torch.fft.ifft2(torch.fft.ifftshift(k_space), norm=normalized_method) 
+    return mri_img
 
 def np_fft(mri_img):
     """
@@ -78,9 +82,11 @@ def extract_ampl(mri_img):
     Magnitude: sqrt(re^2 + im^2) tells you the amplitude of the component 
     at the corresponding frequency
     """
+    #k_space_abs = torch.randn(k_space.size())
+    #for i in range(k_space_abs.size(0)):
+
     k_space = torch_fft(mri_img)
     k_space_abs = torch.abs(k_space)
-
     return k_space_abs
 
 def torch_high_pass_filter(k_space, msl):
