@@ -100,12 +100,12 @@ def torch_high_pass_filter(k_space, msl):
     _, _, height, width = k_space.size()
     ch = int(height / 2) # centre height
     cw = int(width / 2) # center width
-    high_freq_kspace = torch.randn(k_space.size())
+    high_freq_kspace = torch.randn(1, 1, height, width)
     for i in range(k_space.size(0)):
         hf_2d_kspace = k_space[i, 0, :, :] 
         hf_2d_kspace[ch-msl:ch+msl,cw-msl:cw+msl] = 0
         hf_2d_kspace = torch.unsqueeze(torch.unsqueeze(hf_2d_kspace, dim=0), dim=0)
-        concate_tensor_lists(high_freq_kspace, hf_2d_kspace)
+        concate_tensor_lists(high_freq_kspace, hf_2d_kspace, i)
 
     return high_freq_kspace
 
@@ -120,12 +120,15 @@ def torch_low_pass_filter(k_space, msl):
     _, _, height, width = k_space.size()
     ch = int(height / 2)
     cw = int(width / 2)
-    low_k_space = torch.zeros_like(k_space) 
-    low_k_space[:, :,ch-msl:ch+msl,cw-msl:cw+msl] = k_space[:, :,
-                                                                ch-msl:ch+msl,
-                                                                cw-msl:cw+msl] 
-
-    return low_k_space
+    low_freq_kspace = torch.randn(1, 1, height, width)
+    for i in range(k_space.size(0)):
+        kspace_2d = k_space[i, 0, :, :]
+        lf_2d_kspace = torch.zeros_like(kspace_2d)
+        lf_2d_kspace = kspace_2d[ch-msl:ch+msl,cw-msl:cw+msl]
+        lf_2d_kspace = torch.unsqueeze(torch.unsqueeze(lf_2d_kspace, dim=0), dim=0)
+        concate_tensor_lists(low_freq_kspace, lf_2d_kspace, i)
+        
+    return low_freq_kspace
 
 def np_high_pass_filter(kspace: np.ndarray, radius: float):
 
