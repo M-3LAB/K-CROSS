@@ -100,9 +100,14 @@ def torch_high_pass_filter(k_space, msl):
     _, _, height, width = k_space.size()
     ch = int(height / 2) # centre height
     cw = int(width / 2) # center width
-    high_k_space = k_space.clone()
-    high_k_space[:, :,ch-msl:ch+msl,cw-msl:cw+msl] = 0
-    return high_k_space
+    high_freq_kspace = torch.randn(k_space.size())
+    for i in range(k_space.size(0)):
+        hf_2d_kspace = k_space[i, 0, :, :] 
+        hf_2d_kspace[ch-msl:ch+msl,cw-msl:cw+msl] = 0
+        hf_2d_kspace = torch.unsqueeze(torch.unsqueeze(hf_2d_kspace, dim=0), dim=0)
+        concate_tensor_lists(high_freq_kspace, hf_2d_kspace)
+
+    return high_freq_kspace
 
 def torch_low_pass_filter(k_space, msl):
     """
