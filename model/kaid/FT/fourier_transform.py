@@ -11,31 +11,9 @@ ifft2 = np.fft.ifft2
 fftshift = np.fft.fftshift
 ifftshift = np.fft.ifftshift
 
-__all__ = ['torch_rfft','torch_irfft','torch_ifft','torch_fft', 'np_fft', 'np_ifft', 
+__all__ = ['torch_ifft','torch_fft', 'np_fft', 'np_ifft', 
            'extract_ampl', 'torch_high_pass_filter', 'torch_low_pass_filter', 
            'np_high_pass_filter', 'np_low_pass_filter']
-
-def torch_rfft(mri_img):
-    """
-    Convert image into K-space, only for the real part of input 
-    Args:
-        mri_img: torch tensor (BCHW) 
-    Return:
-        k-space: torch tensor 
-    """
-    k_space = torch.fft.fftshift(torch.fft.rfft2(mri_img)) 
-    return k_space
-
-def torch_irfft(k_space):
-    """
-    Convert the real part of K-space into image
-    Args:
-        k-space: torch tensor 
-    Return:
-        mri_img: torch tensor 
-    """
-    mri_img_back = torch.abs(torch.fft.irfft2(torch.fft.ifftshift(k_space))) 
-    return mri_img_back
 
 def torch_fft(mri_img):
     """
