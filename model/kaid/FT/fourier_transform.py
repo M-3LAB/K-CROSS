@@ -13,7 +13,7 @@ ifftshift = np.fft.ifftshift
 
 __all__ = ['torch_ifft','torch_fft', 'np_fft', 'np_ifft', 'torch_normalize', 
            'extract_ampl', 'torch_high_pass_filter', 'torch_low_pass_filter', 
-           'np_high_pass_filter', 'np_low_pass_filter']
+           'np_high_pass_filter', 'np_low_pass_filter', 'torch_fft_vis']
 
 def torch_fft(mri_img, normalized_method=None):
     """
@@ -142,6 +142,11 @@ def torch_normalise(f):
         if fmax != fmin:
             coeff = fmax - fmin
             f[i,0, :] = torch.floor((f[i,0, :] - fmin) / coeff * 255.)
+
+def torch_fft_vis(kspace):
+    kspace_mag = torch.abs(kspace)
+    torch_normalise(kspace_mag)
+    return kspace_mag
 
 
 def np_high_pass_filter(kspace: np.ndarray, radius: float):

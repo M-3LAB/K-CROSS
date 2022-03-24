@@ -1,3 +1,4 @@
+from model.kaid.FT.fourier_transform import torch_normalise
 import torch
 import yaml
 import os
@@ -241,6 +242,7 @@ if __name__ == '__main__':
                 real_a = batch[para_dict['source_domain']]
                 real_b = batch[para_dict['target_domain']]
 
+
                 # Fourier Transform 
                 real_a_kspace = torch_fft(real_a)
                 real_b_kspace = torch_fft(real_b)
@@ -251,137 +253,158 @@ if __name__ == '__main__':
                 real_a_lf = torch_low_pass_filter(real_a_kspace, msl_a)
                 real_b_lf = torch_low_pass_filter(real_b_kspace, msl_b)
 
-                """
-                Magnitude: sqrt(re^2 + im^2) tells you the amplitude of the component at the corresponding frequency
-                Phase: atan2(im, re) tells you the relative phase of that component
-                """
+                # Visualize
+                save_image(image=real_a, name=f"{para_dict['source_domain']}.png", image_path='fft_vis')
+                save_image(image=real_b, name=f"{para_dict['target_domain']}.png", image_path='fft_vis')
 
-                real_a_hf_mag = torch.abs(real_a_hf).to(device)
-                real_a_lf_mag = torch.abs(real_a_lf).to(device)
+                real_a_kspace_mag = torch_fft_vis(real_a_kspace)
+                real_b_kspace_mag = torch_fft_vis(real_b_kspace)
 
-                real_b_hf_mag = torch.abs(real_b_hf).to(device)
-                real_b_lf_mag = torch.abs(real_b_lf).to(device)
+                save_image(image=real_a_kspace_mag, name=f"{para_dict['source_domain']}_mag.png", image_path='fft_vis')
+                save_image(image=real_b_kspace_mag, name=f"{para_dict['target_domain']}_mag.png", image_path='fft_vis')
 
-                optimizer.zero_grad()
+                real_a_hf_mag = torch_fft_vis(real_a_hf)
+                real_b_hf_mag = torch_fft_vis(real_b_hf)
 
-                real_a_hf_z, real_a_hf_hat = kaid_ae(real_a_hf_mag)
-                real_a_lf_z, real_a_lf_hat = kaid_ae(real_a_lf_mag)
+                save_image(image=real_a_hf_mag, name=f"{para_dict['source_domain']}_hf_mag.png", image_path='fft_vis')
+                save_image(image=real_b_hf_mag, name=f"{para_dict['target_domain']}_hf_mag.png", image_path='fft_vis')
 
-                real_b_hf_z, real_b_hf_hat = kaid_ae(real_b_hf_mag)
-                real_b_lf_z, real_b_lf_hat = kaid_ae(real_b_lf_mag)
+                real_a_lf_mag = torch_fft_vis(real_a_lf)
+                real_b_lf_mag = torch_fft_vis(real_b_lf)
 
-                """
-                Reconstruction
-                """
-                loss_recon_real_a_hf = criterion_recon(real_a_hf_mag, real_a_hf_hat) 
-                loss_recon_real_b_hf = criterion_recon(real_b_hf_mag, real_b_hf_hat)
+                save_image(image=real_a_lf_mag, name=f"{para_dict['source_domain']}_lf_mag.png", image_path='fft_vis')
+                save_image(image=real_b_lf_mag, name=f"{para_dict['target_domain']}_lf_mag.png", image_path='fft_vis')
+    #            """
+    #            Magnitude: sqrt(re^2 + im^2) tells you the amplitude of the component at the corresponding frequency
+    #            Phase: atan2(im, re) tells you the relative phase of that component
+    #            """
 
-                loss_recon_real_a_lf = criterion_recon(real_a_lf_mag, real_a_lf_hat) 
-                loss_recon_real_b_lf = criterion_recon(real_b_lf_mag, real_b_lf_hat)
+    #            real_a_hf_mag = torch.abs(real_a_hf).to(device)
+    #            real_a_lf_mag = torch.abs(real_a_lf).to(device)
 
-                loss_recon = para_dict['lambda_recon']*(loss_recon_real_a_hf + loss_recon_real_b_hf 
-                                    + loss_recon_real_a_lf + loss_recon_real_b_lf)
+    #            real_b_hf_mag = torch.abs(real_b_hf).to(device)
+    #            real_b_lf_mag = torch.abs(real_b_lf).to(device)
 
-                """
-                Contrastive Loss
-                """
-                loss_high_frequency = para_dict['lambda_hf'] * criterion_high_freq(real_a_hf_z, real_b_hf_z) 
-                loss_low_frequency = para_dict['lambda_lf'] * criterion_low_freq(real_a_lf_z, real_b_lf_z)
-                contrastive_loss = para_dict['lambda_contrastive'] * (loss_high_frequency - loss_low_frequency)
+    #            optimizer.zero_grad()
 
-                loss_total = contrastive_loss + loss_recon
+    #            real_a_hf_z, real_a_hf_hat = kaid_ae(real_a_hf_mag)
+    #            real_a_lf_z, real_a_lf_hat = kaid_ae(real_a_lf_mag)
 
-                loss_total.backward()
-                optimizer.step()
-                lr_scheduler.step()
+    #            real_b_hf_z, real_b_hf_hat = kaid_ae(real_b_hf_mag)
+    #            real_b_lf_z, real_b_lf_hat = kaid_ae(real_b_lf_mag)
 
-                # Print Log
-                infor = '\r{}[Batch {}/{}] [Total loss: {:.4f}] [Recons loss: {:.4f}] [Contrastive loss: {:.4f}] [High Frequency Loss: {:.4f}] [Low Frequency Loss: {:.4f}]'.format(
-                            '', i, batch_limit, loss_total.item(), loss_recon.item(), contrastive_loss.item(), loss_high_frequency.item(), loss_low_frequency.item())
+    #            """
+    #            Reconstruction
+    #            """
+    #            loss_recon_real_a_hf = criterion_recon(real_a_hf_mag, real_a_hf_hat) 
+    #            loss_recon_real_b_hf = criterion_recon(real_b_hf_mag, real_b_hf_hat)
 
-                print(infor, flush=True, end=' ')         
+    #            loss_recon_real_a_lf = criterion_recon(real_a_lf_mag, real_a_lf_hat) 
+    #            loss_recon_real_b_lf = criterion_recon(real_b_lf_mag, real_b_lf_hat)
 
-            print(f'epoch: {epoch}') 
-            if epoch < para_dict['num_epochs'] - 1:
-                save_model(model=kaid_ae, file_path='{}/checkpoint'.format(kaid_model_path), infor='{}_{}_{}'.format(
-                   para_dict['source_domain'], para_dict['target_domain'], str(epoch)), save_previous=True) 
-            else:
-                save_model(model=kaid_ae, file_path='{}/checkpoint'.format(kaid_model_path), infor='{}_{}_{}'.format(
-                            para_dict['source_domain'], para_dict['target_domain'], 'latest'), save_previous=True) 
+    #            loss_recon = para_dict['lambda_recon']*(loss_recon_real_a_hf + loss_recon_real_b_hf 
+    #                                + loss_recon_real_a_lf + loss_recon_real_b_lf)
+
+    #            """
+    #            Contrastive Loss
+    #            """
+    #            loss_high_frequency = para_dict['lambda_hf'] * criterion_high_freq(real_a_hf_z, real_b_hf_z) 
+    #            loss_low_frequency = para_dict['lambda_lf'] * criterion_low_freq(real_a_lf_z, real_b_lf_z)
+    #            contrastive_loss = para_dict['lambda_contrastive'] * (loss_high_frequency - loss_low_frequency)
+
+    #            loss_total = contrastive_loss + loss_recon
+
+    #            loss_total.backward()
+    #            optimizer.step()
+    #            lr_scheduler.step()
+
+    #            # Print Log
+    #            infor = '\r{}[Batch {}/{}] [Total loss: {:.4f}] [Recons loss: {:.4f}] [Contrastive loss: {:.4f}] [High Frequency Loss: {:.4f}] [Low Frequency Loss: {:.4f}]'.format(
+    #                        '', i, batch_limit, loss_total.item(), loss_recon.item(), contrastive_loss.item(), loss_high_frequency.item(), loss_low_frequency.item())
+
+    #            print(infor, flush=True, end=' ')         
+
+    #        print(f'epoch: {epoch}') 
+    #        if epoch < para_dict['num_epochs'] - 1:
+    #            save_model(model=kaid_ae, file_path='{}/checkpoint'.format(kaid_model_path), infor='{}_{}_{}'.format(
+    #               para_dict['source_domain'], para_dict['target_domain'], str(epoch)), save_previous=True) 
+    #        else:
+    #            save_model(model=kaid_ae, file_path='{}/checkpoint'.format(kaid_model_path), infor='{}_{}_{}'.format(
+    #                        para_dict['source_domain'], para_dict['target_domain'], 'latest'), save_previous=True) 
                  
     
-    if para_dict['validate']:
-        if para_dict['load_latest']:
-            # load model
-            load_model(model=kaid_ae, file_path=kaid_model_path, description='{}_{}_{}'.format(
-                para_dict['source_domain'], para_dict['target_domain'], 'latest'))
-        else:
-            load_model(model=kaid_ae, file_path=kaid_model_path, description='{}_{}_{}'.format(
-                para_dict['source_domain'], para_dict['target_domain'], str(para_dict['assigned-epoch'])))
+    #if para_dict['validate']:
+    #    if para_dict['load_latest']:
+    #        # load model
+    #        load_model(model=kaid_ae, file_path=kaid_model_path, description='{}_{}_{}'.format(
+    #            para_dict['source_domain'], para_dict['target_domain'], 'latest'))
+    #    else:
+    #        load_model(model=kaid_ae, file_path=kaid_model_path, description='{}_{}_{}'.format(
+    #            para_dict['source_domain'], para_dict['target_domain'], str(para_dict['assigned-epoch'])))
 
-        # Score Prediction
-        #TODO: Load GAN Model and KAID  
-        if para_dict['test_model'] == 'cyclegan':
-            generator_from_a_to_b = CycleGen().to(device) 
-            generator_from_b_to_a = CycleGen().to(device)
+    #    # Score Prediction
+    #    #TODO: Load GAN Model and KAID  
+    #    if para_dict['test_model'] == 'cyclegan':
+    #        generator_from_a_to_b = CycleGen().to(device) 
+    #        generator_from_b_to_a = CycleGen().to(device)
 
-        elif para_dict['test_model'] == 'munit':
-            encoder_from_a_to_b = MUE().to(device)
-            decoder_from_a_to_b = MUD().to(device)
-            encoder_from_b_to_a = MUE().to(device)
-            decoder_from_b_to_a = MUD().to(device)
+    #    elif para_dict['test_model'] == 'munit':
+    #        encoder_from_a_to_b = MUE().to(device)
+    #        decoder_from_a_to_b = MUD().to(device)
+    #        encoder_from_b_to_a = MUE().to(device)
+    #        decoder_from_b_to_a = MUD().to(device)
 
-        elif para_dict['test_model'] == 'unit':
-            encoder_from_a_to_b = UE().to(device)
-            generator_from_a_to_b = UG().to(device) 
-            encoder_from_b_to_a = UE().to(device)
-            generator_from_b_to_a = UG().to(device) 
+    #    elif para_dict['test_model'] == 'unit':
+    #        encoder_from_a_to_b = UE().to(device)
+    #        generator_from_a_to_b = UG().to(device) 
+    #        encoder_from_b_to_a = UE().to(device)
+    #        generator_from_b_to_a = UG().to(device) 
 
-        else:
-            raise NotImplementedError('GAN Model Has Not Been Implemented Yet')
+    #    else:
+    #        raise NotImplementedError('GAN Model Has Not Been Implemented Yet')
     
-        #TODO: synthesis data loader
-        # Single Image Quality, batchsize=1
-        for i, batch in enumerate(test_loader): 
-            if i > batch_limit:
-                break
+    #    #TODO: synthesis data loader
+    #    # Single Image Quality, batchsize=1
+    #    for i, batch in enumerate(test_loader): 
+    #        if i > batch_limit:
+    #            break
 
-            real_a = batch[para_dict['source_domain']].to(device)
-            real_b = batch[para_dict['target_domain']].to(device)
-            
-            # Synthesize Image 
-            if para_dict['test_model'] == 'cyclegan':
-                fake_b = generator_from_a_to_b(real_a).to(device)
-                fake_a = generator_from_b_to_a(real_b).to(device)
-            elif para_dict['test_model'] == 'munit':
-                pass
-            elif para_dict['test_model'] == 'unit':
-                pass
-            else:
-                raise NotImplementedError('Synthesis Model Not Implemented Yet')
-            
-            #Distance 
-            real_a_z = kaid_ae.encode(real_a)    
-            fake_a_z = kaid_ae.encode(fake_a)
+    #        real_a = batch[para_dict['source_domain']].to(device)
+    #        real_b = batch[para_dict['target_domain']].to(device)
+    #        
+    #        # Synthesize Image 
+    #        if para_dict['test_model'] == 'cyclegan':
+    #            fake_b = generator_from_a_to_b(real_a).to(device)
+    #            fake_a = generator_from_b_to_a(real_b).to(device)
+    #        elif para_dict['test_model'] == 'munit':
+    #            pass
+    #        elif para_dict['test_model'] == 'unit':
+    #            pass
+    #        else:
+    #            raise NotImplementedError('Synthesis Model Not Implemented Yet')
+    #        
+    #        #Distance 
+    #        real_a_z = kaid_ae.encode(real_a)    
+    #        fake_a_z = kaid_ae.encode(fake_a)
 
-            real_b_z = kaid_ae.encode(real_b)
-            fake_b_z = kaid_ae.encode(fake_b)
+    #        real_b_z = kaid_ae.encode(real_b)
+    #        fake_b_z = kaid_ae.encode(fake_b)
 
-            if para_dict['diff_method'] == 'l1':
-                diff_a = l1_diff(real_a_z, fake_a_z)
-                diff_b = l1_diff(real_b_z, fake_b_z)
-            elif para_dict['diff_method'] == 'l2':
-                diff_a = l2_diff(real_a_z, fake_a_z)
-                diff_b = l2_diff(real_b_z, fake_b_z)
-            elif para_dict['diff_method'] == 'cos':
-                diff_a = cosine_similiarity(real_a_z, fake_a_z)
-                diff_b = cosine_similiarity(real_b_z, fake_b_z)
-            else:
-                raise NotImplementedError('The Difference Method Has Not Been Calculated Yet')
+    #        if para_dict['diff_method'] == 'l1':
+    #            diff_a = l1_diff(real_a_z, fake_a_z)
+    #            diff_b = l1_diff(real_b_z, fake_b_z)
+    #        elif para_dict['diff_method'] == 'l2':
+    #            diff_a = l2_diff(real_a_z, fake_a_z)
+    #            diff_b = l2_diff(real_b_z, fake_b_z)
+    #        elif para_dict['diff_method'] == 'cos':
+    #            diff_a = cosine_similiarity(real_a_z, fake_a_z)
+    #            diff_b = cosine_similiarity(real_b_z, fake_b_z)
+    #        else:
+    #            raise NotImplementedError('The Difference Method Has Not Been Calculated Yet')
 
-            print(f"The mean diff of Modality {para_dict['source_domain']} : {torch.mean(diff_a)}")
-            print(f"The mean diff of Modality {para_dict['target_domain']} : {torch.mean(diff_b)}")
+    #        print(f"The mean diff of Modality {para_dict['source_domain']} : {torch.mean(diff_a)}")
+    #        print(f"The mean diff of Modality {para_dict['target_domain']} : {torch.mean(diff_b)}")
 
 
-        #TODO: Comparision on NIRPS 
+    #    #TODO: Comparision on NIRPS 
     
