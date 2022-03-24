@@ -8,8 +8,8 @@ b_mu: 0.0
 b_sigma: 1.0
 source_domain: pd
 target_domain: t2
-data_path: /disk/medical/ixi
-valid_path: /disk/medical/ixi
+data_path: /disk1/medical/ixi
+valid_path: /disk1/medical/ixi
 batch_size: 8 
 es_higher_limit: 80 
 es_lower_limit: 50
