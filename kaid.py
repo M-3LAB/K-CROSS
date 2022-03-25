@@ -1,3 +1,4 @@
+from curses import flash
 import torch
 import yaml
 import os
@@ -233,10 +234,11 @@ if __name__ == '__main__':
         for epoch in range(para_dict['num_epochs']):
             for i, batch in enumerate(normal_loader): 
             #TODO: noisy loader
-
+                batch_limit = 40
                 if i > batch_limit:
                     break
 
+                optimizer.zero_grad()
                 real_a = batch[para_dict['source_domain']]
                 real_b = batch[para_dict['target_domain']]
 
@@ -299,6 +301,11 @@ if __name__ == '__main__':
 
     #            loss_recon_real_a_lf = criterion_recon(real_a_lf_mag, real_a_lf_hat) 
     #            loss_recon_real_b_lf = criterion_recon(real_b_lf_mag, real_b_lf_hat)
+                # Print Log
+    #            infor = '\r{}[Batch {}/{}] [Total loss: {:.4f}] [Recons loss: {:.4f}] [Contrastive loss: {:.4f}] [High Frequency Loss: {:.4f}] [Low Frequency Loss: {:.4f}]'.format(
+    #                        '', i+1, batch_limit, loss_total.item(), loss_recon.item(), contrastive_loss.item(), loss_high_frequency.item(), loss_low_frequency.item())
+
+    #            print(infor, flush=True, end='  ')         
 
     #            loss_recon = para_dict['lambda_recon']*(loss_recon_real_a_hf + loss_recon_real_b_hf 
     #                                + loss_recon_real_a_lf + loss_recon_real_b_lf)
