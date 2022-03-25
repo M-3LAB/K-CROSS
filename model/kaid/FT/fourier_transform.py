@@ -11,7 +11,7 @@ ifft2 = np.fft.ifft2
 fftshift = np.fft.fftshift
 ifftshift = np.fft.ifftshift
 
-__all__ = ['torch_ifft','torch_fft', 'np_fft', 'np_ifft', 'torch_normalize', 
+__all__ = ['torch_ifft','torch_fft', 'np_fft', 'np_ifft', 'torch_normalise', 
            'extract_ampl', 'torch_high_pass_filter', 'torch_low_pass_filter', 
            'np_high_pass_filter', 'np_low_pass_filter', 'torch_fft_vis']
 
