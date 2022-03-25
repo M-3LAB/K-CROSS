@@ -3,6 +3,7 @@ import matplotlib.pyplot as plt
 import matplotlib
 matplotlib.use('Agg')
 from data_preprocess.common import *
+import torch
 
 __all__ = ['plot_sample', 'slices_reader', 'np_normalize', 'np_scaling_kspace']
 
@@ -47,4 +48,24 @@ def np_scaling_kspace(k_space):
     np.log1p(k_space_abs * scaling, out=k_space_abs)
     np_normalize(k_space_abs)
     k_space_abs = np.require(k_space_abs, np.uint8) 
+    return k_space_abs
+
+def torch_2d_normalize(f): 
+    """ 
+    Normalises 2D torch tensor by "streching" all values to be between 0-255.
+    Parameters:
+        f (2D torch tensor): 2D torch tensor
+    """
+    fmax = float(torch.max(f))
+    fmin = float(torch.min(f))
+    if fmax != fmin:
+        coeff = fmax - fmin
+        f[:] = torch.floor((f[:] - fmin) / coeff * 255.)
+
+def torch_scaling_kspace(k_space):
+    k_space_abs = torch.abs(k_space)
+    scaling = 0.01
+    torch.log1p(scaling * k_space_abs, out=k_space_abs)
+    torch_2d_normalize(k_space_abs)
+    k_space_abs = k_space_abs.to(torch.uint8)
     return k_space_abs

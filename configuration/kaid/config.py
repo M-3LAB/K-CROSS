@@ -49,6 +49,8 @@ def parse_arguments_kaid():
     parser.add_argument('--seg-method', type=str, choices=['2d', '3d'])
     parser.add_argument('--seg-model', type=str, choices=['ex_unet', 'unet'])
     parser.add_argument('--max-filters-2d', type=int, default=999)
+    # visualize check
+    parser.add_argument('--vis-method', type=str, choices=['np', 'torch', 'torch_2d'])
 
     args = parser.parse_args()
     return args
