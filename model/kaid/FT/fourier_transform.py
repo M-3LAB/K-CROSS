@@ -130,7 +130,7 @@ def torch_low_pass_filter(k_space, msl):
         
     return low_freq_kspace
 
-def torch_normalise(f):
+def torch_normalize(f):
     """ 
     Normalises torch tensor by "streching" all values to be between 0-255.
     Parameters:
@@ -145,7 +145,7 @@ def torch_normalise(f):
 
 def torch_fft_vis(kspace):
     kspace_mag = torch.abs(kspace)
-    torch_normalise(kspace_mag)
+    torch_normalize(kspace_mag)
     return kspace_mag
 
 
