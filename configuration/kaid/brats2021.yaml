@@ -36,7 +36,7 @@ msl_stats: False
 msl_assigned: False
 msl_assigned_value: 10
 delta_diff: 10000
-normalized_mothod: 'ortho'
+normalized_method: 'ortho'
 #loss
 lambda_recon: 1.0
 lambda_contrastive: 1.0

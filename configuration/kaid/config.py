@@ -11,7 +11,9 @@ def parse_arguments_kaid():
     parser.add_argument('--model', '-m', type=str, default='cyclegan', choices=['cyclegan', 'munit', 'unit'])
     parser.add_argument('--source-domain', '-s', type=str, default='t1', choices=['t1', 't2', 'pd', 'flair'])
     parser.add_argument('--target-domain', '-t', type=str, default='t2', choices=['t1', 't2', 'pd', 'flair'])
-    parser.add_argument('--data-num', '-pn', type=int, default=None)
+    parser.add_argument('--data-num', '-dn', type=int, default=None)
+    parser.add_argument('--data-path', '-dp', type=str, default=None)
+    parser.add_argument('--valid-path', '-vp', type=str, default=None)
 
     parser.add_argument('--noise-type', type=str, default='gaussian', choices=['normal', 'gaussian', 'slight', 'severe'])
     parser.add_argument('--gpu-id', '-g', type=str, default=None)
