@@ -1,9 +1,7 @@
-from model.kaid.FT.fourier_transform import torch_normalise
 import torch
 import yaml
 import os
 import numpy as np
-
 from torch.utils.data import DataLoader
 from data_io.ixi import IXI
 from data_io.brats import BraTS2021
