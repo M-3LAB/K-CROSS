@@ -2,10 +2,9 @@ import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib
 matplotlib.use('Agg')
+from data_preprocess.common import *
 
-
-
-__all__ = ['plot_sample']
+__all__ = ['plot_sample', 'slices_reader', 'np_normalize']
 
 def plot_sample(real_a, fake_a, real_b, fake_b, step, img_path, descript='Epoch'):
     plt.figure(figsize=(5, 4))
@@ -21,3 +20,20 @@ def plot_sample(real_a, fake_a, real_b, fake_b, step, img_path, descript='Epoch'
     plt.title('{}: {}'.format(descript, step))
     plt.savefig(img_path)
     plt.close()
+
+def slices_reader(file_path, index=80):
+    mri_slices = read_img_sitk(file_path)
+    mri = mri_slices[index]
+    return mri
+
+def np_normalize(f: np.ndarray):
+    """ 
+    Normalises array by "streching" all values to be between 0-255.
+    Parameters:
+        f (np.ndarray): input array
+    """
+    fmin = float(f.min())
+    fmax = float(f.max())
+    if fmax != fmin:
+        coeff = fmax - fmin
+        f[:] = np.floor((f[:] - fmin) / coeff * 255.)
