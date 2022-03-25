@@ -55,3 +55,12 @@ resume: False
 # load model
 load_latest: False
 assigned_epoch: 50
+assigned_images: [['BraTS2021_00001', 'BraTS2021_00001', 70], 
+                  ['BraTS2021_00013', 'BraTS2021_00013', 70],
+                  ['BraTS2021_00438', 'BraTS2021_00438', 70],
+                  ['BraTS2021_01668', 'BraTS2021_01668', 70],
+                  ['BraTS2021_01712', 'BraTS2021_01712', 70],
+                  ['BraTS2021_01756', 'BraTS2021_01756', 70],
+                  ['BraTS2021_00585', 'BraTS2021_00585', 70],
+                  ['BraTS2021_01679', 'BraTS2021_01679', 70],
+                  ['BraTS2021_01763', 'BraTS2021_01763', 70]]

@@ -14,6 +14,7 @@ def parse_arguments_kaid():
     parser.add_argument('--data-num', '-dn', type=int, default=None)
     parser.add_argument('--data-path', '-dp', type=str, default=None)
     parser.add_argument('--valid-path', '-vp', type=str, default=None)
+    parser.add_argument('--batch-size', type=int, default=None)
 
     parser.add_argument('--noise-type', type=str, default='gaussian', choices=['normal', 'gaussian', 'slight', 'severe'])
     parser.add_argument('--gpu-id', '-g', type=str, default=None)

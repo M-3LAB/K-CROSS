@@ -153,7 +153,7 @@ if __name__ == '__main__':
 
     # Debug Mode
     if para_dict['debug']:
-        batch_limit = 2
+        batch_limit = 1
     else:
         batch_limit = int(para_dict['data_num'] / para_dict['batch_size'])
 
@@ -212,15 +212,13 @@ if __name__ == '__main__':
     if para_dict['train'] is False and para_dict['validation'] is False:
         raise ValueError('train or validation need to be done')
     
-    print(f"lambda_recon: {para_dict['lambda_recon']}")
-    print(f"lambda_hf: {para_dict['lambda_hf']}")
-    print(f"lambda_lf: {para_dict['lambda_lf']}")
-    print(f"lambda_constrastive: {para_dict['lambda_contrastive']}")
-    print(f"lr: {para_dict['lr']}")
 
     # Training 
-    for epoch in range(para_dict['num_epochs']):
+    for epoch in range(int(para_dict['num_epochs'])):
         for i, batch in enumerate(normal_loader): 
+            if i > batch_limit:
+                break
+
             real_a = batch[para_dict['source_domain']]
             real_b = batch[para_dict['target_domain']]
 
