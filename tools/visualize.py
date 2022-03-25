@@ -4,7 +4,7 @@ import matplotlib
 matplotlib.use('Agg')
 from data_preprocess.common import *
 
-__all__ = ['plot_sample', 'slices_reader', 'np_normalize']
+__all__ = ['plot_sample', 'slices_reader', 'np_normalize', 'np_scaling_kspace']
 
 def plot_sample(real_a, fake_a, real_b, fake_b, step, img_path, descript='Epoch'):
     plt.figure(figsize=(5, 4))
@@ -21,7 +21,7 @@ def plot_sample(real_a, fake_a, real_b, fake_b, step, img_path, descript='Epoch'
     plt.savefig(img_path)
     plt.close()
 
-def slices_reader(file_path, index=80):
+def slices_reader(file_path, index=74):
     mri_slices = read_img_sitk(file_path)
     mri = mri_slices[index]
     return mri
@@ -37,3 +37,14 @@ def np_normalize(f: np.ndarray):
     if fmax != fmin:
         coeff = fmax - fmin
         f[:] = np.floor((f[:] - fmin) / coeff * 255.)
+
+    f = np.require(f, np.uint8)
+    return f
+
+def np_scaling_kspace(k_space):
+    k_space_abs = np.abs(k_space)
+    scaling = np.power(10., -2)
+    np.log1p(k_space_abs * scaling, out=k_space_abs)
+    np_normalize(k_space_abs)
+    k_space_abs = np.require(k_space_abs, np.uint8) 
+    return k_space_abs

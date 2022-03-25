@@ -1,3 +1,4 @@
+from tools.visualize import np_scaling_kspace
 import torch
 import yaml
 import os
@@ -22,6 +23,7 @@ from model.kaid.ae.kaid_ae import KAIDAE
 
 from tools.visualize import *
 import cv2
+import matplotlib.pyplot as plt
 
 if __name__ == '__main__':
     args = parse_arguments_kaid()
@@ -215,10 +217,60 @@ if __name__ == '__main__':
         raise ValueError('train or validation need to be done')
     
     # Visualize Checking process
-    pd = '/disk/medical/IXI/IXI002-Guys-0828-PD.nii.gz'
-    t2 = '/disk/medical/IXI/IXI002-Guys-0828-T2.nii.gz'
+    pd = '/disk/medical/IXI/PD/IXI508-HH-2268-PD.nii.gz'
+    t2 = '/disk/medical/IXI/T2/IXI508-HH-2268-T2.nii.gz'
     pd_mri = slices_reader(pd) 
     t2_mri = slices_reader(t2) 
+
+    t2_kspace = np_fft(t2_mri)
+    pd_kspace = np_fft(pd_mri)
+
+    pd_kspace_abs = np_scaling_kspace(pd_kspace)
+    t2_kspace_abs = np_scaling_kspace(t2_kspace)
+
+    pd_mri_norm = np_normalize(pd_mri)
+
+    pd_mri_back = np_ifft(pd_kspace)
+    t2_mri_back = np_ifft(t2_kspace)
+    
+    plt.subplot(231)
+    plt.imshow(pd_mri_norm, cmap='gray')
+    plt.title('pd')
+    plt.xticks([])
+    plt.yticks([])
+
+    plt.subplot(232)
+    plt.imshow(pd_kspace_abs, cmap='gray')
+    plt.xticks([])
+    plt.yticks([])
+    plt.title('pd_kspace')
+
+    plt.subplot(233)
+    plt.imshow(pd_mri_back, cmap='gray')
+    plt.xticks([])
+    plt.yticks([])
+    plt.title('pd_mri_back')
+
+    plt.subplot(234)
+    plt.imshow(t2_mri, cmap='gray')
+    plt.title('t2')
+    plt.xticks([])
+    plt.yticks([])
+
+    plt.subplot(235)
+    plt.imshow(t2_kspace_abs, cmap='gray')
+    plt.xticks([])
+    plt.yticks([])
+    plt.title('t2_kspace')
+
+    plt.subplot(236)
+    plt.imshow(t2_mri_back, cmap='gray')
+    plt.xticks([])
+    plt.yticks([])
+    plt.title('t2_mri_back')
+
+    plt.savefig("np_test.png")
+    plt.show()
     
 
     # Training 
