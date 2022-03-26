@@ -129,7 +129,7 @@ if __name__ == '__main__':
                                   batch_size=para_dict['batch_size'], shuffle=False)
 
         test_loader = DataLoader(ixi_test_dataset, num_workers=para_dict['num_workers'],
-                                 batch_size=1, shuffle=False)
+                                 batch_size=2, shuffle=False)
 
         
     elif para_dict['dataset'] == 'brats2021':
@@ -455,8 +455,8 @@ if __name__ == '__main__':
                     real_a_kspace_abs = torch_scaling_kspace(real_a_kspace)
                     real_b_kspace_abs = torch_scaling_kspace(real_b_kspace)
 
-                    real_a_hf = torch_high_pass_filter(real_a_kspace, msl=2)
-                    real_b_hf = torch_high_pass_filter(real_b_kspace, msl=2)
+                    real_a_hf = torch_high_pass_filter(real_a_kspace, radius=5)
+                    real_b_hf = torch_high_pass_filter(real_b_kspace, radius=5)
 
                     real_a_hf_abs = torch_scaling_kspace(real_a_hf)
                     real_b_hf_abs = torch_scaling_kspace(real_b_hf)
