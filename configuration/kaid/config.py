@@ -51,6 +51,7 @@ def parse_arguments_kaid():
     parser.add_argument('--max-filters-2d', type=int, default=999)
     # visualize check
     parser.add_argument('--vis-method', type=str, choices=['np', 'torch', 'torch_2d'])
+    parser.add_argument('--vis-check', action='store_true', default=None, help='indiciate whether need to check visually')
 
     args = parser.parse_args()
     return args
