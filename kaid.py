@@ -117,7 +117,8 @@ if __name__ == '__main__':
                                  transform_data=kaid_transform,
                                  data_mode='paired',
                                  data_num=para_dict['data_num'],
-                                 dataset_splited=False)
+                                 dataset_splited=False,
+                                 assigned_images=para_dict['assigned_images'])
 
         #TODO: make sure normal and nosiy loader release the same order of dataset
         normal_loader = DataLoader(ixi_normal_dataset, num_workers=para_dict['num_workers'],
@@ -226,9 +227,9 @@ if __name__ == '__main__':
     kaid_model_path = os.path.join('kaidae', para_dict['dataset'])
     create_folders(kaid_model_path)
 
-    if para_dict['train'] is False and para_dict['validation'] is False:
-        raise ValueError('train or validation need to be done') 
-    if para_dict['vis-check']:
+    #if para_dict['train'] is False and para_dict['validation'] is False:
+    #    raise ValueError('train or validation need to be done') 
+    if para_dict['vis_check']:
         # Visualize Checking process
         pd = '/disk/medical/IXI/PD/IXI508-HH-2268-PD.nii.gz'
         t2 = '/disk/medical/IXI/T2/IXI508-HH-2268-T2.nii.gz'
@@ -363,31 +364,25 @@ if __name__ == '__main__':
                     real_a_kspace = torch_fft(real_a)
                     real_b_kspace = torch_fft(real_b)
 
-                    #real_a_hf = torch_high_pass_filter(real_a_kspace, msl_a)
-                    #real_b_hf = torch_high_pass_filter(real_b_kspace, msl_b)
+                    real_a = bchw_to_np(real_a)
+                    real_b = bchw_to_np(real_b)
 
-                    #real_a_lf = torch_low_pass_filter(real_a_kspace, msl_a)
-                    #real_b_lf = torch_low_pass_filter(real_b_kspace, msl_b)
+                    real_a_kspace_abs = torch_scaling_kspace(real_a_kspace)
+                    real_a_kspace_abs = bchw_to_np(real_a_kspace_abs)
 
-                    # Visualize
-                    save_image(image=real_a, name=f"{para_dict['source_domain']}.png", image_path='fft_vis')
-                    save_image(image=real_b, name=f"{para_dict['target_domain']}.png", image_path='fft_vis')
+                    plt.subplot(121)
+                    plt.imshow(real_a, cmap='gray')
+                    plt.title('pd')
+                    plt.xticks([])
+                    plt.yticks([])
+                    
+                    plt.subplot(122)
+                    plt.imshow(real_a_kspace_abs, cmap='gray')
+                    plt.title('pd kspace')
+                    plt.xticks([])
+                    plt.yticks([])
 
-                    real_a_kspace_mag = torch_scaling_kspace(real_a_kspace)
-                    real_b_kspace_mag = torch_scaling_kspace(real_b_kspace)
+                    plt.savefig("torch_test.png")
+                    plt.show() 
 
-                    save_image(image=real_a_kspace_mag, name=f"{para_dict['source_domain']}_mag.png", image_path='fft_vis')
-                    save_image(image=real_b_kspace_mag, name=f"{para_dict['target_domain']}_mag.png", image_path='fft_vis')
-
-                    #real_a_hf_mag = torch_fft_vis(real_a_hf)
-                    #real_b_hf_mag = torch_fft_vis(real_b_hf)
-
-                    #save_image(image=real_a_hf_mag, name=f"{para_dict['source_domain']}_hf_mag.png", image_path='fft_vis')
-                    #save_image(image=real_b_hf_mag, name=f"{para_dict['target_domain']}_hf_mag.png", image_path='fft_vis')
-
-                    #real_a_lf_mag = torch_fft_vis(real_a_lf)
-                    #real_b_lf_mag = torch_fft_vis(real_b_lf)
-
-                    #save_image(image=real_a_lf_mag, name=f"{para_dict['source_domain']}_lf_mag.png", image_path='fft_vis')
-                    #save_image(image=real_b_lf_mag, name=f"{para_dict['target_domain']}_lf_mag.png", image_path='fft_vis')
     
