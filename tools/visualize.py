@@ -69,3 +69,13 @@ def torch_scaling_kspace(k_space):
     torch_2d_normalize(k_space_abs)
     k_space_abs = k_space_abs.to(torch.uint8)
     return k_space_abs
+
+def np_to_bchw(mri_img):
+    mri_img = np.array(mri_img)
+    mri_img = torch.from_numpy(mri_img)
+    mri_img = torch.unsqueeze(torch.unsqueeze(mri_img, 0), 0) 
+    return mri_img
+
+def bchw_to_np(tensor):
+    img = torch.squeeze
+    return img

@@ -274,6 +274,7 @@ if __name__ == '__main__':
         plt.show()
     
     elif para_dict['vis_method'] == 'torch_2d':
+
         t2_kspace = torch_fft(t2_mri)
         pd_kspace = torch_fft(pd_mri)
     
