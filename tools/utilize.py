@@ -132,11 +132,11 @@ def load_metric_result(file_path, description=None):
 def save_script(src_file, file_path):
     shutil.copy2(src_file, file_path)
 
-def save_image(image, name, image_path):
+def save_image(image, name, image_path, norm=False):
     if not os.path.exists(image_path):
         os.makedirs(image_path)
 
-    torchvision.utils.save_image(image, '{}/{}'.format(image_path, name), normalize=False)
+    torchvision.utils.save_image(image, '{}/{}'.format(image_path, name), normalize=norm)
 
 def save_model(model, file_path, infor, save_previous=False):
     if not os.path.exists(file_path):

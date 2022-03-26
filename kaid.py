@@ -1,3 +1,4 @@
+from locale import normalize
 from tools.visualize import np_scaling_kspace, torch_scaling_kspace
 import torch
 import yaml
@@ -364,25 +365,29 @@ if __name__ == '__main__':
                     real_a_kspace = torch_fft(real_a)
                     real_b_kspace = torch_fft(real_b)
 
-                    real_a = bchw_to_np(real_a)
-                    real_b = bchw_to_np(real_b)
+                    #real_a = bchw_to_np(real_a)
+                    #real_b = bchw_to_np(real_b)
 
-                    real_a_kspace_abs = torch_scaling_kspace(real_a_kspace)
-                    real_a_kspace_abs = bchw_to_np(real_a_kspace_abs)
+                    #real_a_kspace_abs = torch_scaling_kspace(real_a_kspace)
+                    #real_a_kspace_abs = bchw_to_np(real_a_kspace_abs)
 
-                    plt.subplot(121)
-                    plt.imshow(real_a, cmap='gray')
-                    plt.title('pd')
-                    plt.xticks([])
-                    plt.yticks([])
+                    #plt.subplot(121)
+                    #plt.imshow(real_a, cmap='gray')
+                    #plt.title('pd')
+                    #plt.xticks([])
+                    #plt.yticks([])
                     
-                    plt.subplot(122)
-                    plt.imshow(real_a_kspace_abs, cmap='gray')
-                    plt.title('pd kspace')
-                    plt.xticks([])
-                    plt.yticks([])
+                    #plt.subplot(122)
+                    #plt.imshow(real_a_kspace_abs, cmap='gray')
+                    #plt.title('pd kspace')
+                    #plt.xticks([])
+                    #plt.yticks([])
 
-                    plt.savefig("torch_test.png")
-                    plt.show() 
+                    #plt.savefig("torch_test.png")
+                    #plt.show() 
+
+                    save_image(image=real_a, name=f"{para_dict['source_domain']}.png", image_path='fft_vis', norm=True)
+                    save_image(image=real_b, name=f"{para_dict['target_domain']}.png", image_path='fft_vis', norm=True)
+
 
     
