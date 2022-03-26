@@ -1,4 +1,4 @@
-from tools.visualize import np_scaling_kspace
+from tools.visualize import np_scaling_kspace, torch_scaling_kspace
 import torch
 import yaml
 import os
@@ -278,8 +278,65 @@ if __name__ == '__main__':
         t2_mri = np_to_bchw(t2_mri)
         pd_mri = np_to_bchw(pd_mri)
 
+        #t2_kspace = torch_fft(t2_mri, normalized_method='ortho')
+        #pd_kspace = torch_fft(pd_mri, normalized_method='ortho')
         t2_kspace = torch_fft(t2_mri)
         pd_kspace = torch_fft(pd_mri)
+
+        t2_kspace_abs = torch_scaling_kspace(t2_kspace)
+        pd_kspace_abs = torch_scaling_kspace(pd_kspace)
+
+        #t2_mri_back = torch_ifft(t2_kspace, normalized_method='ortho')
+        #pd_mri_back = torch_ifft(pd_kspace, normalized_method='ortho')
+        t2_mri_back = torch.abs(torch_ifft(t2_kspace))
+        pd_mri_back = torch.abs(torch_ifft(pd_kspace))
+
+        t2_mri = bchw_to_np(t2_mri)
+        pd_mri = bchw_to_np(pd_mri)
+        t2_kspace_abs = bchw_to_np(t2_kspace_abs)
+        pd_kspace_abs = bchw_to_np(pd_kspace_abs)
+        t2_mri_back = bchw_to_np(t2_mri_back)
+        pd_mri_back = bchw_to_np(pd_mri_back)
+
+        plt.subplot(231)
+        plt.imshow(pd_mri, cmap='gray')
+        plt.title('pd')
+        plt.xticks([])
+        plt.yticks([])
+
+        plt.subplot(232)
+        plt.imshow(pd_kspace_abs, cmap='gray')
+        plt.xticks([])
+        plt.yticks([])
+        plt.title('pd_kspace')
+
+        plt.subplot(233)
+        plt.imshow(pd_mri_back, cmap='gray')
+        plt.xticks([])
+        plt.yticks([])
+        plt.title('pd_mri_back')
+
+        plt.subplot(234)
+        plt.imshow(t2_mri, cmap='gray')
+        plt.title('t2')
+        plt.xticks([])
+        plt.yticks([])
+
+        plt.subplot(235)
+        plt.imshow(t2_kspace_abs, cmap='gray')
+        plt.xticks([])
+        plt.yticks([])
+        plt.title('t2_kspace')
+
+        plt.subplot(236)
+        plt.imshow(t2_mri_back, cmap='gray')
+        plt.xticks([])
+        plt.yticks([])
+        plt.title('t2_mri_back')
+
+        plt.savefig("torch_2d_test.png")
+        plt.show() 
+
     
 
     # Training 

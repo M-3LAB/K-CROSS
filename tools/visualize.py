@@ -51,32 +51,35 @@ def np_scaling_kspace(k_space):
     k_space_abs = np.require(k_space_abs, np.uint8) 
     return k_space_abs
 
-def torch_2d_normalize(f): 
+def torch_normalize(f):
     """ 
-    Normalises 2D torch tensor by "streching" all values to be between 0-255.
+    Normalises torch tensor by "streching" all values to be between 0-255.
     Parameters:
-        f (2D torch tensor): 2D torch tensor
+        f (torch tensor): BCHW, C = 1 due to the characteristics of medicial image    
     """
-    fmax = float(torch.max(f))
-    fmin = float(torch.min(f))
-    if fmax != fmin:
-        coeff = fmax - fmin
-        f[:] = torch.floor((f[:] - fmin) / coeff * 255.)
+    for i in range(f.size()[0]):
+        fmax = float(torch.max(f[i, 0, :]))
+        fmin = float(torch.min(f[i, 0, :]))
+        if fmax != fmin:
+            coeff = fmax - fmin
+            f[i,0, :] = torch.floor((f[i,0, :] - fmin) / coeff * 255.)
+    f = f.to(torch.uint8)
+    return f
 
 def torch_scaling_kspace(k_space):
     k_space_abs = torch.abs(k_space)
     scaling = 0.01
     torch.log1p(scaling * k_space_abs, out=k_space_abs)
-    torch_2d_normalize(k_space_abs)
+    torch_normalize(k_space_abs)
     k_space_abs = k_space_abs.to(torch.uint8)
     return k_space_abs
 
 def np_to_bchw(mri_img):
     mri_img = np.array(mri_img)
     mri_img = torch.from_numpy(mri_img)
-    mri_img = torch.unsqueeze(torch.unsqueeze(mri_img, 0), 0) 
+    mri_img = torch.unsqueeze(torch.unsqueeze(mri_img, dim=0), dim=0) 
     return mri_img
 
 def bchw_to_np(tensor):
-    img = torch.squeeze
+    img = torch.squeeze(tensor).numpy()
     return img
