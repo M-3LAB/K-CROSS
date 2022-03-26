@@ -362,11 +362,13 @@ if __name__ == '__main__':
             t2_kspace = torch_fft(t2_mri)
             pd_kspace = torch_fft(pd_mri)
 
+            t2_hf = torch_high_pass_filter(t2_kspace, radius=5)
+
             t2_kspace_abs = torch_scaling_kspace(t2_kspace)
             pd_kspace_abs = torch_scaling_kspace(pd_kspace)
 
-            #t2_mri_back = torch_ifft(t2_kspace, normalized_method='ortho')
-            #pd_mri_back = torch_ifft(pd_kspace, normalized_method='ortho')
+            #t2_mri_back = torch.abs(torch_ifft(t2_kspace, normalized_method='ortho'))
+            #pd_mri_back = torch.abs(torch_ifft(pd_kspace, normalized_method='ortho'))
             t2_mri_back = torch.abs(torch_ifft(t2_kspace))
             pd_mri_back = torch.abs(torch_ifft(pd_kspace))
 
