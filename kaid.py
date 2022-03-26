@@ -275,6 +275,9 @@ if __name__ == '__main__':
     
     elif para_dict['vis_method'] == 'torch_2d':
 
+        t2_mri = np_to_bchw(t2_mri)
+        pd_mri = np_to_bchw(pd_mri)
+
         t2_kspace = torch_fft(t2_mri)
         pd_kspace = torch_fft(pd_mri)
     
