@@ -11,9 +11,9 @@ ifft2 = np.fft.ifft2
 fftshift = np.fft.fftshift
 ifftshift = np.fft.ifftshift
 
-__all__ = ['torch_ifft','torch_fft', 'np_fft', 'np_ifft', 'torch_normalize', 
+__all__ = ['torch_ifft','torch_fft', 'np_fft', 'np_ifft',  
            'extract_ampl', 'torch_high_pass_filter', 'torch_low_pass_filter', 
-           'np_high_pass_filter', 'np_low_pass_filter', 'torch_fft_vis']
+           'np_high_pass_filter', 'np_low_pass_filter']
 
 def torch_fft(mri_img, normalized_method=None):
     """
@@ -129,25 +129,6 @@ def torch_low_pass_filter(k_space, msl):
         concate_tensor_lists(low_freq_kspace, lf_2d_kspace, i)
         
     return low_freq_kspace
-
-def torch_normalize(f):
-    """ 
-    Normalises torch tensor by "streching" all values to be between 0-255.
-    Parameters:
-        f (torch tensor): BCHW, C = 1 due to the characteristics of medicial image    
-    """
-    for i in range(f.size()[0]):
-        fmax = float(torch.max(f[i, 0, :]))
-        fmin = float(torch.min(f[i, 0, :]))
-        if fmax != fmin:
-            coeff = fmax - fmin
-            f[i,0, :] = torch.floor((f[i,0, :] - fmin) / coeff * 255.)
-
-def torch_fft_vis(kspace):
-    kspace_mag = torch.abs(kspace)
-    torch_normalize(kspace_mag)
-    return kspace_mag
-
 
 def np_high_pass_filter(kspace: np.ndarray, radius: float):
 

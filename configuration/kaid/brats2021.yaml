@@ -52,6 +52,9 @@ segmentation: True
 train: False 
 validate: False 
 resume: False
+#visualization
+vis_check: False
+vis_method: 'np'
 # load model
 load_latest: False
 assigned_epoch: 50

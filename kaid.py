@@ -53,6 +53,9 @@ if __name__ == '__main__':
                          'scale':[1.00, 1.00], 
                          'size':(para_dict['size'], para_dict['size'])}]
 
+    kaid_transform = [{'size':(para_dict['size'], para_dict['size'])},
+                      {'size':(para_dict['size'], para_dict['size'])}]
+
     if para_dict['noise_type'] == 'gaussian':
         noise_transform = [{'mu':para_dict['a_mu'], 'sigma':para_dict['a_sigma'],
                             'size':(para_dict['size'], para_dict['size'])},
@@ -105,6 +108,16 @@ if __name__ == '__main__':
                                 data_mode='paired',
                                 data_num=para_dict['data_num'],
                                 dataset_splited=False)
+        
+        ixi_test_dataset = IXI(root=para_dict['data_path'],
+                                 modalities=[para_dict['source_domain'], para_dict['target_domain']],
+                                 extract_slice=[para_dict['es_lower_limit'], para_dict['es_higher_limit']],
+                                 noise_type='kaid',
+                                 learn_mode='train', #train or test is meaningless if dataset_splited is false
+                                 transform_data=kaid_transform,
+                                 data_mode='paired',
+                                 data_num=para_dict['data_num'],
+                                 dataset_splited=False)
 
         #TODO: make sure normal and nosiy loader release the same order of dataset
         normal_loader = DataLoader(ixi_normal_dataset, num_workers=para_dict['num_workers'],
@@ -113,7 +126,7 @@ if __name__ == '__main__':
         noisy_loader = DataLoader(ixi_noise_dataset, num_workers=para_dict['num_workers'],
                                   batch_size=para_dict['batch_size'], shuffle=False)
 
-        test_loader = DataLoader(ixi_normal_dataset, num_workers=para_dict['num_workers'],
+        test_loader = DataLoader(ixi_test_dataset, num_workers=para_dict['num_workers'],
                                  batch_size=1, shuffle=False)
 
         
@@ -338,47 +351,43 @@ if __name__ == '__main__':
             plt.show() 
     
         elif para_dict['vis_method'] == 'torch':
-            pass
+            for epoch in range(int(para_dict['num_epochs'])):
+                for i, batch in enumerate(test_loader): 
+                    if i > batch_limit:
+                        break
 
+                    real_a = batch[para_dict['source_domain']]
+                    real_b = batch[para_dict['target_domain']]
+
+                    # Fourier Transform 
+                    real_a_kspace = torch_fft(real_a)
+                    real_b_kspace = torch_fft(real_b)
+
+                    #real_a_hf = torch_high_pass_filter(real_a_kspace, msl_a)
+                    #real_b_hf = torch_high_pass_filter(real_b_kspace, msl_b)
+
+                    #real_a_lf = torch_low_pass_filter(real_a_kspace, msl_a)
+                    #real_b_lf = torch_low_pass_filter(real_b_kspace, msl_b)
+
+                    # Visualize
+                    save_image(image=real_a, name=f"{para_dict['source_domain']}.png", image_path='fft_vis')
+                    save_image(image=real_b, name=f"{para_dict['target_domain']}.png", image_path='fft_vis')
+
+                    real_a_kspace_mag = torch_scaling_kspace(real_a_kspace)
+                    real_b_kspace_mag = torch_scaling_kspace(real_b_kspace)
+
+                    save_image(image=real_a_kspace_mag, name=f"{para_dict['source_domain']}_mag.png", image_path='fft_vis')
+                    save_image(image=real_b_kspace_mag, name=f"{para_dict['target_domain']}_mag.png", image_path='fft_vis')
+
+                    #real_a_hf_mag = torch_fft_vis(real_a_hf)
+                    #real_b_hf_mag = torch_fft_vis(real_b_hf)
+
+                    #save_image(image=real_a_hf_mag, name=f"{para_dict['source_domain']}_hf_mag.png", image_path='fft_vis')
+                    #save_image(image=real_b_hf_mag, name=f"{para_dict['target_domain']}_hf_mag.png", image_path='fft_vis')
+
+                    #real_a_lf_mag = torch_fft_vis(real_a_lf)
+                    #real_b_lf_mag = torch_fft_vis(real_b_lf)
+
+                    #save_image(image=real_a_lf_mag, name=f"{para_dict['source_domain']}_lf_mag.png", image_path='fft_vis')
+                    #save_image(image=real_b_lf_mag, name=f"{para_dict['target_domain']}_lf_mag.png", image_path='fft_vis')
     
-
-    # Training 
-    #for epoch in range(int(para_dict['num_epochs'])):
-    #    for i, batch in enumerate(normal_loader): 
-    #        if i > batch_limit:
-    #            break
-
-    #        real_a = batch[para_dict['source_domain']]
-    #        real_b = batch[para_dict['target_domain']]
-
-    #        # Fourier Transform 
-    #        real_a_kspace = torch_fft(real_a)
-    #        real_b_kspace = torch_fft(real_b)
-
-    #        real_a_hf = torch_high_pass_filter(real_a_kspace, msl_a)
-    #        real_b_hf = torch_high_pass_filter(real_b_kspace, msl_b)
-
-    #        real_a_lf = torch_low_pass_filter(real_a_kspace, msl_a)
-    #        real_b_lf = torch_low_pass_filter(real_b_kspace, msl_b)
-
-    #        # Visualize
-    #        save_image(image=real_a, name=f"{para_dict['source_domain']}.png", image_path='fft_vis')
-    #        save_image(image=real_b, name=f"{para_dict['target_domain']}.png", image_path='fft_vis')
-
-    #        real_a_kspace_mag = torch_fft_vis(real_a_kspace)
-    #        real_b_kspace_mag = torch_fft_vis(real_b_kspace)
-
-    #        save_image(image=real_a_kspace_mag, name=f"{para_dict['source_domain']}_mag.png", image_path='fft_vis')
-    #        save_image(image=real_b_kspace_mag, name=f"{para_dict['target_domain']}_mag.png", image_path='fft_vis')
-
-    #        real_a_hf_mag = torch_fft_vis(real_a_hf)
-    #        real_b_hf_mag = torch_fft_vis(real_b_hf)
-
-    #        save_image(image=real_a_hf_mag, name=f"{para_dict['source_domain']}_hf_mag.png", image_path='fft_vis')
-    #        save_image(image=real_b_hf_mag, name=f"{para_dict['target_domain']}_hf_mag.png", image_path='fft_vis')
-
-    #        real_a_lf_mag = torch_fft_vis(real_a_lf)
-    #        real_b_lf_mag = torch_fft_vis(real_b_lf)
-
-    #        save_image(image=real_a_lf_mag, name=f"{para_dict['source_domain']}_lf_mag.png", image_path='fft_vis')
-    #        save_image(image=real_b_lf_mag, name=f"{para_dict['target_domain']}_lf_mag.png", image_path='fft_vis')

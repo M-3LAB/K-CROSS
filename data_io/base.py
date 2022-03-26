@@ -205,6 +205,11 @@ class BASE(torch.utils.data.Dataset):
                                                                             scale=self.t[1]['scale'], fillcolor=0), 
                                                    transforms.Resize(size=self.t[1]['size']), 
                                                    ToTensor()])
+        elif self.noise_type == 'kaid':
+            self.transform_a = transforms.Compose([transforms.ToPILImage(), 
+                                                   transforms.Resize(size=self.t[0]['size'])])
+            self.transform_b = transforms.Compose([transforms.ToPILImage(), 
+                                                   transforms.Resize(size=self.t[1]['size'])])
         else:
             raise ValueError('Noise Type Setting Incorrect')
                                                    

@@ -6,7 +6,7 @@ from data_preprocess.common import *
 import torch
 
 __all__ = ['plot_sample', 'slices_reader', 'np_normalize', 'np_scaling_kspace', 'np_to_bchw',
-           'bchw_to_np']
+           'bchw_to_np', 'torch_normalize']
 
 def plot_sample(real_a, fake_a, real_b, fake_b, step, img_path, descript='Epoch'):
     plt.figure(figsize=(5, 4))
