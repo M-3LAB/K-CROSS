@@ -241,45 +241,63 @@ if __name__ == '__main__':
             t2_kspace = np_fft(t2_mri)
             pd_kspace = np_fft(pd_mri)
 
+            t2_high_freq = np_high_pass_filter(t2_kspace, radius=5)
+            pd_high_freq = np_high_pass_filter(pd_kspace, radius=5)
+
             pd_kspace_abs = np_scaling_kspace(pd_kspace)
             t2_kspace_abs = np_scaling_kspace(t2_kspace)
+
+            pd_high_freq_abs = np_scaling_kspace(pd_high_freq)
+            t2_high_freq_abs = np_scaling_kspace(t2_high_freq)
 
             pd_mri_norm = np_normalize(pd_mri)
 
             pd_mri_back = np_ifft(pd_kspace)
             t2_mri_back = np_ifft(t2_kspace)
     
-            plt.subplot(231)
+            plt.subplot(241)
             plt.imshow(pd_mri_norm, cmap='gray')
             plt.title('pd')
             plt.xticks([])
             plt.yticks([])
 
-            plt.subplot(232)
+            plt.subplot(242)
             plt.imshow(pd_kspace_abs, cmap='gray')
             plt.xticks([])
             plt.yticks([])
             plt.title('pd_kspace')
 
-            plt.subplot(233)
+            plt.subplot(243)
+            plt.imshow(pd_high_freq_abs, cmap='gray')
+            plt.xticks([])
+            plt.yticks([])
+            plt.title('pd_high_freq')
+
+            plt.subplot(244)
             plt.imshow(pd_mri_back, cmap='gray')
             plt.xticks([])
             plt.yticks([])
             plt.title('pd_mri_back')
 
-            plt.subplot(234)
+            plt.subplot(245)
             plt.imshow(t2_mri, cmap='gray')
             plt.title('t2')
             plt.xticks([])
             plt.yticks([])
 
-            plt.subplot(235)
+            plt.subplot(246)
             plt.imshow(t2_kspace_abs, cmap='gray')
             plt.xticks([])
             plt.yticks([])
             plt.title('t2_kspace')
 
-            plt.subplot(236)
+            plt.subplot(247)
+            plt.imshow(t2_high_freq_abs, cmap='gray')
+            plt.xticks([])
+            plt.yticks([])
+            plt.title('t2_high_freq')
+
+            plt.subplot(248)
             plt.imshow(t2_mri_back, cmap='gray')
             plt.xticks([])
             plt.yticks([])
@@ -368,7 +386,16 @@ if __name__ == '__main__':
                     #real_a = bchw_to_np(real_a)
                     #real_b = bchw_to_np(real_b)
 
-                    #real_a_kspace_abs = torch_scaling_kspace(real_a_kspace)
+                    real_a_kspace_abs = torch_scaling_kspace(real_a_kspace)
+                    real_b_kspace_abs = torch_scaling_kspace(real_b_kspace)
+
+                    real_a_hf = torch_high_pass_filter(real_a_kspace, msl=2)
+                    real_b_hf = torch_high_pass_filter(real_b_kspace, msl=2)
+
+                    real_a_hf_abs = torch_scaling_kspace(real_a_hf)
+                    real_b_hf_abs = torch_scaling_kspace(real_b_hf)
+                    
+
                     #real_a_kspace_abs = bchw_to_np(real_a_kspace_abs)
 
                     #plt.subplot(121)
@@ -388,6 +415,12 @@ if __name__ == '__main__':
 
                     save_image(image=real_a, name=f"{para_dict['source_domain']}.png", image_path='fft_vis', norm=True)
                     save_image(image=real_b, name=f"{para_dict['target_domain']}.png", image_path='fft_vis', norm=True)
+
+                    save_image(image=real_a_kspace_abs, name=f"{para_dict['source_domain']}_kspace.png", image_path='fft_vis', norm=True)
+                    save_image(image=real_b_kspace_abs, name=f"{para_dict['target_domain']}_kspace.png", image_path='fft_vis', norm=True)
+
+                    save_image(image=real_a_hf_abs, name=f"{para_dict['source_domain']}_high_freq.png", image_path='fft_vis', norm=True)
+                    save_image(image=real_b_hf_abs, name=f"{para_dict['target_domain']}_high_freq.png", image_path='fft_vis', norm=True)
 
 
     

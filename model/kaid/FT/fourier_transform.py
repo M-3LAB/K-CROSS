@@ -100,7 +100,7 @@ def torch_high_pass_filter(k_space, msl):
     _, _, height, width = k_space.size()
     ch = int(height / 2) # centre height
     cw = int(width / 2) # center width
-    high_freq_kspace = torch.randn(1, 1, height, width)
+    high_freq_kspace = torch.randn(k_space.size(0), 1, height, width)
     for i in range(k_space.size(0)):
         hf_2d_kspace = k_space[i, 0, :, :] 
         hf_2d_kspace[ch-msl:ch+msl,cw-msl:cw+msl] = 0
@@ -130,7 +130,7 @@ def torch_low_pass_filter(k_space, msl):
         
     return low_freq_kspace
 
-def np_high_pass_filter(kspace: np.ndarray, radius: float):
+def np_high_pass_filter(kspace, radius):
 
     """
     High pass filter removes the low spatial frequencies from k-space
@@ -144,12 +144,14 @@ def np_high_pass_filter(kspace: np.ndarray, radius: float):
     """
 
     if radius > 0:
-        r = np.hypot(*kspace.shape) / 2 * radius / 100
-        rows, cols = np.array(kspace.shape, dtype=int)
+        high_freq_kspace = kspace.copy()
+        r = np.hypot(*high_freq_kspace.shape) / 2 * radius / 100
+        rows, cols = np.array(high_freq_kspace.shape, dtype=int)
         a, b = np.floor(np.array((rows, cols)) / 2).astype(np.int)
         y, x = np.ogrid[-a:rows - a, -b:cols - b]
         mask = x * x + y * y <= r * r
-        kspace[mask] = 0
+        high_freq_kspace[mask] = 0
+    return high_freq_kspace 
 
 def np_low_pass_filter(kspace: np.ndarray, radius: float):
 
@@ -165,9 +167,11 @@ def np_low_pass_filter(kspace: np.ndarray, radius: float):
     """
 
     if radius < 100:
-        r = np.hypot(*kspace.shape) / 2 * radius / 100
-        rows, cols = np.array(kspace.shape, dtype=int)
+        low_freq_kspace = kspace.copy()
+        r = np.hypot(*low_freq_kspace.shape) / 2 * radius / 100
+        rows, cols = np.array(low_freq_kspace.shape, dtype=int)
         a, b = np.floor(np.array((rows, cols)) / 2).astype(np.int)
         y, x = np.ogrid[-a:rows - a, -b:cols - b]
         mask = x * x + y * y <= r * r
-        kspace[~mask] = 0
+        low_freq_kspace[~mask] = 0
+    return low_freq_kspace

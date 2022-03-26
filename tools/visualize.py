@@ -71,7 +71,7 @@ def torch_scaling_kspace(k_space):
     scaling = 0.01
     torch.log1p(scaling * k_space_abs, out=k_space_abs)
     torch_normalize(k_space_abs)
-    k_space_abs = k_space_abs.to(torch.uint8)
+    #k_space_abs = k_space_abs.to(torch.uint8)
     return k_space_abs
 
 def np_to_bchw(mri_img):
