@@ -275,8 +275,11 @@ if __name__ == '__main__':
                 # Fourier Transform 
                 real_a_kspace = torch_fft(real_a)
                 real_b_kspace = torch_fft(real_b)
-
-                test_output = ComplexConv2d(real_a_kspace)
+                print(f'real_a_ksapce.size: {real_a_kspace.size()}')
+                conv_op = ComplexConv2d(inc=1, ouc=16, ks=3)
+                test = conv_op(real_a_kspace)
+                print(f'test size: {test.size()}')
+                print(f'test: {test}')
 
                 real_a_high_freq = torch_high_pass_filter(k_space=real_a_kspace, radius=radius_a)
                 real_b_high_freq = torch_high_pass_filter(k_space=real_b_kspace, radius=radius_b)

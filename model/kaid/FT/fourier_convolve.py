@@ -4,7 +4,7 @@ import torch.nn as nn
 __all__ = ['ComplexConv2d', 'ComplexConvTranspose2d', 'ComplexBatchNorm2d']
 class ComplexConv2d(nn.Module):
     def __init__(self, inc, ouc, ks, stride=1, padding=0, dilation=1, groups=1, bias=True):
-        super(ComplexConv2d).__init__()
+        super(ComplexConv2d, self).__init__()
 
         # Real part convolution 
         self.conv_re = nn.Conv2d(inc, ouc, ks, stride=stride, padding=padding,
@@ -21,14 +21,14 @@ class ComplexConv2d(nn.Module):
 
 class ComplexConvTranspose2d(nn.Module):
     def __init__(self):
-        super(ComplexConvTranspose2d).__init__()
+        super(ComplexConvTranspose2d, self).__init__()
     
     def forward(self, x):
         pass
 
-class ComplexBatchNorm2d(nn,Moduele):
+class ComplexBatchNorm2d(nn.Module):
     def __init__(self):
-        super(ComplexBatchNorm2d).__init__()
+        super(ComplexBatchNorm2d, self).__init__()
     
     def forward(self, x):
         pass
