@@ -31,11 +31,11 @@ beta2: 0.999
 #schduler
 step_size: 30
 gamma: 0.1
-#msl
-msl_path: ./msl_stats
-msl_stats: False 
-msl_assigned: False
-msl_assigned_value: 10
+#radius
+radius_path: ./raidus_stats
+radius_stats: False 
+radius_assigned: False
+radius_assigned_value: 10
 delta_diff: 1000
 normalized_method: 'ortho'
 #loss

@@ -197,33 +197,33 @@ if __name__ == '__main__':
     tag: target domain
     msl: the half of mask side length
     """ 
-    msl_path = os.path.join(para_dict['msl_path'], para_dict['dataset']) 
-    create_folders(msl_path) 
+    radius_path = os.path.join(para_dict['radius_path'], para_dict['dataset']) 
+    create_folders(radius_path) 
 
-    if para_dict['msl_stats']:
-        assert para_dict['msl_assigned'] is False, 'msl_stats and msl_assigned are contradictory'
+    if para_dict['radius_stats']:
+        assert para_dict['radius_assigned'] is False, 'msl_stats and msl_assigned are contradictory'
         src_dict, tag_dict = mask_stats(normal_loader, para_dict['source_domain'], 
                                         para_dict['target_domain'])
 
         print(f"source_domain: {para_dict['source_domain']}, its_dict: {src_dict}")
         print(f"target_domain: {para_dict['target_domain']}, its_dict: {tag_dict}")
 
-        src_best_msl_list = best_msl_list(src_dict, para_dict['delta_diff'])
-        tag_best_msl_list = best_msl_list(tag_dict, para_dict['delta_diff'])
+        src_best_radius_list = best_radius_list(src_dict, para_dict['delta_diff'])
+        tag_best_radius_list = best_radius_list(tag_dict, para_dict['delta_diff'])
 
-        msl_a = src_best_msl_list[0]
-        msl_b = tag_best_msl_list[0]
-        np.savez_compressed(os.path.join(msl_path, para_dict['source_domain']), msl=msl_a)
-        np.savez_compressed(os.path.join(msl_path, para_dict['target_domain']), msl=msl_b)
-    elif para_dict['msl_assigned']:
-        assert para_dict['msl_stats'] is False, 'msl_stats and msl_assigned are contradictory'
-        msl_a = int(para_dict['msl_assigned_value'])
-        msl_b = int(para_dict['msl_assigned_value'])
+        radius_a = src_best_radius_list[0]
+        radius_b = tag_best_radius_list[0]
+        np.savez_compressed(os.path.join(radius_path, para_dict['source_domain']), radius=radius_a)
+        np.savez_compressed(os.path.join(radius_path, para_dict['target_domain']), radius=radius_b)
+    elif para_dict['radius_assigned']:
+        assert para_dict['radius_stats'] is False, 'radius_stats and radius_assigned are contradictory'
+        radius_a = int(para_dict['radius_assigned_value'])
+        radius_b = int(para_dict['radius_assigned_value'])
     else:
-        msl_a = np.load(os.path.join(msl_path, para_dict['source_domain'])+'.npz')['msl']
-        msl_b = np.load(os.path.join(msl_path, para_dict['target_domain'])+'.npz')['msl']
-        print(f"{para_dict['source_domain']} msl: {msl_a}")
-        print(f"{para_dict['target_domain']} msl: {msl_b}")
+        radius_a = np.load(os.path.join(radius_path, para_dict['source_domain'])+'.npz')['msl']
+        radius_b = np.load(os.path.join(radius_path, para_dict['target_domain'])+'.npz')['msl']
+        print(f"{para_dict['source_domain']} radius: {radius_a}")
+        print(f"{para_dict['target_domain']} radius: {radius_b}")
     
     kaid_model_path = os.path.join('kaidae', para_dict['dataset'])
     create_folders(kaid_model_path)

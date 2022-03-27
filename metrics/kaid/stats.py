@@ -103,7 +103,7 @@ def mask_stats(data_loader, source_domain, target_domain, src_msl=None, tag_msl=
 
     return a_delta_dic, b_delta_dic
 
-def best_msl_list(delta_dic, delta_diff=None):
+def best_radius_list(delta_dic, delta_diff=None):
 
     #print(f'delta_diff: {delta_diff}')
 
