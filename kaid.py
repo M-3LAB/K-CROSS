@@ -276,6 +276,8 @@ if __name__ == '__main__':
                 real_a_kspace = torch_fft(real_a)
                 real_b_kspace = torch_fft(real_b)
 
+                test_output = ComplexConv2d(real_a_kspace)
+
                 real_a_high_freq = torch_high_pass_filter(k_space=real_a_kspace, radius=radius_a)
                 real_b_high_freq = torch_high_pass_filter(k_space=real_b_kspace, radius=radius_b)
 
