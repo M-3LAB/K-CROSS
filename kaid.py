@@ -108,16 +108,26 @@ if __name__ == '__main__':
                                 data_num=para_dict['data_num'],
                                 dataset_splited=False)
         
-        ixi_test_dataset = IXI(root=para_dict['data_path'],
-                                 modalities=[para_dict['source_domain'], para_dict['target_domain']],
-                                 extract_slice=[para_dict['es_lower_limit'], para_dict['es_higher_limit']],
-                                 noise_type='kaid',
-                                 learn_mode='train', #train or test is meaningless if dataset_splited is false
-                                 transform_data=kaid_transform,
-                                 data_mode='paired',
-                                 data_num=para_dict['data_num'],
-                                 dataset_splited=False,
-                                 assigned_images=para_dict['assigned_images'])
+        ixi_kaid_dataset = IXI(root=para_dict['data_path'],
+                               modalities=[para_dict['source_domain'], para_dict['target_domain']],
+                               extract_slice=[para_dict['es_lower_limit'], para_dict['es_higher_limit']],
+                               noise_type='kaid',
+                               learn_mode='train', #train or test is meaningless if dataset_splited is false
+                               transform_data=kaid_transform,
+                               data_mode='paired',
+                               data_num=para_dict['data_num'],
+                               dataset_splited=False)
+        
+        #ixi_test_dataset = IXI(root=para_dict['data_path'],
+        #                         modalities=[para_dict['source_domain'], para_dict['target_domain']],
+        #                         extract_slice=[para_dict['es_lower_limit'], para_dict['es_higher_limit']],
+        #                         noise_type='kaid',
+        #                         learn_mode='train', #train or test is meaningless if dataset_splited is false
+        #                         transform_data=kaid_transform,
+        #                         data_mode='paired',
+        #                         data_num=para_dict['data_num'],
+        #                         dataset_splited=False,
+        #                         assigned_images=para_dict['assigned_images'])
 
         #TODO: make sure normal and nosiy loader release the same order of dataset
         normal_loader = DataLoader(ixi_normal_dataset, num_workers=para_dict['num_workers'],
@@ -126,8 +136,11 @@ if __name__ == '__main__':
         noisy_loader = DataLoader(ixi_noise_dataset, num_workers=para_dict['num_workers'],
                                   batch_size=para_dict['batch_size'], shuffle=False)
 
-        test_loader = DataLoader(ixi_test_dataset, num_workers=para_dict['num_workers'],
-                                 batch_size=2, shuffle=False)
+        kaid_loader = DataLoader(ixi_kaid_dataset, num_workers=para_dict['num_workers'],
+                                 batch_size=para_dict['batch_size'], shuffle=False)
+
+        #test_loader = DataLoader(ixi_test_dataset, num_workers=para_dict['num_workers'],
+        #                         batch_size=2, shuffle=False)
 
         
     elif para_dict['dataset'] == 'brats2021':
@@ -156,6 +169,15 @@ if __name__ == '__main__':
                                         data_mode='paired',
                                         data_num=para_dict['data_num'])
         
+        brats_kaid_dataset = BraTS2021(root=para_dict['data_path'],
+                                         modalities=[para_dict['source_domain'], para_dict['target_domain']],
+                                         extract_slice=[para_dict['es_lower_limit'], para_dict['es_higher_limit']],
+                                         noise_type='normal',
+                                         learn_mode='train', # train or test is meaningless if dataset_spilited is false
+                                         transform_data=normal_transform,
+                                         data_mode='paired',
+                                         data_num=para_dict['data_num'])
+        
         #TODO: make sure normal and nosiy loader release the same order of dataset
         normal_loader = DataLoader(brats_normal_dataset, num_workers=para_dict['num_workers'],
                                    batch_size=para_dict['batch_size'], shuffle=False)
@@ -163,8 +185,8 @@ if __name__ == '__main__':
         noisy_loader = DataLoader(brats_noise_dataset, num_workers=para_dict['num_workers'],
                                   batch_size=para_dict['batch_size'], shuffle=False)
         
-        test_loader = DataLoader(brats_normal_dataset, num_workers=para_dict['num_workers'],
-                                 batch_size=1, shuffle=False)
+        #test_loader = DataLoader(brats_normal_dataset, num_workers=para_dict['num_workers'],
+        #                         batch_size=1, shuffle=False)
     else:
         raise NotImplementedError("New Data Has Not Been Implemented")
 
@@ -238,6 +260,23 @@ if __name__ == '__main__':
             else:
                 load_model(model=kaid_ae, file_path=kaid_model_path, description='{}_{}_{}'.format(
                     para_dict['source_domain'], para_dict['target_domain'], str(para_dict['assigned-epoch'])))
+
+        for epoch in range(para_dict['num_epochs']):
+            for i, batch in enumerate(normal_loader): 
+                if i > batch_limit:
+                    break
+                
+                optimizer.zero_grad()
+                real_a = batch[para_dict['source_domain']]
+                real_b = batch[para_dict['target_domain']]
+
+                # Fourier Transform 
+                real_a_kspace = torch_fft(real_a)
+                real_b_kspace = torch_fft(real_b)
+
+                real_a_high_freq = torch_high_pass_filter(k_space=real_a_kspace, radius=radius_a)
+                real_b_high_freq = torch_high_pass_filter(k_space=real_b_kspace, radius=radius_b)
+                
 
 
     
