@@ -5,7 +5,7 @@ from model.kaid.FT.fourier_transform import *
 from tools.utilize import *
 
 __all__ = ['mask_stats', 'frequency_diff', 'mask_frequency_diff', 'delta_diff',
-           'best_msl_list']
+           'best_radius_list']
 
 def frequency_diff(hf_kspace, lf_kspace):
     """
