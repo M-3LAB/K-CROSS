@@ -15,3 +15,10 @@ class ComplexConvTranspose2d(nn.Module):
     
     def forward(self, x):
         pass
+
+class ComplexBatchNorm2d(nn,Moduele):
+    def __init__(self):
+        super(ComplexBatchNorm2d).__init__()
+    
+    def forward(self, x):
+        pass
