@@ -276,6 +276,21 @@ if __name__ == '__main__':
 
                 real_a_high_freq = torch_high_pass_filter(k_space=real_a_kspace, radius=radius_a)
                 real_b_high_freq = torch_high_pass_filter(k_space=real_b_kspace, radius=radius_b)
+
+                real_a_kspace_abs = torch_scaling_kspace(real_a_kspace)
+                real_b_kspace_abs = torch_scaling_kspace(real_b_kspace)
+                real_a_high_freq_abs = torch_scaling_kspace(real_a_high_freq)
+                real_b_high_freq_abs = torch_scaling_kspace(real_b_high_freq)
+
+                save_image(image=real_a, name=f"{para_dict['source_domain']}.png", image_path='fft_vis', norm=True)
+                save_image(image=real_b, name=f"{para_dict['target_domain']}.png", image_path='fft_vis', norm=True)
+
+                save_image(image=real_a_kspace_abs, name=f"{para_dict['source_domain']}_kspace.png", image_path='fft_vis', norm=True)
+                save_image(image=real_b_kspace_abs, name=f"{para_dict['target_domain']}_kspace.png", image_path='fft_vis', norm=True)
+
+                save_image(image=real_a_high_freq_abs, name=f"{para_dict['source_domain']}_high_freq.png", image_path='fft_vis', norm=True)
+                save_image(image=real_b_high_freq_abs, name=f"{para_dict['target_domain']}_high_freq.png", image_path='fft_vis', norm=True)
+
                 
 
 
