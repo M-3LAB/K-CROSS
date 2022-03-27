@@ -23,6 +23,7 @@ from metrics.kaid.stats import mask_stats, best_radius_list
 from model.kaid.ae.kaid_ae import KAIDAE
 
 from tools.visualize import *
+import matplotlib.pyplot as plt
 
 if __name__ == '__main__':
     args = parse_arguments_kaid()
@@ -262,7 +263,7 @@ if __name__ == '__main__':
                     para_dict['source_domain'], para_dict['target_domain'], str(para_dict['assigned-epoch'])))
 
         for epoch in range(para_dict['num_epochs']):
-            for i, batch in enumerate(normal_loader): 
+            for i, batch in enumerate(kaid_loader): 
                 if i > batch_limit:
                     break
                 
@@ -282,14 +283,6 @@ if __name__ == '__main__':
                 real_a_high_freq_abs = torch_scaling_kspace(real_a_high_freq)
                 real_b_high_freq_abs = torch_scaling_kspace(real_b_high_freq)
 
-                save_image(image=real_a, name=f"{para_dict['source_domain']}.png", image_path='fft_vis', norm=True)
-                save_image(image=real_b, name=f"{para_dict['target_domain']}.png", image_path='fft_vis', norm=True)
-
-                save_image(image=real_a_kspace_abs, name=f"{para_dict['source_domain']}_kspace.png", image_path='fft_vis', norm=True)
-                save_image(image=real_b_kspace_abs, name=f"{para_dict['target_domain']}_kspace.png", image_path='fft_vis', norm=True)
-
-                save_image(image=real_a_high_freq_abs, name=f"{para_dict['source_domain']}_high_freq.png", image_path='fft_vis', norm=True)
-                save_image(image=real_b_high_freq_abs, name=f"{para_dict['target_domain']}_high_freq.png", image_path='fft_vis', norm=True)
 
                 
 
