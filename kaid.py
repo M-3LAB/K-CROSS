@@ -17,11 +17,11 @@ from model.unit.unit import Generator as UG
 
 from configuration.kaid.config import parse_arguments_kaid
 from loss_function.kaid.distance import l1_diff, l2_diff, cosine_similiarity
-from model.kaid.FT.fourier_transform import * 
-from model.kaid.FT.power_spectrum import *
+from model.kaid.complex_nn.fourier_transform import * 
+from model.kaid.complex_nn.power_spectrum import *
 from metrics.kaid.stats import mask_stats, best_radius_list 
 from model.kaid.ae.kaid_ae import KAIDAE
-from model.kaid.FT.fourier_convolve import * 
+from model.kaid.complex_nn.fourier_convolve import * 
 
 from tools.visualize import *
 import matplotlib.pyplot as plt
