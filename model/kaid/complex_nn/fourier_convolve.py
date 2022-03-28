@@ -1,7 +1,7 @@
 import torch
 import torch.nn as nn
 
-__all__ = ['ComplexConv2d', 'ComplexConvTranspose2d', 'ComplexBatchNorm2d']
+__all__ = ['ComplexConv2d', 'ComplexConvTranspose2d']
 class ComplexConv2d(nn.Module):
     def __init__(self, inc, ouc, ks, stride=1, padding=0, dilation=1, groups=1, bias=True):
         super(ComplexConv2d, self).__init__()
