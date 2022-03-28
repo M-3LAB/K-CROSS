@@ -1,7 +1,7 @@
 import torch
 import torch.nn as nn
 
-__all__ = ['NaiveComplexBatchNorm2d', 'ComplexRELU']
+__all__ = ['NaiveComplexBatchNorm2d', 'ComplexRELU', 'ComplexLeakyRELU']
 class NaiveComplexBatchNorm2d(nn.Module):
     def __init__(self, num_features, eps=1e-5, momentum=0.1, affine=True,
                  track_running_stats=True):
@@ -21,6 +21,18 @@ class ComplexRELU(nn.Module):
         super(ComplexRELU, self).__init__()
 
         self.act = nn.ReLU()
+    
+    def forward(self, x):
+        output_real = self.act(x.real)
+        output_imginary = self.act(x.imag)
+        output = torch.complex(output_real, output_imginary)
+        return output
+
+class ComplexLeakyRELU(nn.Module):
+    def __init__(self, slope=0.01):
+        super(ComplexLeakyRELU, self).__init__()
+
+        self.act = nn.LeakyReLU(slope)
     
     def forward(self, x):
         output_real = self.act(x.real)
