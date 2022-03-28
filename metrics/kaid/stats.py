@@ -1,7 +1,7 @@
 import numpy as np
 import torch
-from model.kaid.FT.power_spectrum import *
-from model.kaid.FT.fourier_transform import *
+from model.kaid.complex_nn.power_spectrum import *
+from model.kaid.complex_nn.fourier_transform import *
 from tools.utilize import *
 
 __all__ = ['mask_stats', 'frequency_diff', 'mask_frequency_diff', 'delta_diff',
