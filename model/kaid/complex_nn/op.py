@@ -12,6 +12,11 @@ class ComplexBatchNorm2d(nn.Module):
 class ComplexRELU(nn.Module):
     def __init__(self):
         super(ComplexRELU).__init__()
+
+        self.act = nn.ReLU()
     
     def forward(self, x):
-        pass
+        output_real = self.act(x.real)
+        output_imginary = self.act(x.imag)
+        output = torch.complex(output_real, output_imginary)
+        return output
