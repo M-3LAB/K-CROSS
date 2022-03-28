@@ -1,5 +1,7 @@
 import torch
 import torch.nn as nn
+from model.kaid.complex_nn.fourier_convolve import *
+from model.kaid.complex_nn.op import *
 
 __all__ = ['ComplexDecoder', 'ComplexUnetUp']
 class ComplexUnetUp(nn.Module):
@@ -10,6 +12,12 @@ class ComplexUnetUp(nn.Module):
         self.ks = ks
         self.stride = stride
         self.padding = padding
+
+        self.model = nn.Sequential(
+            ComplexConvTranspose2d(),
+            NaiveComplexBatchNorm2d(),
+            ComplexRELU()
+        )
 
     def forward(self, x):
         pass
