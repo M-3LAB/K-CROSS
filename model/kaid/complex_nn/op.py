@@ -17,10 +17,11 @@ class NaiveComplexBatchNorm2d(nn.Module):
         return output
 
 class ComplexRELU(nn.Module):
-    def __init__(self):
+    def __init__(self, inplace=False):
         super(ComplexRELU, self).__init__()
 
-        self.act = nn.ReLU()
+        self.inplace = inplace
+        self.act = nn.ReLU(inplace=self.inplace)
     
     def forward(self, x):
         output_real = self.act(x.real)
