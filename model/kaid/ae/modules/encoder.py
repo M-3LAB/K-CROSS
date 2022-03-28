@@ -25,9 +25,9 @@ class ComplexUnetDown(nn.Module):
     def forward(self, x):
         output = self.model(x)
         return output
-class ComplexEncoder(nn.Module):
+class ComplexUnetEncoder(nn.Module):
     def __init__(self, ouc_list=[64, 128, 256, 512, 512]):
-        super(ComplexEncoder).__init__()
+        super(ComplexUnetEncoder, self).__init__()
         self.ouc_list = ouc_list
         self.down1 = ComplexUnetDown(1, 64)
         self.down2 = ComplexUnetDown(64, 128)

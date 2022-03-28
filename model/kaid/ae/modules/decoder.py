@@ -28,7 +28,7 @@ class ComplexUnetUp(nn.Module):
         return x
 class ComplexDecoder(nn.Module):
     def __init__(self, ouc_list=[512, 256, 128, 64]):
-        super(ComplexDecoder).__init__()
+        super(ComplexDecoder, self).__init__()
         self.ouc_list = ouc_list
     
     def forward(self, x):
