@@ -14,8 +14,8 @@ class ComplexConv2d(nn.Module):
                                  dilation=dilation, groups=groups, bias=bias)
     
     def forward(self, x):
-        out_real = self.conv_re(x.real)
-        out_imginary = self.conv_im(x.imag)
+        out_real = self.conv_re(x.real) - self.conv_im(x.imag)
+        out_imginary = self.conv_im(x.imag) + self.conv_im(x.imag)
         output = torch.complex(out_real, out_imginary)
         return output
 
