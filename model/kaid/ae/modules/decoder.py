@@ -21,8 +21,11 @@ class ComplexUnetUp(nn.Module):
             ComplexRELU(inplace=self.inplace)
         )
 
-    def forward(self, x):
-        pass
+    def forward(self, x, skip_input=None):
+        if skip_input is not None:
+            x = torch.cat((x, skip_input), 1)
+        x = self.model(x)
+        return x
 class ComplexDecoder(nn.Module):
     def __init__(self):
         super(ComplexDecoder).__init__()
