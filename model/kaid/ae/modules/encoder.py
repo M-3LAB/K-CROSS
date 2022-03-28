@@ -1,11 +1,11 @@
 import torch
 import torch.nn as nn
 
-__all__ = ['ComplexEncoder']
+__all__ = ['ComplexEncoder', 'ComplexUnetDown']
 
-class ComplexUnetUp(nn.Module):
+class ComplexUnetDown(nn.Module):
     def __init__(self):
-        super(ComplexUnetUp, self).__init__()
+        super(ComplexUnetDown, self).__init__()
 
     def forward(self, x):
         pass
