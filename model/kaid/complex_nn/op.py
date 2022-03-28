@@ -31,7 +31,11 @@ class ComplexRELU(nn.Module):
 class ComplexTanh(nn.Module):
     def __init__(self):
         super(ComplexTanh, self).__init__()
+        self.act = nn.Tanh()
     
     def forward(self, x):
-        pass
+        output_real = self.act(x.real)
+        output_imginary = self.act(x.imag)
+        output = torch.complex(output_real, output_imginary)
+        return output
     
