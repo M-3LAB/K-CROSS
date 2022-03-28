@@ -12,11 +12,13 @@ class ComplexUnetUp(nn.Module):
         self.ks = ks
         self.stride = stride
         self.padding = padding
+        self.inplace = inplace
 
         self.model = nn.Sequential(
-            ComplexConvTranspose2d(),
-            NaiveComplexBatchNorm2d(),
-            ComplexRELU()
+            ComplexConvTranspose2d(inc=self.inc, ouc=self.ouc, ks=self.ks,
+                                   stride=self.stride, padding=self.padding),
+            NaiveComplexBatchNorm2d(ouc=self.ouc),
+            ComplexRELU(inplace=self.inplace)
         )
 
     def forward(self, x):
