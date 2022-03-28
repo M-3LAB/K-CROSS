@@ -33,8 +33,6 @@ class ComplexConvTranspose2d(nn.Module):
         self.conv_im = nn.ConvTranspose2d(inc, ouc, ks, stride=stride, padding=padding, 
                                           output_padding=output_padding, groups=groups, bias=bias,
                                           dilation=dilation, padding_modes=padding_modes)
-
-        
     
     def forward(self, x):
         out_real = self.conv_re(x.real) - self.conv_im(x.imag)
