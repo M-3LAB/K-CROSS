@@ -55,10 +55,10 @@ class ComplexDecoder(nn.Module):
         super(ComplexDecoder, self).__init__()
 
         self.ouc_list = ouc_list
-        self.up1 = ComplexUnetUp(self.ouc_list[0], self.ouc_list[0]) 
-        self.up2 = ComplexUnetUp(self.ouc_list[0]*2, self.ouc_list[1]) 
-        self.up3 = ComplexUnetUp(self.ouc_list[1]*2, self.ouc_list[2])
-        self.up4 = ComplexUnetUp(self.out_list[2]*2, self.out_list[3])
+        self.up1 = ComplexUnetUp(inc=self.ouc_list[0], ouc=self.ouc_list[0]) 
+        self.up2 = ComplexUnetUp(inc=self.ouc_list[0]*2, ouc=self.ouc_list[1]) 
+        self.up3 = ComplexUnetUp(inc=self.ouc_list[1]*2, ouc=self.ouc_list[2])
+        self.up4 = ComplexUnetUp(inc=self.out_list[2]*2, ouc=self.out_list[3])
 
         self.final = ComplexFinalLayer(inc=self.ouc_list[3]*2, ouc=1)
     
