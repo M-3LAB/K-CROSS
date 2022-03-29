@@ -1,3 +1,4 @@
+from model.kaid.complex_nn.op import ComplexTanh
 import torch
 import torch.nn as nn
 from model.kaid.complex_nn.fourier_convolve import *
@@ -6,14 +7,26 @@ from model.kaid.complex_nn.op import *
 __all__ = ['ComplexDecoder', 'ComplexUnetUp', 'ComplexFinalLayer']
 
 class ComplexFinalLayer(nn.Module):
-    def __init__(self, inc, ouc):
+    def __init__(self, inc, ouc, ks=3, scale_factor=2, padding=1):
         super(ComplexFinalLayer, self).__init__()
+
         self.inc = inc
         self.ouc = ouc
+        self.scale_factor = scale_factor
+        self.ks = ks
+        self.padding = padding
+
+        self.model = nn.Sequential(
+            ComplexUpsample(scale_factor=self.scale_factor),
+            ComplexConv2d(inc=self.inc, ouc=self.ouc, ks=self.ks, padding=self.padding),
+            ComplexTanh()
+        )
     
-    
-    def forward(self, x):
-        pass
+    def forward(self, x, skip_input=None):
+        if skip_input is not None:
+            x = torch.cat((x, skip_input), 1)
+        x = self.model(x)
+        return x 
 
 class ComplexUnetUp(nn.Module):
     def __init__(self, inc, ouc, ks, stride=2, padding=1, inplace=True):
@@ -47,7 +60,7 @@ class ComplexDecoder(nn.Module):
         self.up3 = ComplexUnetUp(self.ouc_list[1]*2, self.ouc_list[2])
         self.up4 = ComplexUnetUp(self.out_list[2]*2, self.out_list[3])
 
-        self.final = ComplexFinalLayer(self.ouc_list[3]*2, 1)
+        self.final = ComplexFinalLayer(inc=self.ouc_list[3]*2, ouc=1)
     
     def forward(self, z):
         self.u1 = self.up1(z)
