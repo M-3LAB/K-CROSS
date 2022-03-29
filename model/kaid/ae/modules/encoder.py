@@ -29,11 +29,11 @@ class ComplexEncoder(nn.Module):
     def __init__(self, ouc_list=[64, 128, 256, 512, 512]):
         super(ComplexEncoder, self).__init__()
         self.ouc_list = ouc_list
-        self.down1 = ComplexUnetDown(1, 64)
-        self.down2 = ComplexUnetDown(64, 128)
-        self.down3 = ComplexUnetDown(128, 256)
-        self.down4 = ComplexUnetDown(256, 512)
-        self.down5 = ComplexUnetDown(512, 512)
+        self.down1 = ComplexUnetDown(1, self.ouc_list[0])
+        self.down2 = ComplexUnetDown(self.ouc_list[0], self.ouc_list[1])
+        self.down3 = ComplexUnetDown(self.ouc_list[1], self.ouc_list[2])
+        self.down4 = ComplexUnetDown(self.ouc_list[2], self.ouc_list[3])
+        self.down5 = ComplexUnetDown(self.ouc_list[3], self.ouc_list[4])
 
     def forward(self, x):
         self.d1 = self.down1(x)
