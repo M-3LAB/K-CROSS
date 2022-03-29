@@ -36,5 +36,10 @@ class ComplexDecoder(nn.Module):
         self.up3 = ComplexUnetUp(self.ouc_list[1]*2, self.ouc_list[2])
         self.up4 = ComplexUnetUp(self.out_list[2]*2, self.out_list[3])
     
-    def forward(self, x):
-        pass
+    def forward(self, z):
+        self.u1 = self.up1(z)
+        self.u2 = self.up2(self.u1, self.d4)
+        self.u3 = self.up3(self.u2, self.d3)
+        self.u4 = self.up4(self.u3, self.d2)
+        x_hat = self.final(self.u4, self.d1)
+        return x_hat
