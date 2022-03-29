@@ -15,8 +15,15 @@ class FocalFreqLoss(nn.Module):
         self.avg_spectrum = avg_spectrum
         self.batch_matrix = batch_matrix
 
-    def loss_formulation(self):
-        pass 
+    def loss_formulation(self, real_freq, recon_freq, 
+                         assigned_weight_matrix=None):
+
+        if assigned_weight_matrix is not None:
+            weight_matrix = assigned_weight_matrix.detach() 
+        else:
+            matrix_tmp = (recon_freq - real_freq) ** 2
+            matrix_tmp = torch.sqrt(matrix_tmp) * self.alpha
+
 
     def forward(self, x):
         pass
