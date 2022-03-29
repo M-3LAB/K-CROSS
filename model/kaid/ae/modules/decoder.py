@@ -3,7 +3,17 @@ import torch.nn as nn
 from model.kaid.complex_nn.fourier_convolve import *
 from model.kaid.complex_nn.op import *
 
-__all__ = ['ComplexDecoder', 'ComplexUnetUp']
+__all__ = ['ComplexDecoder', 'ComplexUnetUp', 'ComplexFinalLayer']
+
+class ComplexFinalLayer(nn.Module):
+    def __init__(self, inc, ouc):
+        super(ComplexFinalLayer, self).__init__()
+        self.inc = inc
+        self.ouc = ouc
+    
+    
+    def forward(self, x):
+        pass
 
 class ComplexUnetUp(nn.Module):
     def __init__(self, inc, ouc, ks, stride=2, padding=1, inplace=True):
@@ -36,6 +46,8 @@ class ComplexDecoder(nn.Module):
         self.up2 = ComplexUnetUp(self.ouc_list[0]*2, self.ouc_list[1]) 
         self.up3 = ComplexUnetUp(self.ouc_list[1]*2, self.ouc_list[2])
         self.up4 = ComplexUnetUp(self.out_list[2]*2, self.out_list[3])
+
+        self.final = ComplexFinalLayer(self.ouc_list[3]*2, 1)
     
     def forward(self, z):
         self.u1 = self.up1(z)
