@@ -22,7 +22,7 @@ class FocalFreqLoss(nn.Module):
             weight_matrix = assigned_weight_matrix.detach() 
         else:
             matrix_tmp = (recon_freq - real_freq) ** 2
-            matrix_tmp = torch.sqrt(matrix_tmp) * self.alpha
+            matrix_tmp = torch.sqrt(matrix_tmp.real + matrix_tmp.imag) * self.alpha
 
 
     def forward(self, x):
