@@ -37,6 +37,14 @@ class FocalFreqLoss(nn.Module):
                 #TODO: Check How to do
                 pass
             
+            matrix_tmp[torch.isnan(matrix_tmp)] = 0
+            matrix_tmp = torch.clamp(matrix_tmp, min=0.0, max=1.0)
+            weight_matrix = matrix_tmp.clone().detach()
+        
+        assert weight_matrix.min().item() >= 0 and weight_matrix.max().item() <= 1, (
+            'The values of spectrum weight matrix should be in the range [0, 1], '
+            'but got Min: %.10f Max: %.10f' % (weight_matrix.min().item(), weight_matrix.max().item()))
+            
             
 
 
