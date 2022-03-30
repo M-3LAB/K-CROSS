@@ -24,6 +24,9 @@ class FocalFreqLoss(nn.Module):
             matrix_tmp = (recon_freq - real_freq) ** 2
             matrix_tmp = torch.sqrt(matrix_tmp.real + matrix_tmp.imag) * self.alpha
 
+            if self.log_matrix:
+                matrix_tmp = torch.log(matrix_tmp + 1.0)
+
 
     def forward(self, x):
         pass
