@@ -44,9 +44,14 @@ class FocalFreqLoss(nn.Module):
         assert weight_matrix.min().item() >= 0 and weight_matrix.max().item() <= 1, (
             'The values of spectrum weight matrix should be in the range [0, 1], '
             'but got Min: %.10f Max: %.10f' % (weight_matrix.min().item(), weight_matrix.max().item()))
-            
-            
 
+        # frequency distance using (squared) Euclidean distance
+        tmp = (recon_freq - real_freq) ** 2
+        freq_distance = tmp.real + tmp.imag
+
+        # dynamic spectrum weighting (Hadamard product)
+        loss = weight_matrix * freq_distance
+        return torch.mean(loss)
 
     def forward(self, x):
         pass
