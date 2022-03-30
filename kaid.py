@@ -217,9 +217,9 @@ if __name__ == '__main__':
             real_a_freq = torch_fft(real_a)
             #real_b_freq = torch_fft(real_b)
 
-            real_a_hat, real_a_z = kaid_ae(real_a_freq)
-            print(f'real_a_hat.size(): {real_a_hat.size()}')
-            print(f'real_a_z.size(): {real_a_z.size()}')
+            real_a_freq_hat, real_a_freq_z = kaid_ae(real_a_freq)
+            print(f'real_a_freq_hat.size(): {real_a_freq_hat.size()}')
+            print(f'real_a_freq_z.size(): {real_a_freq_z.size()}')
 
 
                 
