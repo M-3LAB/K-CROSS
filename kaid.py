@@ -23,6 +23,7 @@ from metrics.kaid.stats import mask_stats, best_radius_list
 #from model.kaid.ae.kaid_ae import KAIDAE
 from model.kaid.ae.complex_ae import ComplexUnet
 from model.kaid.complex_nn.fourier_convolve import * 
+from loss_function.kaid.focal_freq import FocalFreqLoss
 
 from tools.visualize import *
 #import matplotlib.pyplot as plt
@@ -161,9 +162,9 @@ if __name__ == '__main__':
         brats_kaid_dataset = BraTS2021(root=para_dict['data_path'],
                                          modalities=[para_dict['source_domain'], para_dict['target_domain']],
                                          extract_slice=[para_dict['es_lower_limit'], para_dict['es_higher_limit']],
-                                         noise_type='normal',
+                                         noise_type='kaid',
                                          learn_mode='train', # train or test is meaningless if dataset_spilited is false
-                                         transform_data=normal_transform,
+                                         transform_data=kaid_transform,
                                          data_mode='paired',
                                          data_num=para_dict['data_num'])
         
@@ -189,6 +190,7 @@ if __name__ == '__main__':
     kaid_ae = ComplexUnet().to(device)
     # Loss
     #TODO: Add Focal Freq Loss
+    criterion_freq = FocalFreqLoss().to(device) 
 
     # Optimizer
     optimizer = torch.optim.Adam(kaid_ae.parameters(), lr=para_dict['lr'],
