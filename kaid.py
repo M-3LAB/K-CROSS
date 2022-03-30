@@ -188,9 +188,7 @@ if __name__ == '__main__':
     # Model
     kaid_ae = ComplexUnet().to(device)
     # Loss
-    criterion_recon = torch.nn.L1Loss().to(device)
-    criterion_high_freq = torch.nn.MSELoss(reduction='mean').to(device)
-    criterion_low_freq = torch.nn.MSELoss(reduction='mean').to(device)
+    #TODO: Add Focal Freq Loss
 
     # Optimizer
     optimizer = torch.optim.Adam(kaid_ae.parameters(), lr=para_dict['lr'],
