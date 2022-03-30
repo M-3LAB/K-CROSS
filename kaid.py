@@ -208,17 +208,23 @@ if __name__ == '__main__':
                 break
             
             optimizer.zero_grad()
-            real_a = batch[para_dict['source_domain']]
-            real_b = batch[para_dict['target_domain']]
+            real_a = batch[para_dict['source_domain']].to(device)
+            #real_b = batch[para_dict['target_domain']].to(device)
 
             # Fourier Transform 
             real_a_freq = torch_fft(real_a)
-            real_b_freq = torch_fft(real_b)
-            print(f'real_a_freq.size: {real_a_freq.size()}')
-            conv_op = ComplexConv2d(inc=1, ouc=16, ks=3)
-            test = conv_op(real_a_freq)
-            print(f'test size: {test.size()}')
-            print(f'test: {test}')
+            #real_b_freq = torch_fft(real_b)
+
+            real_a_hat, real_a_z = kaid_ae(real_a_freq)
+            print(f'real_a_hat.size(): {real_a_hat.size()}')
+            print(f'real_a_z.size(): {real_a_z.size()}')
+
+
+            #print(f'real_a_freq.size: {real_a_freq.size()}')
+            #conv_op = ComplexConv2d(inc=1, ouc=16, ks=3)
+            #test = conv_op(real_a_freq)
+            #print(f'test size: {test.size()}')
+            #print(f'test: {test}')
 
 
 
