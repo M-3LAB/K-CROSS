@@ -20,11 +20,12 @@ from loss_function.kaid.distance import l1_diff, l2_diff, cosine_similiarity
 from model.kaid.complex_nn.fourier_transform import * 
 from model.kaid.complex_nn.power_spectrum import *
 from metrics.kaid.stats import mask_stats, best_radius_list 
-from model.kaid.ae.kaid_ae import KAIDAE
+#from model.kaid.ae.kaid_ae import KAIDAE
+from model.kaid.ae.complex_ae import ComplexUnet
 from model.kaid.complex_nn.fourier_convolve import * 
 
 from tools.visualize import *
-import matplotlib.pyplot as plt
+#import matplotlib.pyplot as plt
 
 if __name__ == '__main__':
     args = parse_arguments_kaid()
@@ -185,7 +186,7 @@ if __name__ == '__main__':
         batch_limit = int(para_dict['data_num'] / para_dict['batch_size'])
 
     # Model
-    kaid_ae = KAIDAE().to(device)
+    kaid_ae = ComplexUnet().to(device)
     # Loss
     criterion_recon = torch.nn.L1Loss().to(device)
     criterion_high_freq = torch.nn.MSELoss(reduction='mean').to(device)
@@ -200,72 +201,26 @@ if __name__ == '__main__':
                                                    gamma=para_dict['gamma']) 
     
     # Mask Statistics  
-    """
-    src: source domain
-    tag: target domain
-    msl: the half of mask side length
-    """ 
-    radius_path = os.path.join(para_dict['radius_path'], para_dict['dataset']) 
-    create_folders(radius_path) 
-
-    if para_dict['radius_stats']:
-        assert para_dict['radius_assigned'] is False, 'msl_stats and msl_assigned are contradictory'
-        src_dict, tag_dict = mask_stats(normal_loader, para_dict['source_domain'], 
-                                        para_dict['target_domain'])
-
-        print(f"source_domain: {para_dict['source_domain']}, its_dict: {src_dict}")
-        print(f"target_domain: {para_dict['target_domain']}, its_dict: {tag_dict}")
-
-        src_best_radius_list = best_radius_list(src_dict, para_dict['delta_diff'])
-        tag_best_radius_list = best_radius_list(tag_dict, para_dict['delta_diff'])
-
-        radius_a = src_best_radius_list[0]
-        radius_b = tag_best_radius_list[0]
-        np.savez_compressed(os.path.join(radius_path, para_dict['source_domain']), radius=radius_a)
-        np.savez_compressed(os.path.join(radius_path, para_dict['target_domain']), radius=radius_b)
-    elif para_dict['radius_assigned']:
-        assert para_dict['radius_stats'] is False, 'radius_stats and radius_assigned are contradictory'
-        radius_a = int(para_dict['radius_assigned_value'])
-        radius_b = int(para_dict['radius_assigned_value'])
-    else:
-        radius_a = np.load(os.path.join(radius_path, para_dict['source_domain'])+'.npz')['msl']
-        radius_b = np.load(os.path.join(radius_path, para_dict['target_domain'])+'.npz')['msl']
-        print(f"{para_dict['source_domain']} radius: {radius_a}")
-        print(f"{para_dict['target_domain']} radius: {radius_b}")
-    
     kaid_model_path = os.path.join('kaidae', para_dict['dataset'])
     create_folders(kaid_model_path)
 
-    if para_dict['train'] is False and para_dict['validation'] is False:
-        raise ValueError('train or validation need to be done') 
-    
-    if para_dict['train']:
-        if para_dict['resume']:
-            if para_dict['load_latest']:
-                # load model
-                load_model(model=kaid_ae, file_path=kaid_model_path, description='{}_{}_{}'.format(
-                    para_dict['source_domain'], para_dict['target_domain'], 'latest'))
-            else:
-                load_model(model=kaid_ae, file_path=kaid_model_path, description='{}_{}_{}'.format(
-                    para_dict['source_domain'], para_dict['target_domain'], str(para_dict['assigned-epoch'])))
+    for epoch in range(para_dict['num_epochs']):
+        for i, batch in enumerate(kaid_loader): 
+            if i > batch_limit:
+                break
+            
+            optimizer.zero_grad()
+            real_a = batch[para_dict['source_domain']]
+            real_b = batch[para_dict['target_domain']]
 
-        for epoch in range(para_dict['num_epochs']):
-            for i, batch in enumerate(kaid_loader): 
-                if i > batch_limit:
-                    break
-                
-                optimizer.zero_grad()
-                real_a = batch[para_dict['source_domain']]
-                real_b = batch[para_dict['target_domain']]
-
-                # Fourier Transform 
-                real_a_kspace = torch_fft(real_a)
-                real_b_kspace = torch_fft(real_b)
-                print(f'real_a_ksapce.size: {real_a_kspace.size()}')
-                conv_op = ComplexConv2d(inc=1, ouc=16, ks=3)
-                test = conv_op(real_a_kspace)
-                print(f'test size: {test.size()}')
-                print(f'test: {test}')
+            # Fourier Transform 
+            real_a_freq = torch_fft(real_a)
+            real_b_freq = torch_fft(real_b)
+            print(f'real_a_freq.size: {real_a_freq.size()}')
+            conv_op = ComplexConv2d(inc=1, ouc=16, ks=3)
+            test = conv_op(real_a_freq)
+            print(f'test size: {test.size()}')
+            print(f'test: {test}')
 
 
 
