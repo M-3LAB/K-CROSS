@@ -6,9 +6,21 @@ class NaiveComplexBatchNorm2d(nn.Module):
     def __init__(self, num_features, eps=1e-5, momentum=0.1, affine=True,
                  track_running_stats=True):
         super(NaiveComplexBatchNorm2d, self).__init__()
+        
+        self.num_features = num_features
+        self.eps = eps
+        self.momentum = momentum
+        self.affine =affine
+        self.track_running_stats = track_running_stats
 
-        self.bn_real = nn.BatchNorm2d(num_features, eps, momentum, affine, track_running_stats)
-        self.bn_im = nn.BatchNorm2d(num_features, eps, momentum, affine, track_running_stats)
+        self.bn_real = nn.BatchNorm2d(num_features=self.num_features, eps=self.eps, 
+                                      momentum=self.momentum, affine=self.affine, 
+                                      track_running_stats=self.track_running_stats)
+
+        self.bn_im = nn.BatchNorm2d(num_features=self.num_features, eps=self.eps, 
+                                    momentum=self.momentum, affine=self.affine, 
+                                    track_running_stats=self.track_running_stats)
+
     
     def forward(self, x):
         output_real = self.bn_real(x.real)

@@ -29,7 +29,7 @@ class ComplexFinalLayer(nn.Module):
         return x 
 
 class ComplexUnetUp(nn.Module):
-    def __init__(self, inc, ouc, ks, stride=2, padding=1, inplace=True):
+    def __init__(self, inc, ouc, ks=4, stride=2, padding=1, inplace=True):
         super(ComplexUnetUp, self).__init__()
         self.inc = inc
         self.ouc = ouc
@@ -41,7 +41,7 @@ class ComplexUnetUp(nn.Module):
         self.model = nn.Sequential(
             ComplexConvTranspose2d(inc=self.inc, ouc=self.ouc, ks=self.ks,
                                    stride=self.stride, padding=self.padding),
-            NaiveComplexBatchNorm2d(ouc=self.ouc),
+            NaiveComplexBatchNorm2d(num_features=self.ouc),
             ComplexRELU(inplace=self.inplace)
         )
 
@@ -58,7 +58,7 @@ class ComplexDecoder(nn.Module):
         self.up1 = ComplexUnetUp(inc=self.ouc_list[0], ouc=self.ouc_list[0]) 
         self.up2 = ComplexUnetUp(inc=self.ouc_list[0]*2, ouc=self.ouc_list[1]) 
         self.up3 = ComplexUnetUp(inc=self.ouc_list[1]*2, ouc=self.ouc_list[2])
-        self.up4 = ComplexUnetUp(inc=self.out_list[2]*2, ouc=self.out_list[3])
+        self.up4 = ComplexUnetUp(inc=self.ouc_list[2]*2, ouc=self.ouc_list[3])
 
         self.final = ComplexFinalLayer(inc=self.ouc_list[3]*2, ouc=1)
     
