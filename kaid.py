@@ -220,14 +220,6 @@ if __name__ == '__main__':
             print(f'real_a_z.size(): {real_a_z.size()}')
 
 
-            #print(f'real_a_freq.size: {real_a_freq.size()}')
-            #conv_op = ComplexConv2d(inc=1, ouc=16, ks=3)
-            #test = conv_op(real_a_freq)
-            #print(f'test size: {test.size()}')
-            #print(f'test: {test}')
-
-
-
                 
 
 
