@@ -41,5 +41,5 @@ class KAIDAE(nn.Module):
     def forward(self, x):
         z = self.encode(x)
         x_hat = self.decode(z)
-        return z, x_hat
+        return x_hat, z
 

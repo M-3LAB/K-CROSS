@@ -20,7 +20,7 @@ from loss_function.kaid.distance import l1_diff, l2_diff, cosine_similiarity
 from model.kaid.complex_nn.fourier_transform import * 
 from model.kaid.complex_nn.power_spectrum import *
 from metrics.kaid.stats import mask_stats, best_radius_list 
-#from model.kaid.ae.kaid_ae import KAIDAE
+from model.kaid.ae.kaid_ae import KAIDAE
 from model.kaid.ae.complex_ae import ComplexUnet
 from model.kaid.complex_nn.fourier_convolve import * 
 from loss_function.kaid.focal_freq import FocalFreqLoss
@@ -187,43 +187,43 @@ if __name__ == '__main__':
         batch_limit = int(para_dict['data_num'] / para_dict['batch_size'])
 
     # Model
-    kaid_ae = ComplexUnet().to(device)
+    #kaid_ae = ComplexUnet().to(device)
+    auto_encoder = KAIDAE().to(device)
+    
     # Loss
     #TODO: Add Focal Freq Loss
-    criterion_freq = FocalFreqLoss(loss_weight=1.0, alpha=1.0, log_matrix=False,
-                                   avg_spectrum=False, batch_matrix=False).to(device) 
+    #criterion_freq = FocalFreqLoss(loss_weight=1.0, alpha=1.0, log_matrix=False,
+    #                               avg_spectrum=False, batch_matrix=False).to(device) 
+
+    criterion_recon = torch.nn.L1Loss().to(device)
 
     # Optimizer
-    optimizer = torch.optim.Adam(kaid_ae.parameters(), lr=para_dict['lr'],
+    #optimizer = torch.optim.Adam(kaid_ae.parameters(), lr=para_dict['lr'],
+    #                             betas=[para_dict['beta1'], para_dict['beta2']])
+    optimizer = torch.optim.Adam(auto_encoder.parameters(), lr=para_dict['lr'],
                                  betas=[para_dict['beta1'], para_dict['beta2']])
 
     # Scheduler
-    lr_scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=para_dict['step_size'],
-                                                   gamma=para_dict['gamma']) 
     
-    # Mask Statistics  
-    kaid_model_path = os.path.join('kaidae', para_dict['dataset'])
-    create_folders(kaid_model_path)
-
     for epoch in range(para_dict['num_epochs']):
-        for i, batch in enumerate(kaid_loader): 
+        for i, batch in enumerate(normal_loader): 
             if i > batch_limit:
                 break
             
-            optimizer.zero_grad()
+            
             real_a = batch[para_dict['source_domain']].to(device)
-            #real_b = batch[para_dict['target_domain']].to(device)
 
-            # Fourier Transform 
-            real_a_freq = torch_fft(real_a)
-            #real_b_freq = torch_fft(real_b)
+            real_a_hat, real_a_z = auto_encoder(real_a)
 
-            real_a_freq_hat, real_a_freq_z = kaid_ae(real_a_freq)
-            #print(f'real_a_freq_hat.size(): {real_a_freq_hat.size()}')
-            #print(f'real_a_freq_z.size(): {real_a_freq_z.size()}')
+            recon_loss = criterion_recon(real_a_hat, real_a) 
+            optimizer.zero_grad()
+            recon_loss.backward()
+            optimizer.step()
 
-            loss = criterion_freq(real_a_freq_hat, real_a_freq) 
-            print(loss)
+            infor = '\r{}[Batch {}/{}] [Recon Loss: {:.4f}]'.format(
+                        '', i+1, batch_limit, recon_loss.item())
+
+            print(infor, flush=True, end='  ')    
 
 
                 

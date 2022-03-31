@@ -31,7 +31,7 @@ class FocalFreqLoss(nn.Module):
         self.batch_matrix = batch_matrix
     
     def freq_stack(self, freq):
-        freq = torch.stack([freq.real, freq.imag], -1)
+        freq = torch.stack([freq.real, freq.imag], dim=-1)
         return freq
 
     def loss_formulation(self, real_freq, recon_freq, 
@@ -82,8 +82,8 @@ class FocalFreqLoss(nn.Module):
         """
         pred_freq = self.freq_stack(pred_freq)
         target_freq = self.freq_stack(target_freq)
-        print(f'pred_freq.size(): {pred_freq.size()}')
-        print(f'target_freq.size(): {target_freq.size()}')
+        #print(f'pred_freq.size(): {pred_freq.size()}')
+        #print(f'target_freq.size(): {target_freq.size()}')
 
         # whether to use minibatch average spectrum
         if self.avg_spectrum:

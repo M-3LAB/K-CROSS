@@ -29,20 +29,19 @@ class ComplexFinalLayer(nn.Module):
         return x 
 
 class ComplexUnetUp(nn.Module):
-    def __init__(self, inc, ouc, ks=4, stride=2, padding=1, inplace=True):
+    def __init__(self, inc, ouc, ks=4, stride=2, padding=1):
         super(ComplexUnetUp, self).__init__()
         self.inc = inc
         self.ouc = ouc
         self.ks = ks
         self.stride = stride
         self.padding = padding
-        self.inplace = inplace
 
         self.model = nn.Sequential(
             ComplexConvTranspose2d(inc=self.inc, ouc=self.ouc, ks=self.ks,
                                    stride=self.stride, padding=self.padding),
             NaiveComplexBatchNorm2d(num_features=self.ouc),
-            ComplexRELU(inplace=self.inplace)
+            ComplexRELU()
         )
 
     def forward(self, x, skip_input=None):
