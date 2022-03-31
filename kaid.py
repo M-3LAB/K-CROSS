@@ -210,10 +210,15 @@ if __name__ == '__main__':
             
             
             real_a = batch[para_dict['source_domain']].to(device)
+            real_b = batch[para_dict['target_domain']].to(device)
 
             real_a_hat, real_a_z = unet(real_a)
+            real_b_hat, real_b_z = unet(real_b)
 
-            recon_loss = criterion_recon(real_a_hat, real_a) 
+            real_a_recon_loss = criterion_recon(real_a_hat, real_a) 
+            real_b_recon_loss = criterion_recon(real_b_hat, real_b) 
+            recon_loss = real_a_recon_loss + real_b_recon_loss
+
             optimizer_normal.zero_grad()
             recon_loss.backward()
             optimizer_normal.step()
