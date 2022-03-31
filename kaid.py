@@ -212,27 +212,28 @@ if __name__ == '__main__':
             real_a = batch[para_dict['source_domain']].to(device)
             real_b = batch[para_dict['target_domain']].to(device)
 
-            real_a_hat, real_a_z = unet(real_a)
-            real_b_hat, real_b_z = unet(real_b)
+            if para_dict['method'] == 'normal':
+                real_a_hat, real_a_z = unet(real_a)
+                real_b_hat, real_b_z = unet(real_b)
 
-            real_a_recon_loss = criterion_recon(real_a_hat, real_a) 
-            real_b_recon_loss = criterion_recon(real_b_hat, real_b) 
-            recon_loss = real_a_recon_loss + real_b_recon_loss
+                real_a_recon_loss = criterion_recon(real_a_hat, real_a) 
+                real_b_recon_loss = criterion_recon(real_b_hat, real_b) 
+                recon_loss = real_a_recon_loss + real_b_recon_loss
 
-            real_a_freq_loss = criterion_freq(real_a_hat, real_a)
-            real_b_freq_loss = criterion_freq(real_b_hat, real_b)
-            focal_freq_loss = real_a_freq_loss + real_b_freq_loss
+                real_a_freq_loss = criterion_freq(real_a_hat, real_a)
+                real_b_freq_loss = criterion_freq(real_b_hat, real_b)
+                focal_freq_loss = real_a_freq_loss + real_b_freq_loss
 
-            loss_total = recon_loss + focal_freq_loss
+                loss_total = recon_loss + focal_freq_loss
 
-            optimizer_normal.zero_grad()
-            loss_total.backward()
-            optimizer_normal.step()
+                optimizer_normal.zero_grad()
+                loss_total.backward()
+                optimizer_normal.step()
 
-            infor = '\r{}[Batch {}/{}] [Recon Loss: {:.4f}] [Focal Freq Loss: {:.4f}]'.format(
-                        '', i+1, batch_limit, recon_loss.item(), focal_freq_loss.item())
+                infor = '\r{}[Batch {}/{}] [Recon Loss: {:.4f}] [Focal Freq Loss: {:.4f}]'.format(
+                            '', i+1, batch_limit, recon_loss.item(), focal_freq_loss.item())
 
-            print(infor, flush=True, end='  ')    
+                print(infor, flush=True, end='  ')    
 
 
                 

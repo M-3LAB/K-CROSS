@@ -52,6 +52,8 @@ def parse_arguments_kaid():
     # visualize check
     parser.add_argument('--vis-method', type=str, choices=['np', 'torch', 'torch_2d'])
     parser.add_argument('--vis-check', action='store_true', default=None, help='indiciate whether need to check visually')
+    # method
+    parser.add_argument('--method', type=str, choices=['combined', 'complex', 'normal'])
 
     args = parser.parse_args()
     return args
