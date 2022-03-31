@@ -198,9 +198,9 @@ if __name__ == '__main__':
     criterion_recon = torch.nn.L1Loss().to(device)
 
     # Optimizer
-    optimizer = torch.optim.Adam(complex_unet.parameters(), lr=para_dict['lr'],
+    optimizer_complex = torch.optim.Adam(complex_unet.parameters(), lr=para_dict['lr'],
                                  betas=[para_dict['beta1'], para_dict['beta2']])
-    optimizer_normal_ae = torch.optim.Adam(unet.parameters(), lr=para_dict['lr'],
+    optimizer_normal = torch.optim.Adam(unet.parameters(), lr=para_dict['lr'],
                                  betas=[para_dict['beta1'], para_dict['beta2']])
 
     for epoch in range(para_dict['num_epochs']):
@@ -214,9 +214,9 @@ if __name__ == '__main__':
             real_a_hat, real_a_z = unet(real_a)
 
             recon_loss = criterion_recon(real_a_hat, real_a) 
-            optimizer_normal_ae.zero_grad()
+            optimizer_normal.zero_grad()
             recon_loss.backward()
-            optimizer_normal_ae.step()
+            optimizer_normal.step()
 
             infor = '\r{}[Batch {}/{}] [Recon Loss: {:.4f}]'.format(
                         '', i+1, batch_limit, recon_loss.item())
