@@ -20,7 +20,7 @@ from loss_function.kaid.distance import l1_diff, l2_diff, cosine_similiarity
 from model.kaid.complex_nn.fourier_transform import * 
 from model.kaid.complex_nn.power_spectrum import *
 from metrics.kaid.stats import mask_stats, best_radius_list 
-from model.kaid.ae.kaid_ae import KAIDAE
+from model.kaid.ae.kaid_ae import Unet 
 from model.kaid.ae.complex_ae import ComplexUnet
 from model.kaid.complex_nn.fourier_convolve import * 
 from loss_function.kaid.focal_freq import FocalFreqLoss
@@ -187,20 +187,20 @@ if __name__ == '__main__':
         batch_limit = int(para_dict['data_num'] / para_dict['batch_size'])
 
     # Model
-    #kaid_ae = ComplexUnet().to(device)
-    auto_encoder = KAIDAE().to(device)
+    complex_unet = ComplexUnet().to(device)
+    unet = Unet().to(device)
     
     # Loss
     #TODO: Add Focal Freq Loss
-    #criterion_freq = FocalFreqLoss(loss_weight=1.0, alpha=1.0, log_matrix=False,
-    #                               avg_spectrum=False, batch_matrix=False).to(device) 
+    criterion_freq = FocalFreqLoss(loss_weight=1.0, alpha=1.0, log_matrix=False,
+                                   avg_spectrum=False, batch_matrix=False).to(device) 
 
     criterion_recon = torch.nn.L1Loss().to(device)
 
     # Optimizer
-    #optimizer = torch.optim.Adam(kaid_ae.parameters(), lr=para_dict['lr'],
-    #                             betas=[para_dict['beta1'], para_dict['beta2']])
-    optimizer = torch.optim.Adam(auto_encoder.parameters(), lr=para_dict['lr'],
+    optimizer = torch.optim.Adam(complex_unet.parameters(), lr=para_dict['lr'],
+                                 betas=[para_dict['beta1'], para_dict['beta2']])
+    optimizer_normal_ae = torch.optim.Adam(unet.parameters(), lr=para_dict['lr'],
                                  betas=[para_dict['beta1'], para_dict['beta2']])
 
     # Scheduler
@@ -213,12 +213,12 @@ if __name__ == '__main__':
             
             real_a = batch[para_dict['source_domain']].to(device)
 
-            real_a_hat, real_a_z = auto_encoder(real_a)
+            real_a_hat, real_a_z = unet(real_a)
 
             recon_loss = criterion_recon(real_a_hat, real_a) 
-            optimizer.zero_grad()
+            optimizer_normal_ae.zero_grad()
             recon_loss.backward()
-            optimizer.step()
+            optimizer_normal_ae.step()
 
             infor = '\r{}[Batch {}/{}] [Recon Loss: {:.4f}]'.format(
                         '', i+1, batch_limit, recon_loss.item())
