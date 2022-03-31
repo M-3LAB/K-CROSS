@@ -40,40 +40,39 @@ class FocalFreqLoss(nn.Module):
         # spectrum weight matrix
         if assigned_weight_matrix is not None:
             # if the matrix is predefined
-            weight_matrix = assigned_weight_matrix.detach() 
+            weight_matrix = assigned_weight_matrix.detach()
         else:
             # if the matrix is calculated online: continuous, dynamic, based on current Euclidean distance
             matrix_tmp = (recon_freq - real_freq) ** 2
-            matrix_tmp = torch.sqrt(matrix_tmp.real + matrix_tmp.imag) * self.alpha
+            matrix_tmp = torch.sqrt(matrix_tmp[..., 0] + matrix_tmp[..., 1]) ** self.alpha
 
             # whether to adjust the spectrum weight matrix by logarithm
             if self.log_matrix:
                 matrix_tmp = torch.log(matrix_tmp + 1.0)
-            
+
             # whether to calculate the spectrum weight matrix using batch-based statistics
             if self.batch_matrix:
-                matrix_tmp = matrix_tmp.max()
+                matrix_tmp = matrix_tmp / matrix_tmp.max()
             else:
-                #TODO: Check How to do
-                pass
-            
-            matrix_tmp[torch.isnan(matrix_tmp)] = 0
+                matrix_tmp = matrix_tmp / matrix_tmp.max(-1).values.max(-1).values[:, :, :, None, None]
+
+            matrix_tmp[torch.isnan(matrix_tmp)] = 0.0
             matrix_tmp = torch.clamp(matrix_tmp, min=0.0, max=1.0)
             weight_matrix = matrix_tmp.clone().detach()
-        
+
         assert weight_matrix.min().item() >= 0 and weight_matrix.max().item() <= 1, (
             'The values of spectrum weight matrix should be in the range [0, 1], '
             'but got Min: %.10f Max: %.10f' % (weight_matrix.min().item(), weight_matrix.max().item()))
 
         # frequency distance using (squared) Euclidean distance
         tmp = (recon_freq - real_freq) ** 2
-        freq_distance = tmp.real + tmp.imag
+        freq_distance = tmp[..., 0] + tmp[..., 1]
 
         # dynamic spectrum weighting (Hadamard product)
         loss = weight_matrix * freq_distance
         return torch.mean(loss)
 
-    def forward(self, pred, target, weight_matrix=None):
+    def forward(self, pred_freq, target_freq, weight_matrix=None):
         """Forward function to calculate focal frequency loss.
 
         Args:
@@ -83,8 +82,6 @@ class FocalFreqLoss(nn.Module):
                 Default: None (If set to None: calculated online, dynamic).
         """
 
-        pred_freq = torch_fft(pred, normalized_method='ortho') 
-        target_freq = torch_fft(target, normalized_method='ortho')
 
         #TODO: Not Finished
         if self.avg_spectrum:
