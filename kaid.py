@@ -192,7 +192,7 @@ if __name__ == '__main__':
     
     # Loss
     #TODO: Add Focal Freq Loss
-    criterion_freq = FocalFreqLoss(loss_weight=1.0, alpha=1.0, log_matrix=False,
+    criterion_freq = FocalFreqLoss(loss_weight=100.0, alpha=1.0, log_matrix=False,
                                    avg_spectrum=False, batch_matrix=False).to(device) 
 
     criterion_recon = torch.nn.L1Loss().to(device)
@@ -219,12 +219,18 @@ if __name__ == '__main__':
             real_b_recon_loss = criterion_recon(real_b_hat, real_b) 
             recon_loss = real_a_recon_loss + real_b_recon_loss
 
+            real_a_freq_loss = criterion_freq(real_a_hat, real_a)
+            real_b_freq_loss = criterion_freq(real_b_hat, real_b)
+            focal_freq_loss = real_a_freq_loss + real_b_freq_loss
+
+            loss_total = recon_loss + focal_freq_loss
+
             optimizer_normal.zero_grad()
-            recon_loss.backward()
+            loss_total.backward()
             optimizer_normal.step()
 
-            infor = '\r{}[Batch {}/{}] [Recon Loss: {:.4f}]'.format(
-                        '', i+1, batch_limit, recon_loss.item())
+            infor = '\r{}[Batch {}/{}] [Recon Loss: {:.4f}] [Focal Freq Loss: {:.4f}]'.format(
+                        '', i+1, batch_limit, recon_loss.item(), focal_freq_loss.item())
 
             print(infor, flush=True, end='  ')    
 

@@ -31,7 +31,8 @@ def torch_fft(mri_img, normalized_method=None):
     #    k_space_2d = torch.fft.fftshift(torch.fft.fft2(mri_2d_img)) 
     #    concate_tensor_lists(k_space, k_space_2d, i)
     
-    k_space = torch.fft.fftshift(torch.fft.fft2(mri_img, norm=normalized_method)) 
+    #k_space = torch.fft.fftshift(torch.fft.fft2(mri_img, norm=normalized_method)) 
+    k_space = torch.fft.fft2(mri_img, norm=normalized_method) 
     return k_space
 
 def torch_ifft(k_space, normalized_method=None):

@@ -1,6 +1,6 @@
 import torch
 import torch.nn as nn
-#from model.kaid.complex_nn.fourier_transform import *
+from model.kaid.complex_nn.fourier_transform import *
 
 __all__ = ['FocalFreqLoss']
 
@@ -30,7 +30,8 @@ class FocalFreqLoss(nn.Module):
         self.avg_spectrum = avg_spectrum
         self.batch_matrix = batch_matrix
     
-    def freq_stack(self, freq):
+    def freq_stack(self, img):
+        freq = torch_fft(img, normalized_method='ortho')
         freq = torch.stack([freq.real, freq.imag], dim=-1)
         return freq
 
@@ -71,7 +72,7 @@ class FocalFreqLoss(nn.Module):
         loss = weight_matrix * freq_distance
         return torch.mean(loss)
 
-    def forward(self, pred_freq, target_freq, assigned_weight_matrix=None):
+    def forward(self, pred, target, assigned_weight_matrix=None):
         """Forward function to calculate focal frequency loss.
 
         Args:
@@ -80,10 +81,8 @@ class FocalFreqLoss(nn.Module):
             assigned_weight_matrix (torch.Tensor, optional): Element-wise spectrum weight matrix.
                 Default: None (If set to None: calculated online, dynamic).
         """
-        pred_freq = self.freq_stack(pred_freq)
-        target_freq = self.freq_stack(target_freq)
-        #print(f'pred_freq.size(): {pred_freq.size()}')
-        #print(f'target_freq.size(): {target_freq.size()}')
+        pred_freq = self.freq_stack(pred)
+        target_freq = self.freq_stack(target)
 
         # whether to use minibatch average spectrum
         if self.avg_spectrum:
