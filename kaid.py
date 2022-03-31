@@ -203,8 +203,6 @@ if __name__ == '__main__':
     optimizer_normal_ae = torch.optim.Adam(unet.parameters(), lr=para_dict['lr'],
                                  betas=[para_dict['beta1'], para_dict['beta2']])
 
-    # Scheduler
-    
     for epoch in range(para_dict['num_epochs']):
         for i, batch in enumerate(normal_loader): 
             if i > batch_limit:
