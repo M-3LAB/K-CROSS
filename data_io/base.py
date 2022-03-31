@@ -12,6 +12,8 @@ import matplotlib.pyplot as plt
 import matplotlib
 matplotlib.use('Agg')
 
+__all__ = ['ToTensor', 'BASE']
+
 class ToTensor():
     def __call__(self, tensor):
         tensor = np.expand_dims(tensor, 0)

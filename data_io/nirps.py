@@ -6,6 +6,7 @@ sys.path.append('.')
 
 from torch.utils.data import DataLoader
 from tools.utilize import load_metric_result
+from data_io.base import ToTensor
 
 __all__ = ['NIRPS']
 
