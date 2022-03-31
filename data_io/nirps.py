@@ -42,7 +42,6 @@ class NIRPS(torch.utils.data.Dataset):
 
         return {'img': img, 'gt': gt, 'name': name}
 
-
     def __len__(self):
         return len(self.nirps_dataset)
 
