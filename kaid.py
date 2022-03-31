@@ -190,7 +190,8 @@ if __name__ == '__main__':
     kaid_ae = ComplexUnet().to(device)
     # Loss
     #TODO: Add Focal Freq Loss
-    criterion_freq = FocalFreqLoss().to(device) 
+    criterion_freq = FocalFreqLoss(loss_weight=1.0, alpha=1.0, log_matrix=False,
+                                   avg_spectrum=False, batch_matrix=False).to(device) 
 
     # Optimizer
     optimizer = torch.optim.Adam(kaid_ae.parameters(), lr=para_dict['lr'],
@@ -218,8 +219,11 @@ if __name__ == '__main__':
             #real_b_freq = torch_fft(real_b)
 
             real_a_freq_hat, real_a_freq_z = kaid_ae(real_a_freq)
-            print(f'real_a_freq_hat.size(): {real_a_freq_hat.size()}')
-            print(f'real_a_freq_z.size(): {real_a_freq_z.size()}')
+            #print(f'real_a_freq_hat.size(): {real_a_freq_hat.size()}')
+            #print(f'real_a_freq_z.size(): {real_a_freq_z.size()}')
+
+            loss = criterion_freq(real_a_freq_hat, real_a_freq) 
+            print(loss)
 
 
                 

@@ -1,11 +1,11 @@
 import torch
 import torch.nn as nn
-from model.kaid.complex_nn.fourier_transform import *
+#from model.kaid.complex_nn.fourier_transform import *
 
 __all__ = ['FocalFreqLoss']
 
 class FocalFreqLoss(nn.Module):
-    def __init__(self, loss_weight, patch_factor=1, alpha=1.0, log_matrix=False, 
+    def __init__(self, loss_weight, alpha=1.0, log_matrix=False, 
                  avg_spectrum=False, batch_matrix=False):
         super(FocalFreqLoss, self).__init__()
         """The torch.nn.Module class that implements focal frequency loss - a
@@ -25,7 +25,6 @@ class FocalFreqLoss(nn.Module):
         """
 
         self.loss_weight = loss_weight
-        self.patch_factor = patch_factor
         self.alpha = alpha
         self.log_matrix = log_matrix
         self.avg_spectrum = avg_spectrum
@@ -54,7 +53,7 @@ class FocalFreqLoss(nn.Module):
             if self.batch_matrix:
                 matrix_tmp = matrix_tmp / matrix_tmp.max()
             else:
-                matrix_tmp = matrix_tmp / matrix_tmp.max(-1).values.max(-1).values[:, :, :, None, None]
+                matrix_tmp = matrix_tmp / matrix_tmp.max(-1).values.max(-1).values[:, :, None, None]
 
             matrix_tmp[torch.isnan(matrix_tmp)] = 0.0
             matrix_tmp = torch.clamp(matrix_tmp, min=0.0, max=1.0)
@@ -83,6 +82,8 @@ class FocalFreqLoss(nn.Module):
         """
         pred_freq = self.freq_stack(pred_freq)
         target_freq = self.freq_stack(target_freq)
+        print(f'pred_freq.size(): {pred_freq.size()}')
+        print(f'target_freq.size(): {target_freq.size()}')
 
         # whether to use minibatch average spectrum
         if self.avg_spectrum:
