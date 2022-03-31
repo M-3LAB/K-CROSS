@@ -265,6 +265,16 @@ if __name__ == '__main__':
             else:
                 raise NotImplementedError('The method has not been implemented yet')
     
+    nirps_dataset = NIRPS(nirps_path=para_dict['nirps_path'], regions='ixi',
+                          modalities={'ixi': ['pd']}, models='cyclegan',
+                          epochs=[i for i in range(1, 16)])
+    
+    nirps_loader = DataLoader(nirps_dataset, batch_size=1, num_workers=1, shuffle=False)
+    print('load nirps dataset, size:{}'.format(len(nirps_dataset)))
+
+    for batch in nirps_loader:
+        pass
+    
 
     
                 
