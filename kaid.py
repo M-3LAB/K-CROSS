@@ -273,7 +273,10 @@ if __name__ == '__main__':
     print('load nirps dataset, size:{}'.format(len(nirps_dataset)))
 
     for batch in nirps_loader:
-        pass
+
+        img = batch['img']
+        gt = batch['gt']
+        name = batch['name']
     
 
     
