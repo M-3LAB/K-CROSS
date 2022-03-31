@@ -1,11 +1,11 @@
 import numpy as np
 import torch
-from model.kaid.FT.power_spectrum import *
-from model.kaid.FT.fourier_transform import *
+from model.kaid.complex_nn.power_spectrum import *
+from model.kaid.complex_nn.fourier_transform import *
 from tools.utilize import *
 
 __all__ = ['mask_stats', 'frequency_diff', 'mask_frequency_diff', 'delta_diff',
-           'best_msl_list']
+           'best_radius_list']
 
 def frequency_diff(hf_kspace, lf_kspace):
     """
@@ -103,7 +103,7 @@ def mask_stats(data_loader, source_domain, target_domain, src_msl=None, tag_msl=
 
     return a_delta_dic, b_delta_dic
 
-def best_msl_list(delta_dic, delta_diff=None):
+def best_radius_list(delta_dic, delta_diff=None):
 
     #print(f'delta_diff: {delta_diff}')
 

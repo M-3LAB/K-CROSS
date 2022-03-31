@@ -30,12 +30,13 @@ beta2: 0.999
 #schduler
 step_size: 30
 gamma: 0.1
-#msl
-msl_path: ./msl_stats
-msl_stats: False 
-msl_assigned: False
-msl_assigned_value: 10
+#radius
+radius_path: ./radius_stats
+radius_stats: False 
+radius_assigned: False
+radius_assigned_value: 10
 delta_diff: 10000
+normalized_method: 'ortho'
 #loss
 lambda_recon: 1.0
 lambda_contrastive: 1.0
@@ -51,6 +52,18 @@ segmentation: True
 train: False 
 validate: False 
 resume: False
+#visualization
+vis_check: False
+vis_method: 'np'
 # load model
 load_latest: False
 assigned_epoch: 50
+assigned_images: [['BraTS2021_00001', 'BraTS2021_00001', 70], 
+                  ['BraTS2021_00013', 'BraTS2021_00013', 70],
+                  ['BraTS2021_00438', 'BraTS2021_00438', 70],
+                  ['BraTS2021_01668', 'BraTS2021_01668', 70],
+                  ['BraTS2021_01712', 'BraTS2021_01712', 70],
+                  ['BraTS2021_01756', 'BraTS2021_01756', 70],
+                  ['BraTS2021_00585', 'BraTS2021_00585', 70],
+                  ['BraTS2021_01679', 'BraTS2021_01679', 70],
+                  ['BraTS2021_01763', 'BraTS2021_01763', 70]]

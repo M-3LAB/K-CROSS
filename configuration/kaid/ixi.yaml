@@ -1,5 +1,5 @@
 dataset: ixi
-noise_type: gaussian 
+noise_type: kaid 
 seed: 3
 size: 256 
 a_mu: 0.0
@@ -31,12 +31,13 @@ beta2: 0.999
 #schduler
 step_size: 30
 gamma: 0.1
-#msl
-msl_path: ./msl_stats
-msl_stats: False 
-msl_assigned: False
-msl_assigned_value: 10
+#radius
+radius_path: ./raidus_stats
+radius_stats: False 
+radius_assigned: False
+radius_assigned_value: 10
 delta_diff: 1000
+normalized_method: 'ortho'
 #loss
 lambda_recon: 1.0
 lambda_contrastive: 10.0
@@ -52,6 +53,16 @@ segmentation: false
 train: False 
 validate: False 
 resume: False
+#visualization
+vis_check: False
+vis_method: 'np'
 # load model
 load_latest: False
 assigned_epoch: 50
+assigned_images: [['IXI508-HH-2268', 'IXI508-HH-2268', 74]]
+#assigned_images: [['IXI002-Guys-0828', 'IXI002-Guys-0828', 80], 
+#                  ['IXI305-IOP-0871', 'IXI305-IOP-0871', 55],
+#                  ['IXI508-HH-2268', 'IXI508-HH-2268', 74],
+#                  ['IXI151-Guys-0793', 'IXI151-Guys-0793', 60],
+#                  ['IXI297-Guys-0886', 'IXI297-Guys-0886', 77],
+#                  ['IXI252-HH-1693', 'IXI252-HH-1693', 56]]

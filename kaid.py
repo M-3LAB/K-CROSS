@@ -1,4 +1,5 @@
-from curses import flash
+from locale import normalize
+from tools.visualize import np_scaling_kspace, torch_scaling_kspace
 import torch
 import yaml
 import os
@@ -16,11 +17,16 @@ from model.unit.unit import Generator as UG
 
 from configuration.kaid.config import parse_arguments_kaid
 from loss_function.kaid.distance import l1_diff, l2_diff, cosine_similiarity
-from model.kaid.FT.fourier_transform import * 
-from model.kaid.FT.power_spectrum import *
-from metrics.kaid.stats import mask_stats, best_msl_list 
-from model.kaid.ae.kaid_ae import KAIDAE
+from model.kaid.complex_nn.fourier_transform import * 
+from model.kaid.complex_nn.power_spectrum import *
+from metrics.kaid.stats import mask_stats, best_radius_list 
+#from model.kaid.ae.kaid_ae import KAIDAE
+from model.kaid.ae.complex_ae import ComplexUnet
+from model.kaid.complex_nn.fourier_convolve import * 
+from loss_function.kaid.focal_freq import FocalFreqLoss
 
+from tools.visualize import *
+#import matplotlib.pyplot as plt
 
 if __name__ == '__main__':
     args = parse_arguments_kaid()
@@ -49,6 +55,9 @@ if __name__ == '__main__':
                         {'degrees':0, 'translate':[0.00, 0.00],
                          'scale':[1.00, 1.00], 
                          'size':(para_dict['size'], para_dict['size'])}]
+
+    kaid_transform = [{'size':(para_dict['size'], para_dict['size'])},
+                      {'size':(para_dict['size'], para_dict['size'])}]
 
     if para_dict['noise_type'] == 'gaussian':
         noise_transform = [{'mu':para_dict['a_mu'], 'sigma':para_dict['a_sigma'],
@@ -102,6 +111,17 @@ if __name__ == '__main__':
                                 data_mode='paired',
                                 data_num=para_dict['data_num'],
                                 dataset_splited=False)
+        
+        ixi_kaid_dataset = IXI(root=para_dict['data_path'],
+                               modalities=[para_dict['source_domain'], para_dict['target_domain']],
+                               extract_slice=[para_dict['es_lower_limit'], para_dict['es_higher_limit']],
+                               noise_type='kaid',
+                               learn_mode='train', #train or test is meaningless if dataset_splited is false
+                               transform_data=kaid_transform,
+                               data_mode='paired',
+                               data_num=para_dict['data_num'],
+                               dataset_splited=False)
+        
 
         #TODO: make sure normal and nosiy loader release the same order of dataset
         normal_loader = DataLoader(ixi_normal_dataset, num_workers=para_dict['num_workers'],
@@ -110,10 +130,9 @@ if __name__ == '__main__':
         noisy_loader = DataLoader(ixi_noise_dataset, num_workers=para_dict['num_workers'],
                                   batch_size=para_dict['batch_size'], shuffle=False)
 
-        test_loader = DataLoader(ixi_normal_dataset, num_workers=para_dict['num_workers'],
-                                 batch_size=1, shuffle=False)
+        kaid_loader = DataLoader(ixi_kaid_dataset, num_workers=para_dict['num_workers'],
+                                 batch_size=para_dict['batch_size'], shuffle=False)
 
-        
     elif para_dict['dataset'] == 'brats2021':
         assert para_dict['source_domain'] in ['t1', 't2', 'flair']
         assert para_dict['target_domain'] in ['t1', 't2', 'flair']
@@ -140,6 +159,15 @@ if __name__ == '__main__':
                                         data_mode='paired',
                                         data_num=para_dict['data_num'])
         
+        brats_kaid_dataset = BraTS2021(root=para_dict['data_path'],
+                                         modalities=[para_dict['source_domain'], para_dict['target_domain']],
+                                         extract_slice=[para_dict['es_lower_limit'], para_dict['es_higher_limit']],
+                                         noise_type='kaid',
+                                         learn_mode='train', # train or test is meaningless if dataset_spilited is false
+                                         transform_data=kaid_transform,
+                                         data_mode='paired',
+                                         data_num=para_dict['data_num'])
+        
         #TODO: make sure normal and nosiy loader release the same order of dataset
         normal_loader = DataLoader(brats_normal_dataset, num_workers=para_dict['num_workers'],
                                    batch_size=para_dict['batch_size'], shuffle=False)
@@ -147,23 +175,23 @@ if __name__ == '__main__':
         noisy_loader = DataLoader(brats_noise_dataset, num_workers=para_dict['num_workers'],
                                   batch_size=para_dict['batch_size'], shuffle=False)
         
-        test_loader = DataLoader(brats_normal_dataset, num_workers=para_dict['num_workers'],
-                                 batch_size=1, shuffle=False)
+        #test_loader = DataLoader(brats_normal_dataset, num_workers=para_dict['num_workers'],
+        #                         batch_size=1, shuffle=False)
     else:
         raise NotImplementedError("New Data Has Not Been Implemented")
 
     # Debug Mode
     if para_dict['debug']:
-        batch_limit = 2
+        batch_limit = 1
     else:
         batch_limit = int(para_dict['data_num'] / para_dict['batch_size'])
 
     # Model
-    kaid_ae = KAIDAE().to(device)
+    kaid_ae = ComplexUnet().to(device)
     # Loss
-    criterion_recon = torch.nn.L1Loss().to(device)
-    criterion_high_freq = torch.nn.MSELoss(reduction='mean').to(device)
-    criterion_low_freq = torch.nn.MSELoss(reduction='mean').to(device)
+    #TODO: Add Focal Freq Loss
+    criterion_freq = FocalFreqLoss(loss_weight=1.0, alpha=1.0, log_matrix=False,
+                                   avg_spectrum=False, batch_matrix=False).to(device) 
 
     # Optimizer
     optimizer = torch.optim.Adam(kaid_ae.parameters(), lr=para_dict['lr'],
@@ -174,215 +202,31 @@ if __name__ == '__main__':
                                                    gamma=para_dict['gamma']) 
     
     # Mask Statistics  
-    """
-    src: source domain
-    tag: target domain
-    msl: the half of mask side length
-    """ 
-    msl_path = os.path.join(para_dict['msl_path'], para_dict['dataset']) 
-    create_folders(msl_path) 
-
-    if para_dict['msl_stats']:
-        assert para_dict['msl_assigned'] is False, 'msl_stats and msl_assigned are contradictory'
-        src_dict, tag_dict = mask_stats(normal_loader, para_dict['source_domain'], 
-                                        para_dict['target_domain'])
-
-        print(f"source_domain: {para_dict['source_domain']}, its_dict: {src_dict}")
-        print(f"target_domain: {para_dict['target_domain']}, its_dict: {tag_dict}")
-
-        src_best_msl_list = best_msl_list(src_dict, para_dict['delta_diff'])
-        tag_best_msl_list = best_msl_list(tag_dict, para_dict['delta_diff'])
-
-        msl_a = src_best_msl_list[0]
-        msl_b = tag_best_msl_list[0]
-        np.savez_compressed(os.path.join(msl_path, para_dict['source_domain']), msl=msl_a)
-        np.savez_compressed(os.path.join(msl_path, para_dict['target_domain']), msl=msl_b)
-    elif para_dict['msl_assigned']:
-        assert para_dict['msl_stats'] is False, 'msl_stats and msl_assigned are contradictory'
-        msl_a = int(para_dict['msl_assigned_value'])
-        msl_b = int(para_dict['msl_assigned_value'])
-    else:
-        msl_a = np.load(os.path.join(msl_path, para_dict['source_domain'])+'.npz')['msl']
-        msl_b = np.load(os.path.join(msl_path, para_dict['target_domain'])+'.npz')['msl']
-        print(f"{para_dict['source_domain']} msl: {msl_a}")
-        print(f"{para_dict['target_domain']} msl: {msl_b}")
-    
     kaid_model_path = os.path.join('kaidae', para_dict['dataset'])
     create_folders(kaid_model_path)
 
-    if para_dict['train'] is False and para_dict['validation'] is False:
-        raise ValueError('train or validation need to be done')
-    
-    print(f"lambda_recon: {para_dict['lambda_recon']}")
-    print(f"lambda_hf: {para_dict['lambda_hf']}")
-    print(f"lambda_lf: {para_dict['lambda_lf']}")
-    print(f"lambda_constrastive: {para_dict['lambda_contrastive']}")
-    print(f"lr: {para_dict['lr']}")
-
-    # Training 
-    #TODO: Alternative Training for different training loader
-    if para_dict['train']:
-        if para_dict['resume']:
-            if para_dict['load_latest']:
-                # load model
-                load_model(model=kaid_ae, file_path=kaid_model_path, description='{}_{}_{}'.format(
-                    para_dict['source_domain'], para_dict['target_domain'], 'latest'))
-            else:
-                load_model(model=kaid_ae, file_path=kaid_model_path, description='{}_{}_{}'.format(
-                    para_dict['source_domain'], para_dict['target_domain'], str(para_dict['assigned-epoch'])))
-                
-        
-        for epoch in range(para_dict['num_epochs']):
-            for i, batch in enumerate(normal_loader): 
-            #TODO: noisy loader
-                batch_limit = 40
-                if i > batch_limit:
-                    break
-
-                optimizer.zero_grad()
-                real_a = batch[para_dict['source_domain']]
-                real_b = batch[para_dict['target_domain']]
-
-                # Fourier Transform 
-                real_a_kspace = torch_fft(real_a)
-                real_b_kspace = torch_fft(real_b)
-
-                real_a_hf = torch_high_pass_filter(real_a_kspace, msl_a)
-                real_b_hf = torch_high_pass_filter(real_b_kspace, msl_b)
-
-                real_a_lf = torch_low_pass_filter(real_a_kspace, msl_a)
-                real_b_lf = torch_low_pass_filter(real_b_kspace, msl_b)
-
-                """
-                Magnitude: sqrt(re^2 + im^2) tells you the amplitude of the component at the corresponding frequency
-                Phase: atan2(im, re) tells you the relative phase of that component
-                """
-
-                real_a_hf_mag = torch.abs(real_a_hf).to(device)
-                real_a_lf_mag = torch.abs(real_a_lf).to(device)
-
-                real_b_hf_mag = torch.abs(real_b_hf).to(device)
-                real_b_lf_mag = torch.abs(real_b_lf).to(device)
-
-
-                real_a_hf_z, real_a_hf_hat = kaid_ae(real_a_hf_mag)
-                real_a_lf_z, real_a_lf_hat = kaid_ae(real_a_lf_mag)
-
-                real_b_hf_z, real_b_hf_hat = kaid_ae(real_b_hf_mag)
-                real_b_lf_z, real_b_lf_hat = kaid_ae(real_b_lf_mag)
-
-                """
-                Reconstruction
-                """
-                loss_recon_real_a_hf = criterion_recon(real_a_hf_mag, real_a_hf_hat) 
-                loss_recon_real_b_hf = criterion_recon(real_b_hf_mag, real_b_hf_hat)
-
-                loss_recon_real_a_lf = criterion_recon(real_a_lf_mag, real_a_lf_hat) 
-                loss_recon_real_b_lf = criterion_recon(real_b_lf_mag, real_b_lf_hat)
-
-                loss_recon = para_dict['lambda_recon']*(loss_recon_real_a_hf + loss_recon_real_b_hf 
-                                    + loss_recon_real_a_lf + loss_recon_real_b_lf)
-
-                """
-                Contrastive Loss
-                """
-                loss_high_frequency = para_dict['lambda_hf'] * criterion_high_freq(real_a_hf_z, real_b_hf_z) 
-                loss_low_frequency = para_dict['lambda_lf'] * criterion_low_freq(real_a_lf_z, real_b_lf_z)
-                contrastive_loss = para_dict['lambda_contrastive'] * (loss_high_frequency - loss_low_frequency)
-
-                loss_total = contrastive_loss + loss_recon
-
-                loss_total.backward()
-                optimizer.step()
-                lr_scheduler.step()
-
-                # Print Log
-                infor = '\r{}[Batch {}/{}] [Total loss: {:.4f}] [Recons loss: {:.4f}] [Contrastive loss: {:.4f}] [High Frequency Loss: {:.4f}] [Low Frequency Loss: {:.4f}]'.format(
-                            '', i+1, batch_limit, loss_total.item(), loss_recon.item(), contrastive_loss.item(), loss_high_frequency.item(), loss_low_frequency.item())
-
-                print(infor, flush=True, end='  ')         
-
-            print(f'epoch: {epoch}') 
-            if epoch < para_dict['num_epochs'] - 1:
-                save_model(model=kaid_ae, file_path='{}/checkpoint'.format(kaid_model_path), infor='{}_{}_{}'.format(
-                   para_dict['source_domain'], para_dict['target_domain'], str(epoch)), save_previous=True) 
-            else:
-                save_model(model=kaid_ae, file_path='{}/checkpoint'.format(kaid_model_path), infor='{}_{}_{}'.format(
-                            para_dict['source_domain'], para_dict['target_domain'], 'latest'), save_previous=True) 
-                 
-    
-    if para_dict['validate']:
-        if para_dict['load_latest']:
-            # load model
-            load_model(model=kaid_ae, file_path=kaid_model_path, description='{}_{}_{}'.format(
-                para_dict['source_domain'], para_dict['target_domain'], 'latest'))
-        else:
-            load_model(model=kaid_ae, file_path=kaid_model_path, description='{}_{}_{}'.format(
-                para_dict['source_domain'], para_dict['target_domain'], str(para_dict['assigned-epoch'])))
-
-        # Score Prediction
-        #TODO: Load GAN Model and KAID  
-        if para_dict['test_model'] == 'cyclegan':
-            generator_from_a_to_b = CycleGen().to(device) 
-            generator_from_b_to_a = CycleGen().to(device)
-
-        elif para_dict['test_model'] == 'munit':
-            encoder_from_a_to_b = MUE().to(device)
-            decoder_from_a_to_b = MUD().to(device)
-            encoder_from_b_to_a = MUE().to(device)
-            decoder_from_b_to_a = MUD().to(device)
-
-        elif para_dict['test_model'] == 'unit':
-            encoder_from_a_to_b = UE().to(device)
-            generator_from_a_to_b = UG().to(device) 
-            encoder_from_b_to_a = UE().to(device)
-            generator_from_b_to_a = UG().to(device) 
-
-        else:
-            raise NotImplementedError('GAN Model Has Not Been Implemented Yet')
-    
-        #TODO: synthesis data loader
-        # Single Image Quality, batchsize=1
-        for i, batch in enumerate(test_loader): 
+    for epoch in range(para_dict['num_epochs']):
+        for i, batch in enumerate(kaid_loader): 
             if i > batch_limit:
                 break
-
+            
+            optimizer.zero_grad()
             real_a = batch[para_dict['source_domain']].to(device)
-            real_b = batch[para_dict['target_domain']].to(device)
-            
-            # Synthesize Image 
-            if para_dict['test_model'] == 'cyclegan':
-                fake_b = generator_from_a_to_b(real_a).to(device)
-                fake_a = generator_from_b_to_a(real_b).to(device)
-            elif para_dict['test_model'] == 'munit':
-                pass
-            elif para_dict['test_model'] == 'unit':
-                pass
-            else:
-                raise NotImplementedError('Synthesis Model Not Implemented Yet')
-            
-            #Distance 
-            real_a_z = kaid_ae.encode(real_a)    
-            fake_a_z = kaid_ae.encode(fake_a)
+            #real_b = batch[para_dict['target_domain']].to(device)
 
-            real_b_z = kaid_ae.encode(real_b)
-            fake_b_z = kaid_ae.encode(fake_b)
+            # Fourier Transform 
+            real_a_freq = torch_fft(real_a)
+            #real_b_freq = torch_fft(real_b)
 
-            if para_dict['diff_method'] == 'l1':
-                diff_a = l1_diff(real_a_z, fake_a_z)
-                diff_b = l1_diff(real_b_z, fake_b_z)
-            elif para_dict['diff_method'] == 'l2':
-                diff_a = l2_diff(real_a_z, fake_a_z)
-                diff_b = l2_diff(real_b_z, fake_b_z)
-            elif para_dict['diff_method'] == 'cos':
-                diff_a = cosine_similiarity(real_a_z, fake_a_z)
-                diff_b = cosine_similiarity(real_b_z, fake_b_z)
-            else:
-                raise NotImplementedError('The Difference Method Has Not Been Calculated Yet')
+            real_a_freq_hat, real_a_freq_z = kaid_ae(real_a_freq)
+            #print(f'real_a_freq_hat.size(): {real_a_freq_hat.size()}')
+            #print(f'real_a_freq_z.size(): {real_a_freq_z.size()}')
 
-            print(f"The mean diff of Modality {para_dict['source_domain']} : {torch.mean(diff_a)}")
-            print(f"The mean diff of Modality {para_dict['target_domain']} : {torch.mean(diff_b)}")
+            loss = criterion_freq(real_a_freq_hat, real_a_freq) 
+            print(loss)
 
 
-        #TODO: Comparision on NIRPS 
+                
+
+
     

@@ -1,6 +1,8 @@
 import numpy as np
 from tools.utilize import concate_tensor_lists
 import torch
+import copy
+from tools.visualize import *
 
 """
 Alias Numpy FFT
@@ -11,7 +13,7 @@ ifft2 = np.fft.ifft2
 fftshift = np.fft.fftshift
 ifftshift = np.fft.ifftshift
 
-__all__ = ['torch_ifft','torch_fft', 'np_fft', 'np_ifft', 'torch_normalize', 
+__all__ = ['torch_ifft','torch_fft', 'np_fft', 'np_ifft',  
            'extract_ampl', 'torch_high_pass_filter', 'torch_low_pass_filter', 
            'np_high_pass_filter', 'np_low_pass_filter']
 
@@ -89,62 +91,7 @@ def extract_ampl(mri_img, normalized_method=None):
     k_space_abs = torch.abs(k_space)
     return k_space_abs
 
-def torch_high_pass_filter(k_space, msl):
-    """
-    Args:
-        k_space: torch tensor, BCHW 
-        msl: the half of mask side length, (2 * msl) **2 is the size of the mask, 
-             mask refers to the low frequency zone  
-        return: high_frequency_k_space
-    """
-    _, _, height, width = k_space.size()
-    ch = int(height / 2) # centre height
-    cw = int(width / 2) # center width
-    high_freq_kspace = torch.randn(1, 1, height, width)
-    for i in range(k_space.size(0)):
-        hf_2d_kspace = k_space[i, 0, :, :] 
-        hf_2d_kspace[ch-msl:ch+msl,cw-msl:cw+msl] = 0
-        hf_2d_kspace = torch.unsqueeze(torch.unsqueeze(hf_2d_kspace, dim=0), dim=0)
-        concate_tensor_lists(high_freq_kspace, hf_2d_kspace, i)
-
-    return high_freq_kspace
-
-def torch_low_pass_filter(k_space, msl):
-    """
-    Args:
-        k_space: torch tensor, BCHW 
-        msl: the half of mask side length, (2 * msl) **2 is the size of the mask, 
-             mask refers to the low frequency zone  
-        return: low_frequency_k_space
-    """
-    _, _, height, width = k_space.size()
-    ch = int(height / 2)
-    cw = int(width / 2)
-    low_freq_kspace = torch.randn(1, 1, height, width)
-    for i in range(k_space.size(0)):
-        kspace_2d = k_space[i, 0, :, :]
-        lf_2d_kspace = torch.zeros_like(kspace_2d)
-        lf_2d_kspace[ch-msl:ch+msl,cw-msl:cw+msl] = kspace_2d[ch-msl:ch+msl,cw-msl:cw+msl]
-        lf_2d_kspace = torch.unsqueeze(torch.unsqueeze(lf_2d_kspace, dim=0), dim=0)
-        concate_tensor_lists(low_freq_kspace, lf_2d_kspace, i)
-        
-    return low_freq_kspace
-
-def torch_normalise(f):
-    """ 
-    Normalises torch tensor by "streching" all values to be between 0-255.
-    Parameters:
-        f (torch tensor): BCHW, C = 1 due to the characteristics of medicial image    
-    """
-    for i in range(f.size()[0]):
-        fmax = float(torch.max(f[i, 0, :]))
-        fmin = float(torch.min(f[i, 0, :]))
-        if fmax != fmin:
-            coeff = fmax - fmin
-            f[i,0, :] = torch.floor((f[i,0, :] - fmin) / coeff * 255.)
-
-
-def np_high_pass_filter(kspace: np.ndarray, radius: float):
+def np_high_pass_filter(kspace, radius):
 
     """
     High pass filter removes the low spatial frequencies from k-space
@@ -158,13 +105,34 @@ def np_high_pass_filter(kspace: np.ndarray, radius: float):
     """
 
     if radius > 0:
-        r = np.hypot(*kspace.shape) / 2 * radius / 100
-        rows, cols = np.array(kspace.shape, dtype=int)
+        high_freq_kspace = kspace.copy()
+        r = np.hypot(*high_freq_kspace.shape) / 2 * radius / 100
+        rows, cols = np.array(high_freq_kspace.shape, dtype=int)
         a, b = np.floor(np.array((rows, cols)) / 2).astype(np.int)
         y, x = np.ogrid[-a:rows - a, -b:cols - b]
         mask = x * x + y * y <= r * r
-        kspace[mask] = 0
+        high_freq_kspace[mask] = 0
+    return high_freq_kspace 
 
+def torch_high_pass_filter(k_space, radius):
+    """
+    Args:
+        k_space: torch tensor, BCHW 
+        radius: Relative size of the kspace mask circle (percent) 
+        return: high_frequency_k_space
+    """
+    if radius > 0:
+        kspace = copy.deepcopy(k_space)
+        high_freq_kspace = torch.zeros_like(kspace)
+        bs, _, _, _ = kspace.size() # bs: batch_size
+        for i in range(bs):
+            ks = kspace[i, 0, :]
+            ks_np = bchw_to_np(ks)
+            hf_np = np_high_pass_filter(ks_np, radius)
+            high_freq_kspace[i, 0, :] = np_to_bchw(hf_np)
+        
+        return high_freq_kspace
+ 
 def np_low_pass_filter(kspace: np.ndarray, radius: float):
 
     """
@@ -179,9 +147,30 @@ def np_low_pass_filter(kspace: np.ndarray, radius: float):
     """
 
     if radius < 100:
-        r = np.hypot(*kspace.shape) / 2 * radius / 100
-        rows, cols = np.array(kspace.shape, dtype=int)
+        low_freq_kspace = kspace.copy()
+        r = np.hypot(*low_freq_kspace.shape) / 2 * radius / 100
+        rows, cols = np.array(low_freq_kspace.shape, dtype=int)
         a, b = np.floor(np.array((rows, cols)) / 2).astype(np.int)
         y, x = np.ogrid[-a:rows - a, -b:cols - b]
         mask = x * x + y * y <= r * r
-        kspace[~mask] = 0
+        low_freq_kspace[~mask] = 0
+    return low_freq_kspace
+
+def torch_low_pass_filter(k_space, radius):
+    """
+    Args:
+        k_space: torch tensor, BCHW 
+        radius: Relative size of the kspace mask circle (percent) 
+        return: low_frequency_k_space
+    """
+    if radius < 100:
+        kspace = copy.deepcopy(k_space)
+        low_freq_kspace = torch.zeros_like(kspace)
+        bs, _, _, _ = kspace.size() # bs: batch_size
+        for i in range(bs):
+            ks = kspace[i, 0, :]
+            ks_np = bchw_to_np(ks)
+            lf_np = np_low_pass_filter(ks_np, radius)
+            low_freq_kspace[i, 0, :] = np_to_bchw(lf_np)
+        
+    return low_freq_kspace
