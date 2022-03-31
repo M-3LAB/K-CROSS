@@ -24,6 +24,7 @@ from model.kaid.ae.kaid_ae import Unet
 from model.kaid.ae.complex_ae import ComplexUnet
 from model.kaid.complex_nn.fourier_convolve import * 
 from loss_function.kaid.focal_freq import FocalFreqLoss, euclidean_freq_loss
+from data_io.nirps import NIRPS
 
 from tools.visualize import *
 #import matplotlib.pyplot as plt
@@ -263,7 +264,9 @@ if __name__ == '__main__':
 
             else:
                 raise NotImplementedError('The method has not been implemented yet')
+    
 
+    
                 
 
 
