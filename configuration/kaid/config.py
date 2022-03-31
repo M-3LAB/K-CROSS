@@ -30,7 +30,6 @@ def parse_arguments_kaid():
     parser.add_argument('--lambda-contrastive', type=float, default=None, help='weight for contrastive loss')
     parser.add_argument('--lambda-hf', type=float, default=None, help='weight for high frequency part')
     parser.add_argument('--lambda-lf', type=float, default=None, help='weight for low frequency part')
-    parser.add_argument('--test-model', type=str, default='cyclegan', choices=['cyclegan','munit','unit'])
     #parser.add_argument('--mode', type=str, default='train', choices=['train', 'pred', 'trainpred'])
     parser.add_argument('--diff-method', type=str, default=None, choices=['l1', 'l2', 'cos'])
     parser.add_argument('--lr', type=float, default=None, help='learning rate')
@@ -54,6 +53,10 @@ def parse_arguments_kaid():
     parser.add_argument('--vis-check', action='store_true', default=None, help='indiciate whether need to check visually')
     # method
     parser.add_argument('--method', type=str, choices=['combined', 'complex', 'normal'])
+    # inference 
+    parser.add_argument('--test-model', type=str, default=None, choices=['cyclegan','munit','unit'])
+    parser.add_argument('--start-epoch', type=int, default=None)
+    parser.add_argument('--end-epoch', type=int, default=None)
 
     args = parser.parse_args()
     return args
