@@ -72,17 +72,22 @@ class FocalFreqLoss(nn.Module):
         loss = weight_matrix * freq_distance
         return torch.mean(loss)
 
-    def forward(self, pred_freq, target_freq, weight_matrix=None):
+    def forward(self, pred_freq, target_freq, assigned_weight_matrix=None):
         """Forward function to calculate focal frequency loss.
 
         Args:
             pred (torch.Tensor): of shape (N, C, H, W). Predicted tensor.
             target (torch.Tensor): of shape (N, C, H, W). Target tensor.
-            matrix (torch.Tensor, optional): Element-wise spectrum weight matrix.
+            assigned_weight_matrix (torch.Tensor, optional): Element-wise spectrum weight matrix.
                 Default: None (If set to None: calculated online, dynamic).
         """
+        pred_freq = self.freq_stack(pred_freq)
+        target_freq = self.freq_stack(target_freq)
 
-
-        #TODO: Not Finished
+        # whether to use minibatch average spectrum
         if self.avg_spectrum:
-            pass
+            pred_freq = torch.mean(pred_freq, dim=0, keepdim=True)
+            target_freq = torch.mean(target_freq, dim=0, keepdim=True)
+        
+        # calculate focal frequency loss
+        return self.loss_formulation(pred_freq, target_freq, assigned_weight_matrix) * self.loss_weight
