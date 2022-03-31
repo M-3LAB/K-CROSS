@@ -2,7 +2,7 @@ import torch
 import torch.nn as nn
 from model.kaid.complex_nn.fourier_transform import *
 
-__all__ = ['FocalFreqLoss']
+__all__ = ['FocalFreqLoss', 'euclidean_freq_loss']
 
 class FocalFreqLoss(nn.Module):
     def __init__(self, loss_weight, alpha=1.0, log_matrix=False, 
@@ -91,3 +91,15 @@ class FocalFreqLoss(nn.Module):
         
         # calculate focal frequency loss
         return self.loss_formulation(pred_freq, target_freq, assigned_weight_matrix) * self.loss_weight
+
+def euclidean_freq_loss(real_freq, recon_freq):
+
+    real_freq = torch.stack([real_freq.real, real_freq.imag], dim=-1)
+    recon_freq = torch.stack([recon_freq.real, recon_freq.imag], dim=-1)
+
+    # frequency distance using (squared) Euclidean distance
+    tmp = (recon_freq - real_freq) ** 2
+    freq_distance = tmp[..., 0] + tmp[..., 1]
+
+    return torch.mean(freq_distance)
+

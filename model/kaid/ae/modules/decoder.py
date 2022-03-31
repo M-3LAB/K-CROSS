@@ -24,7 +24,7 @@ class ComplexFinalLayer(nn.Module):
     
     def forward(self, x, skip_input=None):
         if skip_input is not None:
-            x = torch.cat((x, skip_input), 1)
+            x = torch.cat((x, skip_input), dim=1)
         x = self.model(x)
         return x 
 

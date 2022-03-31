@@ -1,7 +1,7 @@
 import torch
 import torch.nn as nn
 
-__all__ = ['cosine_similarity', 'l1_diff', 'l2_diff', 'focal_freq_distance']
+__all__ = ['cosine_similarity', 'l1_diff', 'l2_diff', 'freq_distance']
 
 def cosine_similiarity(real_z, fake_z):
     """
@@ -49,5 +49,5 @@ def l2_diff(real_z, fake_z):
     distance = torch.norm(diff_tensor, p=2, dim=0, keepdim=True)
     return distance
 
-def focal_freq_distance(real_z, fake_z):
+def freq_distance(real_z, fake_z):
     pass

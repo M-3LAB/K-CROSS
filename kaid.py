@@ -23,7 +23,7 @@ from metrics.kaid.stats import mask_stats, best_radius_list
 from model.kaid.ae.kaid_ae import Unet 
 from model.kaid.ae.complex_ae import ComplexUnet
 from model.kaid.complex_nn.fourier_convolve import * 
-from loss_function.kaid.focal_freq import FocalFreqLoss
+from loss_function.kaid.focal_freq import FocalFreqLoss, euclidean_freq_loss
 
 from tools.visualize import *
 #import matplotlib.pyplot as plt
@@ -234,6 +234,37 @@ if __name__ == '__main__':
                             '', i+1, batch_limit, recon_loss.item(), focal_freq_loss.item())
 
                 print(infor, flush=True, end='  ')    
+
+            elif para_dict['method'] == 'complex':
+                real_a_freq = torch_fft(real_a, normalized_method='ortho')
+                real_b_freq = torch_fft(real_b, normalized_method='ortho')
+
+                real_a_freq_hat, _ = complex_unet(real_a_freq)
+                real_b_freq_hat, _ = complex_unet(real_b_freq)
+
+                real_a_freq_loss = euclidean_freq_loss(real_freq=real_a_freq, recon_freq=real_a_freq_hat)
+                real_b_freq_loss = euclidean_freq_loss(real_freq=real_b_freq, recon_freq=real_b_freq_hat)
+
+                freq_loss = real_a_freq_loss + real_b_freq_loss
+
+                loss_total = freq_loss
+
+                optimizer_complex.zero_grad()
+                loss_total.backward()
+                optimizer_complex.step()
+
+                infor = '\r{}[Batch {}/{}] [Freq Loss: {:.4f}]'.format(
+                            '', i+1, batch_limit, freq_loss.item())
+
+                print(infor, flush=True, end='  ')    
+            
+            elif para_dict['method'] == 'combined':
+                pass
+
+            else:
+                raise NotImplementedError('The method has not been implemented yet')
+
+                
 
 
                 
