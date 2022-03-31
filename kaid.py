@@ -265,10 +265,15 @@ if __name__ == '__main__':
             else:
                 raise NotImplementedError('The method has not been implemented yet')
     
+    if para_dict['dataset'] == 'ixi':
+        modalities = {'ixi': ['t1', 't2']} 
+    elif para_dict['dataset'] == 'brats2021':
+        modalities = {'brats2021': ['t1', 't2', 'flair']}
+
     nirps_dataset = NIRPS(nirps_path=para_dict['nirps_path'], regions=para_dict['dataset'],
-                          modalities={para_dict['dataset']: [para_dict['source_domain']]}, 
+                          modalities=modalities, 
                           models=para_dict['test_model'],
-                          epochs=[i for i in range(1, 16)])
+                          epochs=[i for i in range(para_dict['start_epoch'], para_dict['end_epoch'])])
     
     nirps_loader = DataLoader(nirps_dataset, batch_size=1, num_workers=1, shuffle=False)
     print('load nirps dataset, size:{}'.format(len(nirps_dataset)))
