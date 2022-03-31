@@ -30,6 +30,10 @@ class FocalFreqLoss(nn.Module):
         self.log_matrix = log_matrix
         self.avg_spectrum = avg_spectrum
         self.batch_matrix = batch_matrix
+    
+    def freq_stack(self, freq):
+        freq = torch.stack([freq.real, freq.imag], -1)
+        return freq
 
     def loss_formulation(self, real_freq, recon_freq, 
                          assigned_weight_matrix=None):
