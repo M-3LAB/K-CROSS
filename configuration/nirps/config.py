@@ -18,7 +18,6 @@ def parse_arguments_nirps():
     parser.add_argument('--data-mode', '-dm', type=str, default='mixed', choices=['mixed', 'paired', 'unpaired'])
     parser.add_argument('--data-num', type=int, default=None, help='slices number for GAN training')
     parser.add_argument('--gpu-id', '-g', type=str, default=None)
-    parser.add_argument('--atl', action='store_true', default=None, help='indicate whether the atl flag is true or not')
     parser.add_argument('--debug', action='store_true', default=None)
     #parser.add_argument('--nirps-structure', '-ns', action='store_true', help='flag for nirps structure')
 
