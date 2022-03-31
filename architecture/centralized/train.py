@@ -96,7 +96,6 @@ class CentralizedTrain():
                                  {'degrees':0, 'translate':[0.00, 0.00],
                                   'scale':[1.00, 1.00], 
                                   'size':(self.para_dict['size'], self.para_dict['size'])}]
-
         self.gaussian_transform = [{'mu':self.para_dict['a_mu'], 'sigma':self.para_dict['a_sigma'],
                                      'size':(self.para_dict['size'], self.para_dict['size'])},
                                     {'mu':self.para_dict['b_mu'], 'sigma':self.para_dict['b_sigma'],
@@ -144,7 +143,7 @@ class CentralizedTrain():
                                            data_paired_weight=self.para_dict['data_paired_weight'],
                                            data_moda_ratio=self.para_dict['data_moda_ratio'],
                                            data_moda_case=self.para_dict['data_moda_case'],
-                                           seg_annotation=self.para_dict['segmentation'])
+                                           annotation=self.para_dict['segmentation'])
             self.valid_dataset = BraTS2021(root=self.para_dict['valid_path'],
                                            modalities=[self.para_dict['source_domain'], self.para_dict['target_domain']],
                                            noise_type='normal',
@@ -220,7 +219,7 @@ class CentralizedTrain():
             self.trainer = Unit(self.para_dict, self.train_loader, self.valid_loader,
                                     self.assigned_loader, self.device, self.file_path)
         else:
-            raise ValueError('Model is invalid!')
+            raise ValueError('Model is Invalid!')
 
         if self.para_dict['load_model']:
             self.load_models()

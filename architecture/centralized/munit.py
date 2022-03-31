@@ -32,12 +32,8 @@ class Munit(BASE):
                                                 n_residual=self.config['n_res'], n_upsample=self.config['n_upsample'],
                                                 style_dim=self.config['style_dim']).to(self.device)
 
-        self.discriminator_from_a_to_b = Discriminator(auxiliary_rotation=self.config['auxiliary_rotation'], 
-                                                auxiliary_translation=self.config['auxiliary_translation'], auxiliary_scaling=self.config['auxiliary_scaling'], 
-                                                num_rot_label=4, num_translate_label=5, num_scaling_label=4).to(self.device)
-        self.discriminator_from_b_to_a = Discriminator(auxiliary_rotation=self.config['auxiliary_rotation'], 
-                                                auxiliary_translation=self.config['auxiliary_translation'], auxiliary_scaling=self.config['auxiliary_scaling'], 
-                                                num_rot_label=4, num_translate_label=5, num_scaling_label=4).to(self.device)  
+        self.discriminator_from_a_to_b = Discriminator().to(self.device)
+        self.discriminator_from_b_to_a = Discriminator().to(self.device)  
 
         # optimizer
         self.optimizer_generator = torch.optim.Adam(itertools.chain(self.generator_from_a_to_b_enc.parameters(),

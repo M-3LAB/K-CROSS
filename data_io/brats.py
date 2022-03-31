@@ -58,7 +58,6 @@ class BraTS2019(BASE):
         
         if not self.files:
             raise ValueError('Load Origianl Data Filed!')
-
     
     def _generate_dataset(self):
         return super()._generate_dataset()

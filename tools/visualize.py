@@ -1,4 +1,7 @@
+import fractions
 import numpy as np
+import cv2
+
 import matplotlib.pyplot as plt
 import matplotlib
 matplotlib.use('Agg')
@@ -83,3 +86,30 @@ def np_to_bchw(mri_img):
 def bchw_to_np(tensor):
     img = torch.squeeze(tensor).numpy()
     return img
+
+def normalization(img):
+    _range = np.max(img) - np.min(img)
+    return (img - np.min(img)) / _range
+
+def plot_err_map(img, gt, img_path, descript='Error Map'):
+    img_diff = 255 - np.abs(img - gt)
+    # img_diff = normalization(img_diff)
+    # img_diff = cv2.normalize(img_diff, None, alpha=0, beta=255, norm_type=cv2.NORM_MINMAX, dtype=cv2.CV_8U)
+    img_diff = cv2.applyColorMap(img_diff, cv2.COLORMAP_JET) 
+
+    plt.style.use('classic')
+    plt.figure(figsize=(20, 4))
+    plt.xticks([])
+    plt.yticks([])
+    plt.imshow(img_diff)
+    plt.colorbar(fraction=0.02, pad=0.05)
+    plt.clim(0, 1)
+    plt.savefig(img_path, bbox_inches='tight')
+    plt.close()
+    
+if __name__ == '__main__':
+
+    img = cv2.imread('./work_dir/centralized/brats2021/Sat Mar 26 00:30:35 2022/images/epoch_15/BraTS2021_00114-slice-67/fake_a.png', cv2.IMREAD_GRAYSCALE)
+    gt = cv2.imread('./work_dir/centralized/brats2021/Sat Mar 26 00:30:35 2022/images/epoch_15/BraTS2021_00114-slice-67/real_a.png', cv2.IMREAD_GRAYSCALE)
+    img_path = './tools/err_map.png'
+    plot_err_map(img, gt, img_path)
