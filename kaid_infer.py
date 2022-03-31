@@ -34,7 +34,7 @@ if __name__ == '__main__':
 
         # TO DO
 
-        # kaid = KAID_MODEL()
+        # kaid = KAID_MODEL(img, gt)
 
         kaid = 0
         path_kaid = name[0]
