@@ -167,6 +167,7 @@ class NIRPSTrain(CentralizedTrain):
         for epoch in range(self.para_dict['num_epoch']):
             self.epoch = epoch
             self.work_flow()
+            print('Epoch {} done!'.format(self.epoch+1))
 
         # copy generated images to target nirps dataset
         self.copy_img_into_nirps_dataset(self.para_dict['source_domain'], self.para_dict['model']) 
