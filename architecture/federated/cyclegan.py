@@ -5,7 +5,7 @@ from architecture.federated.client import send_from_server_to_client
 from torch.utils.data import DataLoader
 from torch.utils.data.sampler import SubsetRandomSampler
 
-__all__ = ['FedCycleGAN']
+
 class FedCycleGAN(FederatedTrain):
     def __init__(self, args):
         super(FedCycleGAN, self).__init__(args=args)

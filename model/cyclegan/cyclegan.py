@@ -118,32 +118,8 @@ def discriminator_block(in_filters, out_filters):
 
 
 class CycleDis(nn.Module):
-
-    def __init__(self, auxiliary_rotation=False, 
-                 auxiliary_translation=False, auxiliary_scaling=False,
-                 num_augmentation='one'):
-
+    def __init__(self):
         super(CycleDis, self).__init__()
-
-        self.auxiliary_rotation = auxiliary_rotation 
-        self.auxiliary_translation = auxiliary_translation 
-        self.auxiliary_scaling = auxiliary_scaling
-        self.num_augmentation = num_augmentation
-
-        if self.num_augmentation == 'four':
-            self.num_rot_label = 4 
-            self.num_translate_label = 5 
-            self.num_scaling_label = 4 
-
-        elif self.num_augmentation == 'one':
-            self.num_rot_label = 2 
-            self.num_translate_label = 2 
-            self.num_scaling_label = 2 
-        
-        elif self.num_augmentation == 'two':
-            self.num_rot_label = 3 
-            self.num_translate_label = 3 
-            self.num_scaling_label = 3 
 
         # A bunch of convolutions one after another
         model = [nn.Conv2d(1, 64, 4, stride=2, padding=1),
@@ -162,32 +138,12 @@ class CycleDis(nn.Module):
         self.model = nn.Sequential(*model)
         self.fcn = nn.Conv2d(512, 1, 4, padding=1)
 
-        self.fcn_rot = nn.Linear(512, self.num_rot_label)
-        self.fcn_translate = nn.Linear(512, self.num_translate_label)
-        self.fcn_scaling = nn.Linear(512, self.num_scaling_label)
         #self.softmax = nn.Softmax()
 
-    def forward(self, x=None, rot_x=None, translate_x=None, scale_x=None):
-        if self.auxiliary_rotation and rot_x is not None:
-            rot_x = self.model(rot_x)
-            rot_x = torch.sum(rot_x, dim=(2, 3))
-            rot_logits = self.fcn_rot(rot_x) 
-            return rot_logits
+    def forward(self, x):
+        x = self.model(x)
+        x = self.fcn(x)
+        # average pooling and flatten
+        gan_logit = F.avg_pool2d(x, x.size()[2:]).view(x.size()[0], -1)
 
-        elif self.auxiliary_translation and translate_x is not None:
-            translate_x = self.model(translate_x)
-            translate_x = torch.sum(translate_x, dim=(2, 3))
-            translate_logits = self.fcn_translate(translate_x) 
-            return translate_logits
-
-        elif self.auxiliary_scaling and scale_x is not None:
-            scale_x = self.model(scale_x)
-            scaling_x = torch.sum(scale_x, dim=(2, 3))
-            scaling_logits = self.fcn_scaling(scaling_x) 
-            return scaling_logits
-        else: 
-            x = self.model(x)
-            x = self.fcn(x)
-            # average pooling and flatten
-            gan_logit = F.avg_pool2d(x, x.size()[2:]).view(x.size()[0], -1)
-            return gan_logit
+        return gan_logit

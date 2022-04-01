@@ -25,15 +25,8 @@ class CycleGAN(BASE):
         self.generator_from_a_to_b = CycleGen().to(self.device)
         self.generator_from_b_to_a = CycleGen().to(self.device)
 
-        self.discriminator_from_a_to_b = CycleDis(auxiliary_rotation=self.config['auxiliary_rotation'],
-                                                    auxiliary_translation=self.config['auxiliary_translation'],
-                                                    auxiliary_scaling=self.config['auxiliary_scaling'],
-                                                    num_augmentation=self.config['num_augmentation']).to(self.device)
-
-        self.discriminator_from_b_to_a = CycleDis(auxiliary_rotation=self.config['auxiliary_rotation'],
-                                                      auxiliary_translation=self.config['auxiliary_translation'],
-                                                      auxiliary_scaling=self.config['auxiliary_scaling'],
-                                                      num_augmentation=self.config['num_augmentation']).to(self.device)
+        self.discriminator_from_a_to_b = CycleDis().to(self.device)
+        self.discriminator_from_b_to_a = CycleDis().to(self.device)
 
         # differential privacy
         if self.config['diff_privacy']:

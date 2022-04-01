@@ -12,9 +12,9 @@ import torchvision.transforms as transforms
 __all__ = ['NIRPS']
 
 class NIRPS(torch.utils.data.Dataset):
-    def __init__(self, nirps_path, regions=['ixi'], modalities={'ixi': ['t1']}, models=['cyclegan'], epochs=[1, 2], size=256):
+    def __init__(self, nirps_path, regions=['ixi'], modalities={'ixi': ['t2']}, models=['cyclegan'], epochs=[1, 2], size=256):
         self.nirps_path = nirps_path
-        self.region = regions
+        self.regions = regions
         self.modalities = modalities
         self.models = models
         self.epochs = epochs
@@ -22,9 +22,11 @@ class NIRPS(torch.utils.data.Dataset):
 
         self.nirps_dataset = []
         self.load_nirps_dataset()
-
+        self.transform = transforms.Compose([transforms.ToPILImage(), 
+                                             transforms.Resize(size=self.size),
+                                             ToTensor()]) 
     def load_nirps_dataset(self):
-        for dataset in self.region:
+        for dataset in self.regions:
             for moda in self.modalities[dataset]:
                 for model in self.models:
                     for epoch in self.epochs:
@@ -53,10 +55,10 @@ class NIRPS(torch.utils.data.Dataset):
 
         return {'img': img, 'gt': gt, 'name': name}
 
-    def _get_transform(self):
-        self.transform = transforms.Compose([transforms.ToPILImage(), 
-                                             transforms.Resize(size=self.size),
-                                             ToTensor()]) 
+    # def _get_transform(self):
+    #     self.transform = transforms.Compose([transforms.ToPILImage(), 
+    #                                          transforms.Resize(size=self.size),
+    #                                          ToTensor()]) 
 
     def __len__(self):
         return len(self.nirps_dataset)
@@ -85,9 +87,9 @@ if __name__ == '__main__':
 
         print(name[0])
 
-        mae = float(load_metric_result(name[0], 'mae')) 
-        psnr = float(load_metric_result(name[0], 'psnr')) 
-        ssim = float(load_metric_result(name[0], 'ssim')) 
+        mae = load_metric_result(name[0], 'mae') 
+        psnr = load_metric_result(name[0], 'psnr') 
+        ssim = load_metric_result(name[0], 'ssim') 
 
         print('mae: {:.4f} psnr: {:.4f} ssim: {:.4f}'.format(mae, psnr, ssim))
         break

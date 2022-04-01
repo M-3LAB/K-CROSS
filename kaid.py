@@ -272,21 +272,28 @@ if __name__ == '__main__':
                     raise NotImplementedError('The method has not been implemented yet')
 
     if para_dict['validate']: 
-        if para_dict['dataset'] == 'ixi':
-            regions=['ixi']
-            modalities = {'ixi': ['pd', 't2']} 
-        elif para_dict['dataset'] == 'brats2021':
-            regions=['brats2021']
-            modalities = {'brats2021': ['t1', 't2', 'flair']}
-        else:
-            raise NotImplementedError('NIRPS Data Has Not Been Implemented Yet')
+        # if para_dict['dataset'] == 'ixi':
+        #     regions=['ixi']
+        #     modalities = {'ixi': ['pd', 't2']} 
+        # elif para_dict['dataset'] == 'brats2021':
+        #     regions=['brats2021']
+        #     modalities = {'brats2021': ['t1', 't2', 'flair']}
+        # else:
+        #     raise NotImplementedError('NIRPS Data Has Not Been Implemented Yet')
 
-        nirps_dataset = NIRPS(nirps_path=para_dict['nirps_path'], regions=regions,
-                              modalities=modalities, 
-                              models=para_dict['test_model'],
-                              epochs=[i for i in range(1, 16)])
-                              #epochs=[i for i in range(para_dict['start_epoch'], para_dict['end_epoch'])])
-    
+        # nirps_dataset = NIRPS(nirps_path=para_dict['nirps_path'], regions=regions,
+        #                       modalities=modalities, 
+        #                       models=[para_dict['test_model']],
+        #                       epochs=[i for i in range(1, 16)])
+        #                       #epochs=[i for i in range(para_dict['start_epoch'], para_dict['end_epoch'])])
+        nirps_path = './nirps_dataset'
+        regions = ['ixi', 'brats2021']
+        modalities = {'ixi': ['t2', 'pd'],
+                      'brats2021': ['t1', 't2', 'flair']}
+        models = ['cyclegan'] 
+        epochs = [i for i in range(1, 16)]
+
+        nirps_dataset = NIRPS(nirps_path=nirps_path, regions=regions, modalities=modalities, models=models, epochs=epochs)
         nirps_loader = DataLoader(nirps_dataset, batch_size=1, num_workers=1, shuffle=False)
         print('load nirps dataset, size:{}'.format(len(nirps_dataset)))
 
@@ -295,6 +302,8 @@ if __name__ == '__main__':
             img = batch['img']
             gt = batch['gt']
             name = batch['name']
+
+            print(name)
     
 
     

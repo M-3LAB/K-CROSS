@@ -1,10 +1,10 @@
 import torch
+import itertools
 
 from architecture.centralized.base import BASE
 from model.unit.unit import *
 from tools.utilize import *
 
-import itertools
 import matplotlib.pyplot as plt
 import matplotlib
 matplotlib.use('Agg')
@@ -42,12 +42,8 @@ class Unit(BASE):
                    shared_block=shared_G).to(device)
 
         input_shape = (1, self.config['size'], self.config['size'])
-        self.discriminator_from_a_to_b = Discriminator(input_shape, auxiliary_rotation=self.config['auxiliary_rotation'], 
-                                                auxiliary_translation=self.config['auxiliary_translation'], auxiliary_scaling=self.config['auxiliary_scaling'], 
-                                                num_rot_label=4, num_translate_label=5, num_scaling_label=4).to(self.device)
-        self.discriminator_from_b_to_a = Discriminator(input_shape, auxiliary_rotation=self.config['auxiliary_rotation'], 
-                                                auxiliary_translation=self.config['auxiliary_translation'], auxiliary_scaling=self.config['auxiliary_scaling'], 
-                                                num_rot_label=4, num_translate_label=5, num_scaling_label=4).to(self.device)  
+        self.discriminator_from_a_to_b = Discriminator(input_shape).to(self.device)
+        self.discriminator_from_b_to_a = Discriminator(input_shape).to(self.device)  
         # optimizer
         self.optimizer_generator = torch.optim.Adam(itertools.chain(self.generator_from_a_to_b_enc.parameters(),
                                                             self.generator_from_a_to_b_dec.parameters(),

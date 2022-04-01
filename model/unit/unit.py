@@ -103,19 +103,11 @@ class Generator(nn.Module):
 
 
 class Discriminator(nn.Module):
-    def __init__(self, input_shape, auxiliary_rotation=False, auxiliary_translation=False,
-                auxiliary_scaling=False, num_rot_label=4, num_translate_label=5, num_scaling_label=4):
+    def __init__(self, input_shape):
         super(Discriminator, self).__init__()
         channels, height, width = input_shape
-        # Calculate output of image discriminator (PatchGAN)
+        # calculate output of image discriminator (PatchGAN)
         self.output_shape = (1, height // 2 ** 4, width // 2 ** 4)
-
-        self.auxiliary_rotation = auxiliary_rotation 
-        self.auxiliary_translation = auxiliary_translation 
-        self.auxiliary_scaling = auxiliary_scaling
-        self.num_rot_label = num_rot_label
-        self.num_translate_label = num_translate_label
-        self.num_scaling_label = num_scaling_label
 
         def discriminator_block(in_filters, out_filters, normalize=True):
             """Returns downsampling layers of each discriminator block"""
@@ -135,27 +127,10 @@ class Discriminator(nn.Module):
             nn.Conv2d(512, 1, 3, padding=1)
         )
 
-        self.fcn_rot = nn.Linear(512, self.num_rot_label)
-        self.fcn_translate = nn.Linear(512, self.num_translate_label)
-        self.fcn_scaling = nn.Linear(512, self.num_scaling_label)
-
     def compute_loss(self, x, gt):
         """Computes the MSE between model output and scalar gt"""
         loss = sum([torch.mean((out - gt) ** 2) for out in self.forward(x)])
         return loss
 
-    def forward(self, x=None, rot_x=None, translate_x=None, scale_x=None):
-        if self.auxiliary_rotation and rot_x is not None:
-            rot = torch.sum(self.models(rot_x), dim=(2, 3))
-            rot_logits = self.fcn_rot(rot)
-            return rot_logits
-        elif self.auxiliary_translation and translate_x is not None:
-            translate = torch.sum(self.models(translate_x), dim=(2, 3))
-            translate_logits = self.fcn_translate(translate) 
-            return translate_logits
-        elif self.auxiliary_scaling and scale_x is not None:
-            scale = torch.sum(self.models(scale_x), dim=(2, 3))
-            scaling_logits = self.fcn_scaling(scale) 
-            return scaling_logits
-        else: 
-            return self.cnv(self.models(x))
+    def forward(self, x):
+        return self.cnv(self.models(x))
