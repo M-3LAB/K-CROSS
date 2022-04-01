@@ -204,7 +204,9 @@ if __name__ == '__main__':
                                  betas=[para_dict['beta1'], para_dict['beta2']])
     optimizer_normal = torch.optim.Adam(unet.parameters(), lr=para_dict['lr'],
                                  betas=[para_dict['beta1'], para_dict['beta2']])
-    print(para_dict['train'])
+    checkpoint_path = 'kaid_ck' 
+    create_folders(tag_path=checkpoint_path)
+
     if para_dict['train']:
         for epoch in range(para_dict['num_epochs']):
             for i, batch in enumerate(normal_loader): 
@@ -291,8 +293,17 @@ if __name__ == '__main__':
                     infor = '\r{}[Batch {}/{}] [Recon Loss: {:.4f}] [Freq Loss: {:.4f}]'.format(
                                 '', i+1, batch_limit, recon_loss.item(), freq_loss.item())
 
+                    print(infor, flush=True, end='  ')
                 else:
                     raise NotImplementedError('The method has not been implemented yet')
+        
+        if para_dict['method'] == 'normal':
+            save_model(model=unet, file_path=checkpoint_path, info='normal')
+        elif para_dict['method'] == 'complex':
+            save_model(model=complex_unet, file_path=checkpoint_path, info='complex')
+        elif para_dict['method'] == 'combined':
+            save_model(model=complex_unet, file_path=checkpoint_path, info='combined_complex')
+            save_model(model=unet, file_path=checkpoint_path, info='combined_normal')
 
     if para_dict['validate']: 
         nirps_path = para_dict['nirps_path']
@@ -310,6 +321,15 @@ if __name__ == '__main__':
             img = batch['img']
             gt = batch['gt']
             name = batch['name']
+
+            if para_dict['method'] == 'normal':
+                pass
+            elif para_dict['method'] == 'complex':
+                pass
+            elif para_dict['method'] == 'combined':
+                pass
+            else:
+                raise NotImplementedError
 
     
 
