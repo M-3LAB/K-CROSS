@@ -54,6 +54,7 @@ def parse_arguments_kaid():
     # method
     parser.add_argument('--method', type=str, choices=['combined', 'complex', 'normal'])
     # inference 
+    parser.add_argument('--nirps-path', type=str, default=None, help='nirps data path')
     parser.add_argument('--test-model', type=str, default=None, choices=['cyclegan','munit','unit'])
     parser.add_argument('--start-epoch', type=int, default=None)
     parser.add_argument('--end-epoch', type=int, default=None)

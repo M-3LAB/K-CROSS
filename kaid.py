@@ -204,88 +204,90 @@ if __name__ == '__main__':
                                  betas=[para_dict['beta1'], para_dict['beta2']])
     optimizer_normal = torch.optim.Adam(unet.parameters(), lr=para_dict['lr'],
                                  betas=[para_dict['beta1'], para_dict['beta2']])
+    print(para_dict['train'])
+    if para_dict['train']:
+        for epoch in range(para_dict['num_epochs']):
+            for i, batch in enumerate(normal_loader): 
+                if i > batch_limit:
+                    break
+                
+                
+                real_a = batch[para_dict['source_domain']].to(device)
+                real_b = batch[para_dict['target_domain']].to(device)
 
-    for epoch in range(para_dict['num_epochs']):
-        for i, batch in enumerate(normal_loader): 
-            if i > batch_limit:
-                break
-            
-            
-            real_a = batch[para_dict['source_domain']].to(device)
-            real_b = batch[para_dict['target_domain']].to(device)
+                if para_dict['method'] == 'normal':
+                    real_a_hat, real_a_z = unet(real_a)
+                    real_b_hat, real_b_z = unet(real_b)
 
-            if para_dict['method'] == 'normal':
-                real_a_hat, real_a_z = unet(real_a)
-                real_b_hat, real_b_z = unet(real_b)
+                    real_a_recon_loss = criterion_recon(real_a_hat, real_a) 
+                    real_b_recon_loss = criterion_recon(real_b_hat, real_b) 
+                    recon_loss = real_a_recon_loss + real_b_recon_loss
 
-                real_a_recon_loss = criterion_recon(real_a_hat, real_a) 
-                real_b_recon_loss = criterion_recon(real_b_hat, real_b) 
-                recon_loss = real_a_recon_loss + real_b_recon_loss
+                    real_a_freq_loss = criterion_freq(real_a_hat, real_a)
+                    real_b_freq_loss = criterion_freq(real_b_hat, real_b)
+                    focal_freq_loss = real_a_freq_loss + real_b_freq_loss
 
-                real_a_freq_loss = criterion_freq(real_a_hat, real_a)
-                real_b_freq_loss = criterion_freq(real_b_hat, real_b)
-                focal_freq_loss = real_a_freq_loss + real_b_freq_loss
+                    loss_total = recon_loss + focal_freq_loss
 
-                loss_total = recon_loss + focal_freq_loss
+                    optimizer_normal.zero_grad()
+                    loss_total.backward()
+                    optimizer_normal.step()
 
-                optimizer_normal.zero_grad()
-                loss_total.backward()
-                optimizer_normal.step()
+                    infor = '\r{}[Batch {}/{}] [Recon Loss: {:.4f}] [Focal Freq Loss: {:.4f}]'.format(
+                                '', i+1, batch_limit, recon_loss.item(), focal_freq_loss.item())
 
-                infor = '\r{}[Batch {}/{}] [Recon Loss: {:.4f}] [Focal Freq Loss: {:.4f}]'.format(
-                            '', i+1, batch_limit, recon_loss.item(), focal_freq_loss.item())
+                    print(infor, flush=True, end='  ')    
 
-                print(infor, flush=True, end='  ')    
+                elif para_dict['method'] == 'complex':
+                    real_a_freq = torch_fft(real_a, normalized_method='ortho')
+                    real_b_freq = torch_fft(real_b, normalized_method='ortho')
 
-            elif para_dict['method'] == 'complex':
-                real_a_freq = torch_fft(real_a, normalized_method='ortho')
-                real_b_freq = torch_fft(real_b, normalized_method='ortho')
+                    real_a_freq_hat, _ = complex_unet(real_a_freq)
+                    real_b_freq_hat, _ = complex_unet(real_b_freq)
 
-                real_a_freq_hat, _ = complex_unet(real_a_freq)
-                real_b_freq_hat, _ = complex_unet(real_b_freq)
+                    real_a_freq_loss = euclidean_freq_loss(real_freq=real_a_freq, recon_freq=real_a_freq_hat)
+                    real_b_freq_loss = euclidean_freq_loss(real_freq=real_b_freq, recon_freq=real_b_freq_hat)
 
-                real_a_freq_loss = euclidean_freq_loss(real_freq=real_a_freq, recon_freq=real_a_freq_hat)
-                real_b_freq_loss = euclidean_freq_loss(real_freq=real_b_freq, recon_freq=real_b_freq_hat)
+                    freq_loss = real_a_freq_loss + real_b_freq_loss
 
-                freq_loss = real_a_freq_loss + real_b_freq_loss
+                    loss_total = freq_loss
 
-                loss_total = freq_loss
+                    optimizer_complex.zero_grad()
+                    loss_total.backward()
+                    optimizer_complex.step()
 
-                optimizer_complex.zero_grad()
-                loss_total.backward()
-                optimizer_complex.step()
+                    infor = '\r{}[Batch {}/{}] [Freq Loss: {:.4f}]'.format(
+                                '', i+1, batch_limit, freq_loss.item())
 
-                infor = '\r{}[Batch {}/{}] [Freq Loss: {:.4f}]'.format(
-                            '', i+1, batch_limit, freq_loss.item())
+                    print(infor, flush=True, end='  ')    
 
-                print(infor, flush=True, end='  ')    
-            
-            elif para_dict['method'] == 'combined':
-                pass
+                elif para_dict['method'] == 'combined':
+                    pass
 
-            else:
-                raise NotImplementedError('The method has not been implemented yet')
+                else:
+                    raise NotImplementedError('The method has not been implemented yet')
+
+    if para_dict['validate']: 
+        if para_dict['dataset'] == 'ixi':
+            modalities = {'ixi': ['pd', 't2']} 
+        elif para_dict['dataset'] == 'brats2021':
+            modalities = {'brats2021': ['t1', 't2', 'flair']}
+        else:
+            raise NotImplementedError('NIRPS Data Has Not Been Implemented Yet')
+
+        nirps_dataset = NIRPS(nirps_path=para_dict['nirps_path'], regions=para_dict['dataset'],
+                              modalities=modalities, 
+                              models=para_dict['test_model'],
+                              epochs=[i for i in range(para_dict['start_epoch'], para_dict['end_epoch'])])
     
-    if para_dict['dataset'] == 'ixi':
-        modalities = {'ixi': ['t1', 't2']} 
-    elif para_dict['dataset'] == 'brats2021':
-        modalities = {'brats2021': ['t1', 't2', 'flair']}
-    else:
-        raise NotImplementedError('NIRPS Data Has Not Been Implemented Yet')
+        nirps_loader = DataLoader(nirps_dataset, batch_size=1, num_workers=1, shuffle=False)
+        print('load nirps dataset, size:{}'.format(len(nirps_dataset)))
 
-    nirps_dataset = NIRPS(nirps_path=para_dict['nirps_path'], regions=para_dict['dataset'],
-                          modalities=modalities, 
-                          models=para_dict['test_model'],
-                          epochs=[i for i in range(para_dict['start_epoch'], para_dict['end_epoch'])])
-    
-    nirps_loader = DataLoader(nirps_dataset, batch_size=1, num_workers=1, shuffle=False)
-    print('load nirps dataset, size:{}'.format(len(nirps_dataset)))
+        for batch in nirps_loader:
 
-    for batch in nirps_loader:
-
-        img = batch['img']
-        gt = batch['gt']
-        name = batch['name']
+            img = batch['img']['pd']
+            gt = batch['gt']['pd']
+            name = batch['name']
     
 
     

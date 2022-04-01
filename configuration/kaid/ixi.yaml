@@ -61,3 +61,5 @@ load_latest: False
 assigned_epoch: 50
 # method
 method: 'normal'
+#nirps_path
+nirps_path: '/disk/medical/nirps_dataset/'
