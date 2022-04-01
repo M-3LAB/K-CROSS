@@ -6,7 +6,7 @@ import sys
 sys.path.append('.')
 
 from torch.utils.data import DataLoader
-from tools.utilize import load_metric_result
+from tools.utilize import load_metric_result, save_metric_result
 from data_io.base import ToTensor
 import torchvision.transforms as transforms
 
@@ -85,5 +85,13 @@ if __name__ == '__main__':
         ssim = load_metric_result(name[0], 'ssim') 
 
         print('mae: {:.4f} psnr: {:.4f} ssim: {:.4f}'.format(mae, psnr, ssim))
+
+        # TO DO
+        # kaid = KAID_MODEL(img, gt)
+
+        kaid = 0
+        path_kaid = name[0]
+        save_metric_result(kaid, path_kaid, 'kaid')
+
         break
 
