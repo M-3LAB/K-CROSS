@@ -300,7 +300,7 @@ if __name__ == '__main__':
         #                       models=[para_dict['test_model']],
         #                       epochs=[i for i in range(1, 16)])
         #                       #epochs=[i for i in range(para_dict['start_epoch'], para_dict['end_epoch'])])
-        nirps_path = './nirps_dataset'
+        nirps_path = para_dict['nirps_path']
         regions = ['ixi', 'brats2021']
         modalities = {'ixi': ['t2', 'pd'],
                       'brats2021': ['t1', 't2', 'flair']}
