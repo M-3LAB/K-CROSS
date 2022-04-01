@@ -268,6 +268,18 @@ if __name__ == '__main__':
                     real_b_recon_loss = criterion_recon(real_b_hat, real_b) 
                     recon_loss = real_a_recon_loss + real_b_recon_loss
 
+                    real_a_freq = torch_fft(real_a, normalized_method='ortho')
+                    real_b_freq = torch_fft(real_b, normalized_method='ortho')
+
+                    real_a_freq_hat, _ = complex_unet(real_a_freq)
+                    real_b_freq_hat, _ = complex_unet(real_b_freq)
+
+                    real_a_freq_loss = euclidean_freq_loss(real_freq=real_a_freq, recon_freq=real_a_freq_hat)
+                    real_b_freq_loss = euclidean_freq_loss(real_freq=real_b_freq, recon_freq=real_b_freq_hat)
+                    freq_loss = real_a_freq_loss + real_b_freq_loss
+
+                    loss_total = recon_loss + freq_loss
+
                 else:
                     raise NotImplementedError('The method has not been implemented yet')
 
