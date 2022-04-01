@@ -211,7 +211,6 @@ if __name__ == '__main__':
                 if i > batch_limit:
                     break
                 
-                
                 real_a = batch[para_dict['source_domain']].to(device)
                 real_b = batch[para_dict['target_domain']].to(device)
 
@@ -262,8 +261,8 @@ if __name__ == '__main__':
                     print(infor, flush=True, end='  ')    
 
                 elif para_dict['method'] == 'combined':
-                    real_a_hat, real_a_z = unet(real_a)
-                    real_b_hat, real_b_z = unet(real_b)
+                    real_a_hat, _ = unet(real_a)
+                    real_b_hat, _ = unet(real_b)
 
                     real_a_recon_loss = criterion_recon(real_a_hat, real_a) 
                     real_b_recon_loss = criterion_recon(real_b_hat, real_b) 
@@ -274,14 +273,16 @@ if __name__ == '__main__':
 
     if para_dict['validate']: 
         if para_dict['dataset'] == 'ixi':
+            regions=['ixi']
             modalities = {'ixi': ['pd', 't2']} 
         elif para_dict['dataset'] == 'brats2021':
+            regions=['brats2021']
             modalities = {'brats2021': ['t1', 't2', 'flair']}
         else:
             raise NotImplementedError('NIRPS Data Has Not Been Implemented Yet')
 
-        nirps_dataset = NIRPS(nirps_path=para_dict['nirps_path'], regions=para_dict['dataset'],
-                              modalities={'ixi': ['t2', 'pd']}, 
+        nirps_dataset = NIRPS(nirps_path=para_dict['nirps_path'], regions=regions,
+                              modalities=modalities, 
                               models=para_dict['test_model'],
                               epochs=[i for i in range(1, 16)])
                               #epochs=[i for i in range(para_dict['start_epoch'], para_dict['end_epoch'])])
