@@ -276,9 +276,10 @@ if __name__ == '__main__':
             raise NotImplementedError('NIRPS Data Has Not Been Implemented Yet')
 
         nirps_dataset = NIRPS(nirps_path=para_dict['nirps_path'], regions=para_dict['dataset'],
-                              modalities=modalities, 
+                              modalities={'ixi': 't1'}, 
                               models=para_dict['test_model'],
-                              epochs=[i for i in range(para_dict['start_epoch'], para_dict['end_epoch'])])
+                              epochs=[i for i in range(1, 16)])
+                              #epochs=[i for i in range(para_dict['start_epoch'], para_dict['end_epoch'])])
     
         nirps_loader = DataLoader(nirps_dataset, batch_size=1, num_workers=1, shuffle=False)
         print('load nirps dataset, size:{}'.format(len(nirps_dataset)))
