@@ -316,6 +316,15 @@ if __name__ == '__main__':
         nirps_loader = DataLoader(nirps_dataset, batch_size=1, num_workers=1, shuffle=False)
         print('load nirps dataset, size: {}'.format(len(nirps_dataset)))
 
+        #load models
+        if para_dict['method'] == 'normal':
+            unet = load_model(model=unet, file_path=checkpoint_path, description='normal')
+        elif para_dict['method'] == 'complex':
+            complex_unet = load_model(model=complex_unet, file_path=checkpoint_path, description='complex')
+        elif para_dict['method'] == 'combined':
+            unet = load_model(model=unet, file_path=checkpoint_path, description='combined_normal')
+            complex_unet = load_model(model=complex_unet, file_path=checkpoint_path, description='combined_complex')
+
         for batch in nirps_loader:
 
             img = batch['img']
