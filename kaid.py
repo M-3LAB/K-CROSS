@@ -17,7 +17,7 @@ from model.unit.unit import Encoder as UE
 from model.unit.unit import Generator as UG
 
 from configuration.kaid.config import parse_arguments_kaid
-from loss_function.kaid.distance import l1_diff, l2_diff, cosine_similiarity
+from loss_function.kaid.distance import l1_diff, l2_diff, cosine_similiarity, freq_distance
 from model.kaid.complex_nn.fourier_transform import * 
 from model.kaid.complex_nn.power_spectrum import *
 from metrics.kaid.stats import mask_stats, best_radius_list 
@@ -114,15 +114,15 @@ if __name__ == '__main__':
                                 data_num=para_dict['data_num'],
                                 dataset_splited=False)
         
-        ixi_kaid_dataset = IXI(root=para_dict['data_path'],
-                               modalities=[para_dict['source_domain'], para_dict['target_domain']],
-                               extract_slice=[para_dict['es_lower_limit'], para_dict['es_higher_limit']],
-                               noise_type='kaid',
-                               learn_mode='train', #train or test is meaningless if dataset_splited is false
-                               transform_data=kaid_transform,
-                               data_mode='paired',
-                               data_num=para_dict['data_num'],
-                               dataset_splited=False)
+        #ixi_kaid_dataset = IXI(root=para_dict['data_path'],
+        #                       modalities=[para_dict['source_domain'], para_dict['target_domain']],
+        #                       extract_slice=[para_dict['es_lower_limit'], para_dict['es_higher_limit']],
+        #                       noise_type='kaid',
+        #                       learn_mode='train', #train or test is meaningless if dataset_splited is false
+        #                       transform_data=kaid_transform,
+        #                       data_mode='paired',
+        #                       data_num=para_dict['data_num'],
+        #                       dataset_splited=False)
         
 
         #TODO: make sure normal and nosiy loader release the same order of dataset
@@ -132,8 +132,8 @@ if __name__ == '__main__':
         noisy_loader = DataLoader(ixi_noise_dataset, num_workers=para_dict['num_workers'],
                                   batch_size=para_dict['batch_size'], shuffle=False)
 
-        kaid_loader = DataLoader(ixi_kaid_dataset, num_workers=para_dict['num_workers'],
-                                 batch_size=para_dict['batch_size'], shuffle=False)
+        #kaid_loader = DataLoader(ixi_kaid_dataset, num_workers=para_dict['num_workers'],
+        #                         batch_size=para_dict['batch_size'], shuffle=False)
 
     elif para_dict['dataset'] == 'brats2021':
         assert para_dict['source_domain'] in ['t1', 't2', 'flair']
@@ -161,14 +161,14 @@ if __name__ == '__main__':
                                         data_mode='paired',
                                         data_num=para_dict['data_num'])
         
-        brats_kaid_dataset = BraTS2021(root=para_dict['data_path'],
-                                         modalities=[para_dict['source_domain'], para_dict['target_domain']],
-                                         extract_slice=[para_dict['es_lower_limit'], para_dict['es_higher_limit']],
-                                         noise_type='kaid',
-                                         learn_mode='train', # train or test is meaningless if dataset_spilited is false
-                                         transform_data=kaid_transform,
-                                         data_mode='paired',
-                                         data_num=para_dict['data_num'])
+        #brats_kaid_dataset = BraTS2021(root=para_dict['data_path'],
+        #                                 modalities=[para_dict['source_domain'], para_dict['target_domain']],
+        #                                 extract_slice=[para_dict['es_lower_limit'], para_dict['es_higher_limit']],
+        #                                 noise_type='kaid',
+        #                                 learn_mode='train', # train or test is meaningless if dataset_spilited is false
+        #                                 transform_data=kaid_transform,
+        #                                 data_mode='paired',
+        #                                 data_num=para_dict['data_num'])
         
         #TODO: make sure normal and nosiy loader release the same order of dataset
         normal_loader = DataLoader(brats_normal_dataset, num_workers=para_dict['num_workers'],
@@ -177,8 +177,6 @@ if __name__ == '__main__':
         noisy_loader = DataLoader(brats_noise_dataset, num_workers=para_dict['num_workers'],
                                   batch_size=para_dict['batch_size'], shuffle=False)
         
-        #test_loader = DataLoader(brats_normal_dataset, num_workers=para_dict['num_workers'],
-        #                         batch_size=1, shuffle=False)
     else:
         raise NotImplementedError("New Data Has Not Been Implemented")
 
@@ -332,11 +330,36 @@ if __name__ == '__main__':
             name = batch['name']
 
             if para_dict['method'] == 'normal':
-                pass
+                img_z = unet.encode(img)
+                gt_z = unet.encode(gt)
+
+                if para_dict['diff'] == 'l1':
+                    kaid = l1_diff(real_z=gt_z, fake_z=img_z).item()
+                elif para_dict['diff'] == 'l2':
+                    kaid = l2_diff(real_z=gt_z, fake_z=img_z).item()
+                elif para_dict['diff'] == 'cos':
+                    kaid = cosine_similiarity(real_z=gt_z, fake_z=img_z).item()
+                else:
+                    raise ValueError
+                print(f'KAID: {kaid}')
+
             elif para_dict['method'] == 'complex':
-                pass
+                img_freq_z = complex_unet.encode(img)
+                gt_freq_z = complex_unet.encode(gt)
+
+                kaid = freq_distance(real_z=gt_freq_z, fake_z=img_freq_z)
+                print(f'KAID: {kaid}')
+
             elif para_dict['method'] == 'combined':
-                pass
+                img_z = unet.encode(img)
+                gt_z = unet.encode(gt)
+
+                img_freq_z = complex_unet.encode(img)
+                gt_freq_z = complex_unet.encode(gt)
+
+                kaid = l2_diff(real_z=gt_z, fake_z=img_z) + freq_distance(real_z=gt_freq_z, fake_z=img_freq_z) 
+                print(f'KAID: {kaid}')
+
             else:
                 raise NotImplementedError
 

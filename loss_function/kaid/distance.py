@@ -31,8 +31,9 @@ def l1_diff(real_z, fake_z):
         the l1 difference between two hidden space 
     
     """
-    distance = torch.abs(real_z - fake_z)
-    return distance
+    diff_tensor = real_z - fake_z
+    distance = torch.norm(diff_tensor, p=1, dim=-2, keepdim=True)
+    return torch.mean(distance)
 
 def l2_diff(real_z, fake_z):
     """
@@ -46,8 +47,8 @@ def l2_diff(real_z, fake_z):
         the l2 difference between two hidden space
     """
     diff_tensor = real_z - fake_z
-    distance = torch.norm(diff_tensor, p=2, dim=0, keepdim=True)
-    return distance
+    distance = torch.norm(diff_tensor, p=2, dim=-2, keepdim=True)
+    return torch.mean(distance)
 
 def freq_distance(real_z, fake_z):
     real_z_freq = torch.stack([real_z.real, real_z.imag], dim=-1)
