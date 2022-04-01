@@ -26,6 +26,7 @@ class NIRPS(torch.utils.data.Dataset):
         self.transform = transforms.Compose([transforms.ToPILImage(), 
                                              transforms.Resize(size=self.size),
                                              ToTensor()]) 
+
     def load_nirps_dataset(self):
         for dataset in self.regions:
             for moda in self.modalities[dataset]:
@@ -49,11 +50,10 @@ class NIRPS(torch.utils.data.Dataset):
         # read gray scale Image
         gt = cv2.imread(self.nirps_dataset[index][1], cv2.IMREAD_GRAYSCALE)
         gt = self.transform(img)
-
+        # img path
         name = self.nirps_dataset[index][0][:-8]
 
         return {'img': img, 'gt': gt, 'name': name}
-
 
     def __len__(self):
         return len(self.nirps_dataset)
