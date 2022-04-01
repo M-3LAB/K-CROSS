@@ -288,6 +288,9 @@ if __name__ == '__main__':
                     optimizer_complex.step()
                     optimizer_normal.step()
 
+                    infor = '\r{}[Batch {}/{}] [Recon Loss: {:.4f}] [Freq Loss: {:.4f}]'.format(
+                                '', i+1, batch_limit, recon_loss.item(), freq_loss.item())
+
                 else:
                     raise NotImplementedError('The method has not been implemented yet')
 
