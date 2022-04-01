@@ -50,4 +50,11 @@ def l2_diff(real_z, fake_z):
     return distance
 
 def freq_distance(real_z, fake_z):
-    pass
+    real_z_freq = torch.stack([real_z.real, real_z.imag], dim=-1)
+    fake_z_freq = torch.stack([fake_z.real, fake_z.imag], dim=-1)
+
+    # frequency distance using (squared) Euclidean distance
+    tmp = (real_z_freq - fake_z_freq) ** 2
+    freq_distance = torch.sqrt(tmp[..., 0] + tmp[..., 1])
+
+    return torch.mean(freq_distance)
