@@ -342,7 +342,8 @@ if __name__ == '__main__':
                     kaid = cosine_similiarity(real_z=gt_z, fake_z=img_z).item()
                 else:
                     raise ValueError
-                print(f'KAID: {kaid}')
+
+                save_metric_result(result=kaid, file_path=name[0], description='kaid_normal')
 
             elif para_dict['method'] == 'complex':
 
@@ -353,7 +354,8 @@ if __name__ == '__main__':
                 gt_freq_z = complex_unet.encode(gt_freq)
 
                 kaid = freq_distance(real_z=gt_freq_z, fake_z=img_freq_z)
-                print(f'KAID: {kaid}')
+
+                save_metric_result(result=kaid, file_path=name[0], description='kaid_complex')
 
             elif para_dict['method'] == 'combined':
 
@@ -374,8 +376,7 @@ if __name__ == '__main__':
                 else:
                     raise ValueError
 
-                print(f'KAID: {kaid}')
-                save_metric_result()
+                save_metric_result(result=kaid, file_path=name[0], description='kaid_combined')
 
             else:
                 raise NotImplementedError
