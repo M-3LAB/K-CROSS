@@ -317,6 +317,7 @@ if __name__ == '__main__':
         #load models
         if para_dict['method'] == 'normal':
             unet = load_model(model=unet, file_path=checkpoint_path, description='normal')
+            
         elif para_dict['method'] == 'complex':
             complex_unet = load_model(model=complex_unet, file_path=checkpoint_path, description='complex')
         elif para_dict['method'] == 'combined':
@@ -325,8 +326,8 @@ if __name__ == '__main__':
 
         for batch in nirps_loader:
 
-            img = batch['img'].to(device)
-            gt = batch['gt'].to(device)
+            img = batch['img'].float().to(device)
+            gt = batch['gt'].float().to(device)
             name = batch['name']
 
             if para_dict['method'] == 'normal':
@@ -344,21 +345,37 @@ if __name__ == '__main__':
                 print(f'KAID: {kaid}')
 
             elif para_dict['method'] == 'complex':
-                img_freq_z = complex_unet.encode(img)
-                gt_freq_z = complex_unet.encode(gt)
+
+                img_freq = torch_fft(img, normalized_method='ortho')
+                gt_freq = torch_fft(gt, normalized_method='ortho')
+
+                img_freq_z = complex_unet.encode(img_freq)
+                gt_freq_z = complex_unet.encode(gt_freq)
 
                 kaid = freq_distance(real_z=gt_freq_z, fake_z=img_freq_z)
                 print(f'KAID: {kaid}')
 
             elif para_dict['method'] == 'combined':
+
                 img_z = unet.encode(img)
                 gt_z = unet.encode(gt)
 
-                img_freq_z = complex_unet.encode(img)
-                gt_freq_z = complex_unet.encode(gt)
+                img_freq = torch_fft(img, normalized_method='ortho')
+                gt_freq = torch_fft(gt, normalized_method='ortho')
+                img_freq_z = complex_unet.encode(img_freq)
+                gt_freq_z = complex_unet.encode(gt_freq)
 
-                kaid = l2_diff(real_z=gt_z, fake_z=img_z) + freq_distance(real_z=gt_freq_z, fake_z=img_freq_z) 
+                if para_dict['diff'] == 'l1':
+                    kaid = l1_diff(real_z=gt_z, fake_z=img_z) + freq_distance(real_z=gt_freq_z, fake_z=img_freq_z) 
+                elif para_dict['diff'] == 'l2':
+                    kaid = l2_diff(real_z=gt_z, fake_z=img_z) + freq_distance(real_z=gt_freq_z, fake_z=img_freq_z) 
+                elif para_dict['diff'] == 'cos':
+                    kaid = cosine_similiarity(real_z=gt_z, fake_z=img_z) + freq_distance(real_z=gt_freq_z, fake_z=img_freq_z) 
+                else:
+                    raise ValueError
+
                 print(f'KAID: {kaid}')
+                save_metric_result()
 
             else:
                 raise NotImplementedError

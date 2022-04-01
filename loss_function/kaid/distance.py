@@ -15,9 +15,9 @@ def cosine_similiarity(real_z, fake_z):
         cosine similiarity distance between two hidden space 
     
     """
-    cos = nn.CosineSimilarity(dim=1, eps=1e-6)
+    cos = nn.CosineSimilarity(dim=-2, eps=1e-6)
     distance = cos(real_z, fake_z)
-    return distance
+    return torch.mean(distance)
 
 def l1_diff(real_z, fake_z):
     """
