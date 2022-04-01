@@ -204,7 +204,9 @@ if __name__ == '__main__':
                                  betas=[para_dict['beta1'], para_dict['beta2']])
     optimizer_normal = torch.optim.Adam(unet.parameters(), lr=para_dict['lr'],
                                  betas=[para_dict['beta1'], para_dict['beta2']])
-    print(para_dict['train'])
+    checkpoint_path = 'kaid_ck' 
+    create_folders(tag_path=checkpoint_path)
+
     if para_dict['train']:
         for epoch in range(para_dict['num_epochs']):
             for i, batch in enumerate(normal_loader): 
@@ -280,30 +282,33 @@ if __name__ == '__main__':
 
                     loss_total = recon_loss + freq_loss
 
+                    optimizer_complex.zero_grad()
+                    optimizer_normal.zero_grad()
 
+                    loss_total.backward()
 
+                    optimizer_complex.step()
+                    optimizer_normal.step()
+
+                    infor = '\r{}[Batch {}/{}] [Recon Loss: {:.4f}] [Freq Loss: {:.4f}]'.format(
+                                '', i+1, batch_limit, recon_loss.item(), freq_loss.item())
+
+                    print(infor, flush=True, end='  ')
                 else:
                     raise NotImplementedError('The method has not been implemented yet')
+        
+        if para_dict['method'] == 'normal':
+            save_model(model=unet, file_path=checkpoint_path, infor='normal', save_previous=True)
+        elif para_dict['method'] == 'complex':
+            save_model(model=complex_unet, file_path=checkpoint_path, infor='complex', save_previous=True)
+        elif para_dict['method'] == 'combined':
+            save_model(model=complex_unet, file_path=checkpoint_path, infor='combined_complex', save_previous=True)
+            save_model(model=unet, file_path=checkpoint_path, infor='combined_normal', save_previous=True)
 
     if para_dict['validate']: 
-        # if para_dict['dataset'] == 'ixi':
-        #     regions=['ixi']
-        #     modalities = {'ixi': ['pd', 't2']} 
-        # elif para_dict['dataset'] == 'brats2021':
-        #     regions=['brats2021']
-        #     modalities = {'brats2021': ['t1', 't2', 'flair']}
-        # else:
-        #     raise NotImplementedError('NIRPS Data Has Not Been Implemented Yet')
-
-        # nirps_dataset = NIRPS(nirps_path=para_dict['nirps_path'], regions=regions,
-        #                       modalities=modalities, 
-        #                       models=[para_dict['test_model']],
-        #                       epochs=[i for i in range(1, 16)])
-        #                       #epochs=[i for i in range(para_dict['start_epoch'], para_dict['end_epoch'])])
         nirps_path = para_dict['nirps_path']
-        regions = ['ixi', 'brats2021']
-        modalities = {'ixi': ['t2', 'pd'],
-                      'brats2021': ['t1', 't2', 'flair']}
+        regions = ['ixi']
+        modalities = {'ixi': ['t2', 'pd']}
         models = ['cyclegan'] 
         epochs = [i for i in range(1, 16)]
 
@@ -311,13 +316,30 @@ if __name__ == '__main__':
         nirps_loader = DataLoader(nirps_dataset, batch_size=1, num_workers=1, shuffle=False)
         print('load nirps dataset, size: {}'.format(len(nirps_dataset)))
 
+        #load models
+        if para_dict['method'] == 'normal':
+            unet = load_model(model=unet, file_path=checkpoint_path, description='normal')
+        elif para_dict['method'] == 'complex':
+            complex_unet = load_model(model=complex_unet, file_path=checkpoint_path, description='complex')
+        elif para_dict['method'] == 'combined':
+            unet = load_model(model=unet, file_path=checkpoint_path, description='combined_normal')
+            complex_unet = load_model(model=complex_unet, file_path=checkpoint_path, description='combined_complex')
+
         for batch in nirps_loader:
 
             img = batch['img']
             gt = batch['gt']
             name = batch['name']
 
-            print(name)
+            if para_dict['method'] == 'normal':
+                pass
+            elif para_dict['method'] == 'complex':
+                pass
+            elif para_dict['method'] == 'combined':
+                pass
+            else:
+                raise NotImplementedError
+
     
 
     
