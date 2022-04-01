@@ -10,7 +10,7 @@ from tools.utilize import load_metric_result
 __all__ = ['NIRPS']
 
 class NIRPS(torch.utils.data.Dataset):
-    def __init__(self, nirps_path, regions=['ixi'], modalities={'ixi': ['t1']}, models=['cyclegan'], epochs=[1, 2]):
+    def __init__(self, nirps_path, regions=['ixi'], modalities={'ixi': ['t2']}, models=['cyclegan'], epochs=[1, 2]):
         self.nirps_path = nirps_path
         self.region = regions
         self.modalities = modalities
@@ -70,9 +70,9 @@ if __name__ == '__main__':
 
         print(name[0])
 
-        mae = float(load_metric_result(name[0], 'mae')) 
-        psnr = float(load_metric_result(name[0], 'psnr')) 
-        ssim = float(load_metric_result(name[0], 'ssim')) 
+        mae = load_metric_result(name[0], 'mae') 
+        psnr = load_metric_result(name[0], 'psnr') 
+        ssim = load_metric_result(name[0], 'ssim') 
 
         print('mae: {:.4f} psnr: {:.4f} ssim: {:.4f}'.format(mae, psnr, ssim))
         break
