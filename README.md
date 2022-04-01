@@ -78,3 +78,8 @@ To reveal the real-world sitation in hosptials, datastream is organized as follo
 ```bash
 python3 data_io/nirps.py
 ```
+
+## Metric Consistency
+```bash
+python3 metric_consistency.py
+```
