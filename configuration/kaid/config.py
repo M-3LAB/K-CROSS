@@ -21,8 +21,6 @@ def parse_arguments_kaid():
     parser.add_argument('--debug', action='store_true', default=None)
     parser.add_argument('--normalized-method', type=str, default=None, choices=['forward', 'backward', 'ortho'])
     parser.add_argument('--num-epochs', type=int, default=None)
-    parser.add_argument('--lambda-recon', type=float, default=None, help='weight for reconstruction loss')
-    parser.add_argument('--lambda-contrastive', type=float, default=None, help='weight for contrastive loss')
     parser.add_argument('--diff-method', type=str, default=None, choices=['l1', 'l2', 'cos', 'freq'])
     parser.add_argument('--lr', type=float, default=None, help='learning rate')
     parser.add_argument('--step-size', type=int, default=None, help='learning rate will be adjust for epoch numbers')
@@ -30,7 +28,6 @@ def parse_arguments_kaid():
     parser.add_argument('--beta1', type=float, default=None, help='Adam Optimizer parameter')
     parser.add_argument('--beta2', type=float, default=None, help='Adam Optimizer parameter')
     parser.add_argument('--fid', action='store_true', default=True)
-    parser.add_argument('--resume', action='store_true', default=None, help='resume training or not')
     parser.add_argument('--train', action='store_true', default=None)
     parser.add_argument('--validate', action='store_true', default=None)
     #segmentation

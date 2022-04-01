@@ -22,7 +22,6 @@ work_dir: ./work_dir
 save_log: true
 debug: False 
 federated: false
-kaid_stats: false
 data_num: 3000
 lr: 0.0001
 #optimizer
@@ -31,16 +30,7 @@ beta2: 0.999
 #schduler
 step_size: 30
 gamma: 0.1
-#radius
-radius_path: ./raidus_stats
-radius_stats: False 
-radius_assigned: False
-radius_assigned_value: 10
-delta_diff: 1000
 normalized_method: 'ortho'
-#loss
-lambda_recon: 1.0
-lambda_contrastive: 10.0
 #test_model
 test_model: cyclegan
 # diff
@@ -50,13 +40,6 @@ segmentation: false
 # train, validation, resume
 train: False 
 validate: False 
-resume: False
-#visualization
-vis_check: False
-vis_method: 'np'
-# load model
-load_latest: False
-assigned_epoch: 50
 # method
 method: 'normal'
 #nirps_path
