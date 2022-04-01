@@ -298,12 +298,12 @@ if __name__ == '__main__':
                     raise NotImplementedError('The method has not been implemented yet')
         
         if para_dict['method'] == 'normal':
-            save_model(model=unet, file_path=checkpoint_path, info='normal')
+            save_model(model=unet, file_path=checkpoint_path, infor='normal', save_previous=True)
         elif para_dict['method'] == 'complex':
-            save_model(model=complex_unet, file_path=checkpoint_path, info='complex')
+            save_model(model=complex_unet, file_path=checkpoint_path, infor='complex', save_previous=True)
         elif para_dict['method'] == 'combined':
-            save_model(model=complex_unet, file_path=checkpoint_path, info='combined_complex')
-            save_model(model=unet, file_path=checkpoint_path, info='combined_normal')
+            save_model(model=complex_unet, file_path=checkpoint_path, infor='combined_complex', save_previous=True)
+            save_model(model=unet, file_path=checkpoint_path, infor='combined_normal', save_previous=True)
 
     if para_dict['validate']: 
         nirps_path = para_dict['nirps_path']
