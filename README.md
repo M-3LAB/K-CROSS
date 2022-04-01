@@ -47,9 +47,14 @@ python3 centralized_training.py --dataset 'brats2021' --model 'cyclegan' --sourc
 python3 centralized_training.py --dataset 'ixi' --model 'cyclegan' --source-domain 'pd' --target-domain 't2' --data-path '/disk1/medical/ixi' --valid-path '/disk1/medical/ixi'  
 ```
 
-## KAID Debug 
+## KAID Training 
 ```bash
-python3 kaid.py --dataset 'ixi' --source-domain 't2' --target-domain 'pd' -g 1 --msl-assigned --msl-assigned-value 10 --train --num-epochs 30
+python3 kaid.py --dataset 'ixi' --source-domain 'pd' --target-domain 't2' -g 1  --data-path '/disk/medical/ixi' --valid-path '/disk/medical/ixi' --nirps-path '/disk/medical/nirps_dataset' --train --num-epochs 30 --method 'normal'  
+```
+
+## KAID Validation 
+```bash
+python3 kaid.py --dataset 'ixi' --source-domain 'pd' --target-domain 't2' -g 1  --data-path '/disk/medical/ixi' --valid-path '/disk/medical/ixi'  --nirps-path '/disk/medical/nirps_dataset' --validate --method 'normal' --diff 'l2'
 ```
 
 ## NIRPS Dataset Build Up
