@@ -1,5 +1,6 @@
 import torch
 import cv2
+import numpy as np
 import os
 import sys
 sys.path.append('.')
@@ -12,9 +13,9 @@ import torchvision.transforms as transforms
 __all__ = ['NIRPS']
 
 class NIRPS(torch.utils.data.Dataset):
-    def __init__(self, nirps_path, regions=['ixi'], modalities={'ixi': ['t1']}, models=['cyclegan'], epochs=[1, 2], size=256):
+    def __init__(self, nirps_path, regions=['ixi'], modalities={'ixi': ['t2']}, models=['cyclegan'], epochs=[1, 2], size=256):
         self.nirps_path = nirps_path
-        self.region = regions
+        self.regions = regions
         self.modalities = modalities
         self.models = models
         self.epochs = epochs
@@ -22,9 +23,12 @@ class NIRPS(torch.utils.data.Dataset):
 
         self.nirps_dataset = []
         self.load_nirps_dataset()
+        self.transform = transforms.Compose([transforms.ToPILImage(), 
+                                             transforms.Resize(size=self.size),
+                                             ToTensor()]) 
 
     def load_nirps_dataset(self):
-        for dataset in self.region:
+        for dataset in self.regions:
             for moda in self.modalities[dataset]:
                 for model in self.models:
                     for epoch in self.epochs:
@@ -39,24 +43,16 @@ class NIRPS(torch.utils.data.Dataset):
             raise ValueError('Load Nirps Dataset Filed!')
 
     def __getitem__(self, index):
-        # Read Gray Scale Image
+        # read gray scale Image
         img = cv2.imread(self.nirps_dataset[index][0], cv2.IMREAD_GRAYSCALE)
         img = self.transform(img)
-        img = torch.unsqueeze(img, dim=0)
-
-        # Read Gray Scale Image
+        # read gray scale Image
         gt = cv2.imread(self.nirps_dataset[index][1], cv2.IMREAD_GRAYSCALE)
-        gt = self.transform(img)
-        gt = torch.unsqueeze(img, dim=0)
-
+        gt = self.transform(gt)
+        # img path
         name = self.nirps_dataset[index][0][:-8]
 
         return {'img': img, 'gt': gt, 'name': name}
-
-    def _get_transform(self):
-        self.transform = transforms.Compose([transforms.ToPILImage(), 
-                                             transforms.Resize(size=self.size),
-                                             ToTensor()]) 
 
     def __len__(self):
         return len(self.nirps_dataset)
@@ -73,7 +69,6 @@ if __name__ == '__main__':
     epochs = [i for i in range(1, 3)]
 
     nirps_dataset = NIRPS(nirps_path=nirps_path, regions=regions, modalities=modalities, models=models, epochs=epochs)
-
     nirps_loader = DataLoader(nirps_dataset, batch_size=1, num_workers=1, shuffle=False)
 
     print('load nirps dataset, size:{}'.format(len(nirps_dataset)))
@@ -85,9 +80,9 @@ if __name__ == '__main__':
 
         print(name[0])
 
-        mae = float(load_metric_result(name[0], 'mae')) 
-        psnr = float(load_metric_result(name[0], 'psnr')) 
-        ssim = float(load_metric_result(name[0], 'ssim')) 
+        mae = load_metric_result(name[0], 'mae') 
+        psnr = load_metric_result(name[0], 'psnr') 
+        ssim = load_metric_result(name[0], 'ssim') 
 
         print('mae: {:.4f} psnr: {:.4f} ssim: {:.4f}'.format(mae, psnr, ssim))
         break

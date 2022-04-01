@@ -132,19 +132,9 @@ class Decoder(nn.Module):
         img = self.model(content_code)
         return img
 
-        
-
 class Discriminator(nn.Module):
-    def __init__(self, in_channels=1, auxiliary_rotation=False, auxiliary_translation=False,
-                auxiliary_scaling=False, num_rot_label=4, num_translate_label=5, num_scaling_label=4):
+    def __init__(self, in_channels=1):
         super(Discriminator, self).__init__()
-
-        self.auxiliary_rotation = auxiliary_rotation 
-        self.auxiliary_translation = auxiliary_translation 
-        self.auxiliary_scaling = auxiliary_scaling
-        self.num_rot_label = num_rot_label
-        self.num_translate_label = num_translate_label
-        self.num_scaling_label = num_scaling_label
 
         def discriminator_block(in_filters, out_filters, normalize=True):
             """Returns downsampling layers of each discriminator block"""
@@ -177,38 +167,17 @@ class Discriminator(nn.Module):
 
         self.downsample = nn.AvgPool2d(in_channels, stride=2)
 
-        self.fcn_rot = nn.Linear(512, self.num_rot_label)
-        self.fcn_translate = nn.Linear(512, self.num_translate_label)
-        self.fcn_scaling = nn.Linear(512, self.num_scaling_label)
-
-
     def compute_loss(self, x, gt):
         """Computes the MSE between model output and scalar gt"""
         loss = sum([torch.mean((out - gt) ** 2) for out in self.forward(x)])
         return loss
 
-    def forward(self, x=None, rot_x=None, translate_x=None, scale_x=None):
-        if self.auxiliary_rotation and rot_x is not None:
-            m = self.models.disc_0
-            rot = torch.sum(m(rot_x), dim=(2, 3))
-            rot_logits = self.fcn_rot(rot)
-            return rot_logits
-        elif self.auxiliary_translation and translate_x is not None:
-            translate = self.models.disc_0(translate_x)
-            translate = torch.sum(translate, dim=(2, 3))
-            translate_logits = self.fcn_translate(translate) 
-            return translate_logits
-        elif self.auxiliary_scaling and scale_x is not None:
-            scale = self.models.disc_0(scale_x)
-            scale = torch.sum(scale, dim=(2, 3))
-            scaling_logits = self.fcn_scaling(scale) 
-            return scaling_logits
-        else: 
-            outputs = []
-            for m, cnv in zip(self.models, self.conv2ds):
-                outputs.append(cnv(m(x)))
-                x = self.downsample(x)
-            return outputs
+    def forward(self, x):
+        outputs = []
+        for m, cnv in zip(self.models, self.conv2ds):
+            outputs.append(cnv(m(x)))
+            x = self.downsample(x)
+        return outputs
 
 class ResidualBlock(nn.Module):
     def __init__(self, features, norm="in"):
@@ -228,7 +197,6 @@ class ResidualBlock(nn.Module):
 
     def forward(self, x):
         return x + self.block(x)
-
 
 class AdaptiveInstanceNorm2d(nn.Module):
     """Reference: https://github.com/NVlabs/MUNIT/blob/master/networks.py"""

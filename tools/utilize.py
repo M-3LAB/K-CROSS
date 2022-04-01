@@ -127,7 +127,7 @@ def save_metric_result(result, file_path, description=None):
 def load_metric_result(file_path, description=None):
     with open('{}/{}.txt'.format(file_path, description), 'r') as f:
         data = f.read()
-    return data
+    return float(data)
 
 def save_script(src_file, file_path):
     shutil.copy2(src_file, file_path)

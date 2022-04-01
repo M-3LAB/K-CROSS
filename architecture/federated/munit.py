@@ -10,7 +10,6 @@ class FedMunit(FederatedTrain):
         super(FedMunit, self).__init__(args=args)
         self.args = args
 
-
     def init_model(self, description='server and clients'):
         self.server = Munit(self.para_dict, self.train_loader, self.valid_loader,
                                self.assigned_loader, self.device, self.file_path)

@@ -315,7 +315,6 @@ class BASE():
         with open(save_img_path.replace('.png', '.npy'), 'wb') as f:
             np.save(f, np.array([real_a, fake_a, real_b, fake_b]))
 
-
     def master_hook_adder(self, module, grad_input, grad_output):
         # global dynamic_hook_function
         return self.dynamic_hook_function(module, grad_input, grad_output)
