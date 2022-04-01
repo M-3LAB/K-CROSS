@@ -6,16 +6,19 @@ sys.path.append('.')
 
 from torch.utils.data import DataLoader
 from tools.utilize import load_metric_result
+from data_io.base import ToTensor
+import torchvision.transforms as transforms
 
 __all__ = ['NIRPS']
 
 class NIRPS(torch.utils.data.Dataset):
-    def __init__(self, nirps_path, regions=['ixi'], modalities={'ixi': ['t1']}, models=['cyclegan'], epochs=[1, 2]):
+    def __init__(self, nirps_path, regions=['ixi'], modalities={'ixi': ['t1']}, models=['cyclegan'], epochs=[1, 2], size=256):
         self.nirps_path = nirps_path
         self.region = regions
         self.modalities = modalities
         self.models = models
         self.epochs = epochs
+        self.size = size
 
         self.nirps_dataset = []
         self.load_nirps_dataset()
@@ -36,11 +39,24 @@ class NIRPS(torch.utils.data.Dataset):
             raise ValueError('Load Nirps Dataset Filed!')
 
     def __getitem__(self, index):
-        img = cv2.imread(self.nirps_dataset[index][0])
-        gt = cv2.imread(self.nirps_dataset[index][1])
+        # Read Gray Scale Image
+        img = cv2.imread(self.nirps_dataset[index][0], cv2.IMREAD_GRAYSCALE)
+        img = self.transform(img)
+        img = torch.unsqueeze(img, dim=0)
+
+        # Read Gray Scale Image
+        gt = cv2.imread(self.nirps_dataset[index][1], cv2.IMREAD_GRAYSCALE)
+        gt = self.transform(img)
+        gt = torch.unsqueeze(img, dim=0)
+
         name = self.nirps_dataset[index][0][:-8]
 
         return {'img': img, 'gt': gt, 'name': name}
+
+    def _get_transform(self):
+        self.transform = transforms.Compose([transforms.ToPILImage(), 
+                                             transforms.Resize(size=self.size),
+                                             ToTensor()]) 
 
     def __len__(self):
         return len(self.nirps_dataset)

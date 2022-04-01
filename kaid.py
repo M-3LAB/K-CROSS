@@ -1,3 +1,4 @@
+from ast import Not
 from locale import normalize
 from tools.visualize import np_scaling_kspace, torch_scaling_kspace
 import torch
@@ -269,6 +270,8 @@ if __name__ == '__main__':
         modalities = {'ixi': ['t1', 't2']} 
     elif para_dict['dataset'] == 'brats2021':
         modalities = {'brats2021': ['t1', 't2', 'flair']}
+    else:
+        raise NotImplementedError('NIRPS Data Has Not Been Implemented Yet')
 
     nirps_dataset = NIRPS(nirps_path=para_dict['nirps_path'], regions=para_dict['dataset'],
                           modalities=modalities, 
