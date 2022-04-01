@@ -327,8 +327,8 @@ if __name__ == '__main__':
 
         for batch in nirps_loader:
 
-            img = batch['img']
-            gt = batch['gt']
+            img = batch['img'].to(device)
+            gt = batch['gt'].to(device)
             name = batch['name']
 
             if para_dict['method'] == 'normal':

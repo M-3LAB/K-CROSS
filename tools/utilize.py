@@ -160,7 +160,7 @@ def load_model(model, file_path, description):
         raise ValueError('file is not exist, {}'.format(file_path)) 
 
     #model_path = glob.glob('{}/checkpoint/{}/*.pth'.format(file_path, description))[0]
-    model_path = f'{file_path}/checkpoint/{description}.pth' 
+    model_path = f'{file_path}/{description}.pth' 
     checkpoint = torch.load(model_path)
     model.load_state_dict(checkpoint['model_state_dict'])
 
