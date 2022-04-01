@@ -280,7 +280,13 @@ if __name__ == '__main__':
 
                     loss_total = recon_loss + freq_loss
 
+                    optimizer_complex.zero_grad()
+                    optimizer_normal.zero_grad()
 
+                    loss_total.backward()
+
+                    optimizer_complex.step()
+                    optimizer_normal.step()
 
                 else:
                     raise NotImplementedError('The method has not been implemented yet')
