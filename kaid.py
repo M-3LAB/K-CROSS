@@ -262,7 +262,12 @@ if __name__ == '__main__':
                     print(infor, flush=True, end='  ')    
 
                 elif para_dict['method'] == 'combined':
-                    pass
+                    real_a_hat, real_a_z = unet(real_a)
+                    real_b_hat, real_b_z = unet(real_b)
+
+                    real_a_recon_loss = criterion_recon(real_a_hat, real_a) 
+                    real_b_recon_loss = criterion_recon(real_b_hat, real_b) 
+                    recon_loss = real_a_recon_loss + real_b_recon_loss
 
                 else:
                     raise NotImplementedError('The method has not been implemented yet')
@@ -276,7 +281,7 @@ if __name__ == '__main__':
             raise NotImplementedError('NIRPS Data Has Not Been Implemented Yet')
 
         nirps_dataset = NIRPS(nirps_path=para_dict['nirps_path'], regions=para_dict['dataset'],
-                              modalities={'ixi': 't1'}, 
+                              modalities={'ixi': ['t2', 'pd']}, 
                               models=para_dict['test_model'],
                               epochs=[i for i in range(1, 16)])
                               #epochs=[i for i in range(para_dict['start_epoch'], para_dict['end_epoch'])])
@@ -286,8 +291,8 @@ if __name__ == '__main__':
 
         for batch in nirps_loader:
 
-            img = batch['img']['pd']
-            gt = batch['gt']['pd']
+            img = batch['img']
+            gt = batch['gt']
             name = batch['name']
     
 
