@@ -46,7 +46,6 @@ class NIRPS(torch.utils.data.Dataset):
         # read gray scale Image
         img = cv2.imread(self.nirps_dataset[index][0], cv2.IMREAD_GRAYSCALE)
         img = self.transform(img)
-
         # read gray scale Image
         gt = cv2.imread(self.nirps_dataset[index][1], cv2.IMREAD_GRAYSCALE)
         gt = self.transform(gt)

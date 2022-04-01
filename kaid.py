@@ -309,7 +309,7 @@ if __name__ == '__main__':
 
         nirps_dataset = NIRPS(nirps_path=nirps_path, regions=regions, modalities=modalities, models=models, epochs=epochs)
         nirps_loader = DataLoader(nirps_dataset, batch_size=1, num_workers=1, shuffle=False)
-        print('load nirps dataset, size:{}'.format(len(nirps_dataset)))
+        print('load nirps dataset, size: {}'.format(len(nirps_dataset)))
 
         for batch in nirps_loader:
 
