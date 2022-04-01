@@ -22,7 +22,7 @@ work_dir: ./work_dir
 save_log: true
 debug: False 
 federated: false
-data_num: 3000
+data_num: 10000
 lr: 0.0001
 #optimizer
 beta1: 0.5
