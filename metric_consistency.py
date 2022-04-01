@@ -114,5 +114,4 @@ if __name__ == '__main__':
 
     # plot result
     vis_metric_consistency(result_std[0])
-    pass
 
