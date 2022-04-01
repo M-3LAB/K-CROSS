@@ -121,7 +121,7 @@ def save_log(infor, file_path, description=None):
         print(infor, file=f)
 
 def save_metric_result(result, file_path, description=None):
-    with open('{}/{}.txt'.format(file_path, description), 'a') as f:
+    with open('{}/{}.txt'.format(file_path, description), 'w') as f:
         print(result, file=f)
 
 def load_metric_result(file_path, description=None):

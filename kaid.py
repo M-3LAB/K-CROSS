@@ -353,7 +353,7 @@ if __name__ == '__main__':
                 img_freq_z = complex_unet.encode(img_freq)
                 gt_freq_z = complex_unet.encode(gt_freq)
 
-                kaid = freq_distance(real_z=gt_freq_z, fake_z=img_freq_z)
+                kaid = freq_distance(real_z=gt_freq_z, fake_z=img_freq_z).item()
 
                 save_metric_result(result=kaid, file_path=name[0], description='kaid_complex')
 
@@ -368,11 +368,11 @@ if __name__ == '__main__':
                 gt_freq_z = complex_unet.encode(gt_freq)
 
                 if para_dict['diff'] == 'l1':
-                    kaid = l1_diff(real_z=gt_z, fake_z=img_z) + freq_distance(real_z=gt_freq_z, fake_z=img_freq_z) 
+                    kaid = (l1_diff(real_z=gt_z, fake_z=img_z) + freq_distance(real_z=gt_freq_z, fake_z=img_freq_z)).item() 
                 elif para_dict['diff'] == 'l2':
-                    kaid = l2_diff(real_z=gt_z, fake_z=img_z) + freq_distance(real_z=gt_freq_z, fake_z=img_freq_z) 
+                    kaid = (l2_diff(real_z=gt_z, fake_z=img_z) + freq_distance(real_z=gt_freq_z, fake_z=img_freq_z)).item() 
                 elif para_dict['diff'] == 'cos':
-                    kaid = cosine_similiarity(real_z=gt_z, fake_z=img_z) + freq_distance(real_z=gt_freq_z, fake_z=img_freq_z) 
+                    kaid = (cosine_similiarity(real_z=gt_z, fake_z=img_z) + freq_distance(real_z=gt_freq_z, fake_z=img_freq_z)).item() 
                 else:
                     raise ValueError
 
