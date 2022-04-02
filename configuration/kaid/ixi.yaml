@@ -3,7 +3,7 @@ noise_type: kaid
 seed: 3
 size: 256 
 mu: 0.0
-sigma: 1.0
+sigma: 0.05 
 source_domain: pd
 target_domain: t2
 data_path: /disk1/medical/ixi

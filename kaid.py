@@ -5,7 +5,7 @@ import torch
 import yaml
 import os
 import numpy as np
-
+from skimage.util import random_noise
 from torch.utils.data import DataLoader
 from data_io.ixi import IXI
 from data_io.brats import BraTS2021
@@ -104,22 +104,22 @@ if __name__ == '__main__':
                                  data_num=para_dict['data_num'],
                                  dataset_splited=False)
         
-        ixi_noise_dataset = IXI(root=para_dict['data_path'],
-                                modalities=[para_dict['source_domain'], para_dict['target_domain']],
-                                extract_slice=[para_dict['es_lower_limit'], para_dict['es_higher_limit']],
-                                noise_type=para_dict['noise_type'],
-                                learn_mode='train', #train or test is meaningless if dataset_splited is false
-                                transform_data=noise_transform,
-                                data_mode='paired',
-                                data_num=para_dict['data_num'],
-                                dataset_splited=False)
+        #ixi_noise_dataset = IXI(root=para_dict['data_path'],
+        #                        modalities=[para_dict['source_domain'], para_dict['target_domain']],
+        #                        extract_slice=[para_dict['es_lower_limit'], para_dict['es_higher_limit']],
+        #                        noise_type=para_dict['noise_type'],
+        #                        learn_mode='train', #train or test is meaningless if dataset_splited is false
+        #                        transform_data=noise_transform,
+        #                        data_mode='paired',
+        #                        data_num=para_dict['data_num'],
+        #                        dataset_splited=False)
         
         #TODO: make sure normal and nosiy loader release the same order of dataset
         normal_loader = DataLoader(ixi_normal_dataset, num_workers=para_dict['num_workers'],
                                    batch_size=para_dict['batch_size'], shuffle=False)
 
-        noisy_loader = DataLoader(ixi_noise_dataset, num_workers=para_dict['num_workers'],
-                                  batch_size=para_dict['batch_size'], shuffle=False)
+        #noisy_loader = DataLoader(ixi_noise_dataset, num_workers=para_dict['num_workers'],
+        #                          batch_size=para_dict['batch_size'], shuffle=False)
 
     elif para_dict['dataset'] == 'brats2021':
         assert para_dict['source_domain'] in ['t1', 't2', 'flair']
@@ -138,22 +138,22 @@ if __name__ == '__main__':
                                          data_mode='paired',
                                          data_num=para_dict['data_num'])
 
-        brats_noise_dataset = BraTS2021(root=para_dict['data_path'],
-                                        modalities=[para_dict['source_domain'], para_dict['target_domain']],
-                                        noise_type=para_dict['noise_type'],
-                                        learn_mode='train',
-                                        extract_slice=[para_dict['es_lower_limit'], para_dict['es_higher_limit']],
-                                        transform_data=noise_transform,
-                                        data_mode='paired',
-                                        data_num=para_dict['data_num'])
+        #brats_noise_dataset = BraTS2021(root=para_dict['data_path'],
+        #                                modalities=[para_dict['source_domain'], para_dict['target_domain']],
+        #                                noise_type=para_dict['noise_type'],
+        #                                learn_mode='train',
+        #                                extract_slice=[para_dict['es_lower_limit'], para_dict['es_higher_limit']],
+        #                                transform_data=noise_transform,
+        #                                data_mode='paired',
+        #                                data_num=para_dict['data_num'])
         
         
         #TODO: make sure normal and nosiy loader release the same order of dataset
         normal_loader = DataLoader(brats_normal_dataset, num_workers=para_dict['num_workers'],
                                    batch_size=para_dict['batch_size'], shuffle=False)
 
-        noisy_loader = DataLoader(brats_noise_dataset, num_workers=para_dict['num_workers'],
-                                  batch_size=para_dict['batch_size'], shuffle=False)
+        #noisy_loader = DataLoader(brats_noise_dataset, num_workers=para_dict['num_workers'],
+        #                          batch_size=para_dict['batch_size'], shuffle=False)
         
     else:
         raise NotImplementedError("New Data Has Not Been Implemented")
@@ -204,6 +204,16 @@ if __name__ == '__main__':
                     real_a_freq_loss = criterion_freq(real_a_hat, real_a)
                     real_b_freq_loss = criterion_freq(real_b_hat, real_b)
                     focal_freq_loss = real_a_freq_loss + real_b_freq_loss
+
+                    if para_dict['noisy_loss']:
+                        real_a_noise = torch.tensor(random_noise(real_a, mode='gaussian', 
+                                                                mean=para_dict['mu'], 
+                                                                var=para_dict['sigma'], clip=True)).to(device) 
+
+                        real_b_noise = torch.tensor(random_noise(real_b, mode='gaussian', 
+                                                                mean=para_dict['mu'], 
+                                                                var=para_dict['sigma'], clip=True)).to(device) 
+
 
                     loss_total = recon_loss + focal_freq_loss
 
