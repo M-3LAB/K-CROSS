@@ -15,7 +15,7 @@ from model.kaid.ae.kaid_ae import Unet
 from model.kaid.ae.complex_ae import ComplexUnet
 from model.kaid.complex_nn.fourier_convolve import * 
 from loss_function.kaid.focal_freq import FocalFreqLoss, euclidean_freq_loss
-from loss_function.kaid.cosine_sim import cosine_sim_loss
+from loss_function.kaid.cosine_sim import cosine_sim_loss, complex_cosine_sim_loss
 from data_io.nirps import NIRPS
 
 if __name__ == '__main__':
@@ -140,11 +140,11 @@ if __name__ == '__main__':
                     if para_dict['noisy_loss']:
                         real_a_noise = torch.tensor(random_noise(real_a.cpu(), mode='gaussian', 
                                                                 mean=para_dict['mu'], 
-                                                                var=para_dict['sigma'], clip=True)).to(device) 
+                                                                var=para_dict['sigma'], clip=True)).float().to(device) 
 
                         real_b_noise = torch.tensor(random_noise(real_b.cpu(), mode='gaussian', 
                                                                 mean=para_dict['mu'], 
-                                                                var=para_dict['sigma'], clip=True)).to(device) 
+                                                                var=para_dict['sigma'], clip=True)).float().to(device) 
 
                         real_a_noise_hat, real_a_noise_z = unet(real_a_noise) 
                         real_b_noise_hat, real_b_noise_z = unet(real_b_noise)
@@ -172,7 +172,7 @@ if __name__ == '__main__':
                                 '', i+1, batch_limit, recon_loss.item(), focal_freq_loss.item())
 
                     if para_dict['noisy_loss']:
-                        infor = '{} [Noisy Recon Loss: {.4f}] [Sim Loss: {:.4f}]'.format(infor, noisy_recon_loss, sim_loss)
+                        infor = '{} [Noisy Recon Loss: {:.4f}] [Sim Loss: {:.4f}]'.format(infor, noisy_recon_loss, sim_loss)
 
                     print(infor, flush=True, end='  ')    
 
@@ -258,7 +258,10 @@ if __name__ == '__main__':
 
         #load models
         if para_dict['method'] == 'normal':
-            unet = load_model(model=unet, file_path=checkpoint_path, description='normal')
+            if para_dict['noisy_loss']:
+                unet = load_model(model=unet, file_path=checkpoint_path, description='normal_noisy')
+            else:
+                unet = load_model(model=unet, file_path=checkpoint_path, description='normal')
             
         elif para_dict['method'] == 'complex':
             complex_unet = load_model(model=complex_unet, file_path=checkpoint_path, description='complex')
