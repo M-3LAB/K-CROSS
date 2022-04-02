@@ -180,8 +180,8 @@ if __name__ == '__main__':
                     real_a_freq = torch_fft(real_a, normalized_method='ortho')
                     real_b_freq = torch_fft(real_b, normalized_method='ortho')
 
-                    real_a_freq_hat, _ = complex_unet(real_a_freq)
-                    real_b_freq_hat, _ = complex_unet(real_b_freq)
+                    real_a_freq_hat, real_a_freq_z = complex_unet(real_a_freq)
+                    real_b_freq_hat, real_b_freq_z = complex_unet(real_b_freq)
 
                     real_a_freq_loss = euclidean_freq_loss(real_freq=real_a_freq, recon_freq=real_a_freq_hat)
                     real_b_freq_loss = euclidean_freq_loss(real_freq=real_b_freq, recon_freq=real_b_freq_hat)
@@ -190,12 +190,41 @@ if __name__ == '__main__':
 
                     loss_total = freq_loss
 
+                    if para_dict['noisy_loss']:
+                        real_a_noise = torch.tensor(random_noise(real_a.cpu(), mode='gaussian', 
+                                                                mean=para_dict['mu'], 
+                                                                var=para_dict['sigma'], clip=True)).float().to(device) 
+
+                        real_b_noise = torch.tensor(random_noise(real_b.cpu(), mode='gaussian', 
+                                                                mean=para_dict['mu'], 
+                                                                var=para_dict['sigma'], clip=True)).float().to(device)
+
+                        real_a_noise_freq = torch_fft(real_a_noise, normalized_method='ortho')
+                        real_b_noise_freq = torch_fft(real_b_noise, normalized_method='ortho')
+
+                        real_a_noise_freq_hat, real_a_noise_freq_z = complex_unet(real_a_noise_freq)
+                        real_b_noise_freq_hat, real_b_noise_freq_z = complex_unet(real_b_noise_freq)
+
+                        real_a_noise_freq_loss = euclidean_freq_loss(real_freq=real_a_noise_freq, recon_freq=real_a_noise_freq_hat)
+                        real_b_noise_freq_loss = euclidean_freq_loss(real_freq=real_b_noise_freq, recon_freq=real_b_noise_freq_hat)
+
+                        noise_freq_loss = real_a_noise_freq_loss + real_b_noise_freq_loss
+
+                        real_a_sim_loss = complex_cosine_sim_loss(real_freq_z=real_a_freq_z, noise_freq_z=real_a_noise_freq_z)
+                        real_b_sim_loss = complex_cosine_sim_loss(real_freq_z=real_b_freq_z, noise_freq_z=real_b_noise_freq_z)
+                        sim_loss = real_a_sim_loss + real_b_sim_loss
+
+                        loss_total = loss_total + noise_freq_loss + sim_loss
+                        
                     optimizer_complex.zero_grad()
                     loss_total.backward()
                     optimizer_complex.step()
 
                     infor = '\r{}[Batch {}/{}] [Freq Loss: {:.4f}]'.format(
                                 '', i+1, batch_limit, freq_loss.item())
+
+                    if para_dict['noisy_loss']:
+                        infor= '{} [Noise Freq Loss: {:.4f}] [Sim Loss: {:.4f}]'.format(infor, noise_freq_loss.item(), sim_loss.item())
 
                     print(infor, flush=True, end='  ')    
 
@@ -235,15 +264,25 @@ if __name__ == '__main__':
                     raise NotImplementedError('The method has not been implemented yet')
         
         if para_dict['method'] == 'normal':
+
             if para_dict['noisy_loss']:
                 save_model(model=unet, file_path=checkpoint_path, infor='normal_noisy', save_previous=True)
             else:
                 save_model(model=unet, file_path=checkpoint_path, infor='normal', save_previous=True)
+
         elif para_dict['method'] == 'complex':
-            save_model(model=complex_unet, file_path=checkpoint_path, infor='complex', save_previous=True)
+            if para_dict['noisy_loss']:
+                save_model(model=complex_unet, file_path=checkpoint_path, infor='complex', save_previous=True)
+            else:
+                save_model(model=complex_unet, file_path=checkpoint_path, infor='complex', save_previous=True)
+
         elif para_dict['method'] == 'combined':
-            save_model(model=complex_unet, file_path=checkpoint_path, infor='combined_complex', save_previous=True)
-            save_model(model=unet, file_path=checkpoint_path, infor='combined_normal', save_previous=True)
+            if para_dict['noisy_loss']:
+                save_model(model=complex_unet, file_path=checkpoint_path, infor='combined_complex_noisy', save_previous=True)
+                save_model(model=unet, file_path=checkpoint_path, infor='combined_normal_noisy', save_previous=True)
+            else:
+                save_model(model=complex_unet, file_path=checkpoint_path, infor='combined_complex', save_previous=True)
+                save_model(model=unet, file_path=checkpoint_path, infor='combined_normal', save_previous=True)
 
     if para_dict['validate']: 
         nirps_path = para_dict['nirps_path']
