@@ -9,7 +9,7 @@ from data_preprocess.common import *
 import torch
 
 __all__ = ['plot_sample', 'slices_reader', 'np_normalize', 'np_scaling_kspace', 'np_to_bchw',
-           'bchw_to_np', 'torch_normalize']
+           'bchw_to_np', 'torch_normalize', 'compute_err', 'plot_err_map', 'plot_err_map2']
 
 def plot_sample(real_a, fake_a, real_b, fake_b, step, img_path, descript='Epoch'):
     plt.figure(figsize=(5, 4))
@@ -91,25 +91,65 @@ def normalization(img):
     _range = np.max(img) - np.min(img)
     return (img - np.min(img)) / _range
 
-def plot_err_map(img, gt, img_path, descript='Error Map'):
+def compute_err(img, gt):
     img_diff = 255 - np.abs(img - gt)
     # img_diff = normalization(img_diff)
-    # img_diff = cv2.normalize(img_diff, None, alpha=0, beta=255, norm_type=cv2.NORM_MINMAX, dtype=cv2.CV_8U)
+    img_diff = cv2.normalize(img_diff, None, alpha=0, beta=255, norm_type=cv2.NORM_MINMAX, dtype=cv2.CV_8UC1)
     img_diff = cv2.applyColorMap(img_diff, cv2.COLORMAP_JET) 
 
+    return img_diff
+
+def plot_err_map(diff, img_path, colorbar=True, descript='Error Map with Colorbar'):
+    if colorbar:
+        plt.style.use('classic')
+        plt.figure(figsize=(20, 4))
+        plt.xticks([])
+        plt.yticks([])
+        plt.imshow(diff)
+        plt.colorbar(fraction=0.02, pad=0.05)
+        plt.clim(0, 1)
+        plt.savefig(img_path, bbox_inches='tight', pad_inches = 0.1)
+        plt.close()
+    else:
+        fig = plt.figure()
+        fig_ax = fig.add_axes([0, 0, 1, 1], frame_on = False)
+        fig_ax.xaxis.set_visible(False)
+        fig_ax.yaxis.set_visible(False)
+        plt.imshow(diff)
+        plt.savefig(img_path, bbox_inches='tight', pad_inches = 0)
+        plt.close()
+
+
+def plot_err_map2(img, gt, diff, img_path, descript='Error Map'):
     plt.style.use('classic')
-    plt.figure(figsize=(20, 4))
+    plt.figure(figsize=(10, 4))
+    plt.subplot(1, 3, 1)
+    plt.imshow(gt, cmap='gray')
     plt.xticks([])
     plt.yticks([])
-    plt.imshow(img_diff)
-    plt.colorbar(fraction=0.02, pad=0.05)
-    plt.clim(0, 1)
+    plt.title('GT')
+
+    plt.subplot(1, 3, 2)
+    plt.imshow(img, cmap='gray')
+    plt.xticks([])
+    plt.yticks([])
+    plt.title('Fake')
+
+    plt.subplot(1, 3, 3)
+    plt.imshow(diff)
+    plt.xticks([])
+    plt.yticks([])
+    plt.title('Error Map')
+
+    # plt.colorbar(fraction=0.02, pad=0.05)
+    # plt.clim(0, 1)
     plt.savefig(img_path, bbox_inches='tight')
     plt.close()
-    
+ 
 if __name__ == '__main__':
 
     img = cv2.imread('./work_dir/centralized/brats2021/Sat Mar 26 00:30:35 2022/images/epoch_15/BraTS2021_00114-slice-67/fake_a.png', cv2.IMREAD_GRAYSCALE)
     gt = cv2.imread('./work_dir/centralized/brats2021/Sat Mar 26 00:30:35 2022/images/epoch_15/BraTS2021_00114-slice-67/real_a.png', cv2.IMREAD_GRAYSCALE)
     img_path = './tools/err_map.png'
-    plot_err_map(img, gt, img_path)
+    diff = compute_err(img, gt)
+    plot_err_map(diff, img_path)

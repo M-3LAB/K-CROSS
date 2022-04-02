@@ -5,10 +5,12 @@ import os
 import sys
 sys.path.append('.')
 
+import torchvision.transforms as transforms
 from torch.utils.data import DataLoader
 from tools.utilize import load_metric_result, save_metric_result
 from data_io.base import ToTensor
-import torchvision.transforms as transforms
+from tools.visualize import compute_err, plot_err_map, plot_err_map2
+from tqdm import tqdm
 
 __all__ = ['NIRPS']
 
@@ -66,32 +68,40 @@ if __name__ == '__main__':
     modalities = {'ixi': ['t2', 'pd'],
                   'brats2021': ['t1', 't2', 'flair']}
     models = ['cyclegan'] 
-    epochs = [i for i in range(1, 3)]
+    epochs = [i for i in range(1, 51)]
 
     nirps_dataset = NIRPS(nirps_path=nirps_path, regions=regions, modalities=modalities, models=models, epochs=epochs)
     nirps_loader = DataLoader(nirps_dataset, batch_size=1, num_workers=1, shuffle=False)
 
     print('load nirps dataset, size:{}'.format(len(nirps_dataset)))
 
-    for batch in nirps_loader:
-        img = batch['img']
-        gt = batch['gt']
-        name = batch['name']
+    for batch in tqdm(nirps_loader):
+        img = batch['img'][0][0, :, :]
+        gt = batch['gt'][0][0, :, :]
+        name = batch['name'][0]
 
-        print(name[0])
+        # example, how to use it
+        if False:
+            mae = load_metric_result(name, 'mae') 
+            psnr = load_metric_result(name, 'psnr') 
+            ssim = load_metric_result(name, 'ssim') 
 
-        mae = load_metric_result(name[0], 'mae') 
-        psnr = load_metric_result(name[0], 'psnr') 
-        ssim = load_metric_result(name[0], 'ssim') 
+            print('mae: {:.4f} psnr: {:.4f} ssim: {:.4f}'.format(mae, psnr, ssim))
 
-        print('mae: {:.4f} psnr: {:.4f} ssim: {:.4f}'.format(mae, psnr, ssim))
+            # TO DO
+            # kaid = KAID_MODEL(img, gt)
 
-        # TO DO
-        # kaid = KAID_MODEL(img, gt)
+            kaid = 0
+            path_kaid = name
+            save_metric_result(kaid, path_kaid, 'kaid')
 
-        kaid = 0
-        path_kaid = name[0]
-        save_metric_result(kaid, path_kaid, 'kaid')
-
-        break
+        # generate err map
+        if True:
+            diff = compute_err(img.numpy(), gt.numpy())
+            plot_err_map(diff, '{}/err_map_no_colorbar'.format(name), colorbar=False)
+            plot_err_map(diff,'{}/err_map_colorbar'.format(name), colorbar=True)
+            plot_err_map2(img.numpy(), gt.numpy(), diff, '{}/err_map'.format(name))
+        
+        # break
+        
 
