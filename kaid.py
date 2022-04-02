@@ -145,6 +145,12 @@ if __name__ == '__main__':
                                                                 mean=para_dict['mu'], 
                                                                 var=para_dict['sigma'], clip=True)).to(device) 
 
+                        real_a_noise_hat, real_a_noise_z = unet(real_a_noise) 
+                        real_b_noise_hat, real_b_noise_z = unet(real_b_noise)
+
+                        real_a_noise_recon_loss = criterion_recon(real_a_noise_hat, real_a_noise)
+                        real_b_noise_recon_loss = criterion_recon(real_b_noise_hat, real_b_noise)
+
 
                     loss_total = recon_loss + focal_freq_loss
 
