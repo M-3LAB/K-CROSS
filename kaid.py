@@ -114,26 +114,12 @@ if __name__ == '__main__':
                                 data_num=para_dict['data_num'],
                                 dataset_splited=False)
         
-        #ixi_kaid_dataset = IXI(root=para_dict['data_path'],
-        #                       modalities=[para_dict['source_domain'], para_dict['target_domain']],
-        #                       extract_slice=[para_dict['es_lower_limit'], para_dict['es_higher_limit']],
-        #                       noise_type='kaid',
-        #                       learn_mode='train', #train or test is meaningless if dataset_splited is false
-        #                       transform_data=kaid_transform,
-        #                       data_mode='paired',
-        #                       data_num=para_dict['data_num'],
-        #                       dataset_splited=False)
-        
-
         #TODO: make sure normal and nosiy loader release the same order of dataset
         normal_loader = DataLoader(ixi_normal_dataset, num_workers=para_dict['num_workers'],
                                    batch_size=para_dict['batch_size'], shuffle=False)
 
         noisy_loader = DataLoader(ixi_noise_dataset, num_workers=para_dict['num_workers'],
                                   batch_size=para_dict['batch_size'], shuffle=False)
-
-        #kaid_loader = DataLoader(ixi_kaid_dataset, num_workers=para_dict['num_workers'],
-        #                         batch_size=para_dict['batch_size'], shuffle=False)
 
     elif para_dict['dataset'] == 'brats2021':
         assert para_dict['source_domain'] in ['t1', 't2', 'flair']
@@ -161,14 +147,6 @@ if __name__ == '__main__':
                                         data_mode='paired',
                                         data_num=para_dict['data_num'])
         
-        #brats_kaid_dataset = BraTS2021(root=para_dict['data_path'],
-        #                                 modalities=[para_dict['source_domain'], para_dict['target_domain']],
-        #                                 extract_slice=[para_dict['es_lower_limit'], para_dict['es_higher_limit']],
-        #                                 noise_type='kaid',
-        #                                 learn_mode='train', # train or test is meaningless if dataset_spilited is false
-        #                                 transform_data=kaid_transform,
-        #                                 data_mode='paired',
-        #                                 data_num=para_dict['data_num'])
         
         #TODO: make sure normal and nosiy loader release the same order of dataset
         normal_loader = DataLoader(brats_normal_dataset, num_workers=para_dict['num_workers'],
