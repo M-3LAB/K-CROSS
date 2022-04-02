@@ -62,9 +62,9 @@ if __name__ == '__main__':
                       {'size':(para_dict['size'], para_dict['size'])}]
 
     if para_dict['noise_type'] == 'gaussian':
-        noise_transform = [{'mu':para_dict['a_mu'], 'sigma':para_dict['a_sigma'],
+        noise_transform = [{'mu':para_dict['mu'], 'sigma':para_dict['sigma'],
                             'size':(para_dict['size'], para_dict['size'])},
-                           {'mu':para_dict['b_mu'], 'sigma':para_dict['b_sigma'],
+                           {'mu':para_dict['mu'], 'sigma':para_dict['sigma'],
                             'size':(para_dict['size'], para_dict['size'])}]
 
     elif para_dict['noise_type'] == 'slight':
