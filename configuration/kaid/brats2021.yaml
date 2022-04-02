@@ -43,6 +43,3 @@ validate: False
 method: 'normal'
 #nirps_path
 nirps_path: '/disk1/medical/nirps_dataset'
-#nirps start epcoh and end epoch
-start_epoch: 1
-end_epoch: 16
