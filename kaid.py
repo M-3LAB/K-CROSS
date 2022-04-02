@@ -180,7 +180,8 @@ if __name__ == '__main__':
                                  betas=[para_dict['beta1'], para_dict['beta2']])
     optimizer_normal = torch.optim.Adam(unet.parameters(), lr=para_dict['lr'],
                                  betas=[para_dict['beta1'], para_dict['beta2']])
-    checkpoint_path = 'kaid_ck' 
+
+    checkpoint_path = os.path.join('kaid_ck', para_dict['dataset']) 
     create_folders(tag_path=checkpoint_path)
 
     if para_dict['train']:
