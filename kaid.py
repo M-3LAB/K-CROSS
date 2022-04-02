@@ -272,7 +272,7 @@ if __name__ == '__main__':
 
         elif para_dict['method'] == 'complex':
             if para_dict['noisy_loss']:
-                save_model(model=complex_unet, file_path=checkpoint_path, infor='complex', save_previous=True)
+                save_model(model=complex_unet, file_path=checkpoint_path, infor='complex_noisy', save_previous=True)
             else:
                 save_model(model=complex_unet, file_path=checkpoint_path, infor='complex', save_previous=True)
 
@@ -303,10 +303,18 @@ if __name__ == '__main__':
                 unet = load_model(model=unet, file_path=checkpoint_path, description='normal')
             
         elif para_dict['method'] == 'complex':
-            complex_unet = load_model(model=complex_unet, file_path=checkpoint_path, description='complex')
+            if para_dict['noisy_loss']:
+                complex_unet = load_model(model=complex_unet, file_path=checkpoint_path, description='complex_noisy')
+            else:
+                complex_unet = load_model(model=complex_unet, file_path=checkpoint_path, description='complex')
+            
         elif para_dict['method'] == 'combined':
-            unet = load_model(model=unet, file_path=checkpoint_path, description='combined_normal')
-            complex_unet = load_model(model=complex_unet, file_path=checkpoint_path, description='combined_complex')
+            if para_dict['noisy_loss']:
+                unet = load_model(model=unet, file_path=checkpoint_path, description='combined_normal_noisy')
+                complex_unet = load_model(model=complex_unet, file_path=checkpoint_path, description='combined_complex_noisy')
+            else:
+                unet = load_model(model=unet, file_path=checkpoint_path, description='combined_normal')
+                complex_unet = load_model(model=complex_unet, file_path=checkpoint_path, description='combined_complex')
 
         for batch in nirps_loader:
 
