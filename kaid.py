@@ -15,6 +15,7 @@ from model.kaid.ae.kaid_ae import Unet
 from model.kaid.ae.complex_ae import ComplexUnet
 from model.kaid.complex_nn.fourier_convolve import * 
 from loss_function.kaid.focal_freq import FocalFreqLoss, euclidean_freq_loss
+from loss_function.kaid.cosine_sim import cosine_sim_loss
 from data_io.nirps import NIRPS
 
 if __name__ == '__main__':
@@ -151,8 +152,17 @@ if __name__ == '__main__':
                         real_a_noise_recon_loss = criterion_recon(real_a_noise_hat, real_a_noise)
                         real_b_noise_recon_loss = criterion_recon(real_b_noise_hat, real_b_noise)
 
+                        noisy_recon_loss = real_a_noise_recon_loss + real_b_noise_recon_loss
+                        
+                        real_a_sim_loss = cosine_sim_loss(real_z=real_a_z, noise_z=real_a_noise_z) 
+                        real_b_sim_loss = cosine_sim_loss(real_z=real_b_z, noise_z=real_b_noise_z) 
+
+                        sim_loss = real_a_sim_loss + real_b_sim_loss
 
                     loss_total = recon_loss + focal_freq_loss
+
+                    if para_dict['noisy_loss']:
+                        loss_total = loss_total + noisy_recon_loss + sim_loss
 
                     optimizer_normal.zero_grad()
                     loss_total.backward()
@@ -160,6 +170,9 @@ if __name__ == '__main__':
 
                     infor = '\r{}[Batch {}/{}] [Recon Loss: {:.4f}] [Focal Freq Loss: {:.4f}]'.format(
                                 '', i+1, batch_limit, recon_loss.item(), focal_freq_loss.item())
+
+                    if para_dict['noisy_loss']:
+                        infor = '{} [Noisy Recon Loss: {.4f}] [Sim Loss: {:.4f}]'.format(infor, noisy_recon_loss, sim_loss)
 
                     print(infor, flush=True, end='  ')    
 
