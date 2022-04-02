@@ -350,8 +350,6 @@ if __name__ == '__main__':
                     kaid = (l1_diff(real_z=gt_z, fake_z=img_z) + freq_distance(real_z=gt_freq_z, fake_z=img_freq_z)).item() 
                 elif para_dict['diff'] == 'l2':
                     kaid = (l2_diff(real_z=gt_z, fake_z=img_z) + freq_distance(real_z=gt_freq_z, fake_z=img_freq_z)).item() 
-                elif para_dict['diff'] == 'cos':
-                    kaid = (cosine_similiarity(real_z=gt_z, fake_z=img_z) + freq_distance(real_z=gt_freq_z, fake_z=img_freq_z)).item() 
                 else:
                     raise ValueError
 
