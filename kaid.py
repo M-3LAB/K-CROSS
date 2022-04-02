@@ -235,7 +235,10 @@ if __name__ == '__main__':
                     raise NotImplementedError('The method has not been implemented yet')
         
         if para_dict['method'] == 'normal':
-            save_model(model=unet, file_path=checkpoint_path, infor='normal', save_previous=True)
+            if para_dict['noisy_loss']:
+                save_model(model=unet, file_path=checkpoint_path, infor='normal_noisy', save_previous=True)
+            else:
+                save_model(model=unet, file_path=checkpoint_path, infor='normal', save_previous=True)
         elif para_dict['method'] == 'complex':
             save_model(model=complex_unet, file_path=checkpoint_path, infor='complex', save_previous=True)
         elif para_dict['method'] == 'combined':
