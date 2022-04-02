@@ -1,6 +1,3 @@
-from ast import Not
-from locale import normalize
-from tools.visualize import np_scaling_kspace, torch_scaling_kspace
 import torch
 import yaml
 import os
@@ -10,25 +7,15 @@ from torch.utils.data import DataLoader
 from data_io.ixi import IXI
 from data_io.brats import BraTS2021
 from tools.utilize import *
-from model.cyclegan.cyclegan import CycleGen 
-from model.munit.munit import Encoder as MUE
-from model.munit.munit import Decoder as MUD
-from model.unit.unit import Encoder as UE 
-from model.unit.unit import Generator as UG
 
 from configuration.kaid.config import parse_arguments_kaid
 from loss_function.kaid.distance import l1_diff, l2_diff, cosine_similiarity, freq_distance
 from model.kaid.complex_nn.fourier_transform import * 
-from model.kaid.complex_nn.power_spectrum import *
-from metrics.kaid.stats import mask_stats, best_radius_list 
 from model.kaid.ae.kaid_ae import Unet 
 from model.kaid.ae.complex_ae import ComplexUnet
 from model.kaid.complex_nn.fourier_convolve import * 
 from loss_function.kaid.focal_freq import FocalFreqLoss, euclidean_freq_loss
 from data_io.nirps import NIRPS
-
-from tools.visualize import *
-#import matplotlib.pyplot as plt
 
 if __name__ == '__main__':
     args = parse_arguments_kaid()
@@ -58,37 +45,6 @@ if __name__ == '__main__':
                          'scale':[1.00, 1.00], 
                          'size':(para_dict['size'], para_dict['size'])}]
 
-    kaid_transform = [{'size':(para_dict['size'], para_dict['size'])},
-                      {'size':(para_dict['size'], para_dict['size'])}]
-
-    if para_dict['noise_type'] == 'gaussian':
-        noise_transform = [{'mu':para_dict['mu'], 'sigma':para_dict['sigma'],
-                            'size':(para_dict['size'], para_dict['size'])},
-                           {'mu':para_dict['mu'], 'sigma':para_dict['sigma'],
-                            'size':(para_dict['size'], para_dict['size'])}]
-
-    elif para_dict['noise_type'] == 'slight':
-        noise_transform = [{'degrees': para_dict["a_rotation_degrees"],
-                            'translate': [para_dict['a_trans_lower_limit'], para_dict['a_trans_upper_limit']],
-                            'scale': [para_dict['a_scale_lower_limit'], para_dict['a_scale_upper_limit']],
-                            'size': (para_dict['size'], para_dict['size']),'fillcolor': 0},
-                           {'degrees': para_dict['b_rotation_degrees'],
-                            'translate': [para_dict['b_trans_lower_limit'], para_dict['b_trans_upper_limit']],
-                            'scale': [para_dict['b_scale_lower_limit'], para_dict['b_scale_uppper_limit']],
-                            'size': (para_dict['size'], para_dict['size']),'fillcolor': 0}]
-
-    elif para_dict['noise_type'] == 'severe':
-        noise_transform = [{'degrees':para_dict['severe_rotation'], 
-                            'translate':[para_dict['severe_translation'], para_dict['severe_translation']],
-                            'scale':[1-para_dict['severe_scaling'], 1+para_dict['severe_scaling']], 
-                            'size':(para_dict['size'], para_dict['size'])},
-                            {'degrees':para_dict['severe_rotation'], 
-                             'translate':[para_dict['severe_translation'], para_dict['severe_translation']],
-                             'scale':[1-para_dict['severe_scaling'], 1+para_dict['severe_scaling']], 
-                             'size':(para_dict['size'], para_dict['size'])}]
-    else:
-        raise NotImplementedError('New Noise Has Not Been Implemented')
-    
     #Dataset IO
     if para_dict['dataset'] == 'ixi':
         assert para_dict['source_domain'] in ['t2', 'pd']
@@ -104,22 +60,9 @@ if __name__ == '__main__':
                                  data_num=para_dict['data_num'],
                                  dataset_splited=False)
         
-        #ixi_noise_dataset = IXI(root=para_dict['data_path'],
-        #                        modalities=[para_dict['source_domain'], para_dict['target_domain']],
-        #                        extract_slice=[para_dict['es_lower_limit'], para_dict['es_higher_limit']],
-        #                        noise_type=para_dict['noise_type'],
-        #                        learn_mode='train', #train or test is meaningless if dataset_splited is false
-        #                        transform_data=noise_transform,
-        #                        data_mode='paired',
-        #                        data_num=para_dict['data_num'],
-        #                        dataset_splited=False)
-        
         #TODO: make sure normal and nosiy loader release the same order of dataset
         normal_loader = DataLoader(ixi_normal_dataset, num_workers=para_dict['num_workers'],
                                    batch_size=para_dict['batch_size'], shuffle=False)
-
-        #noisy_loader = DataLoader(ixi_noise_dataset, num_workers=para_dict['num_workers'],
-        #                          batch_size=para_dict['batch_size'], shuffle=False)
 
     elif para_dict['dataset'] == 'brats2021':
         assert para_dict['source_domain'] in ['t1', 't2', 'flair']
@@ -138,22 +81,10 @@ if __name__ == '__main__':
                                          data_mode='paired',
                                          data_num=para_dict['data_num'])
 
-        #brats_noise_dataset = BraTS2021(root=para_dict['data_path'],
-        #                                modalities=[para_dict['source_domain'], para_dict['target_domain']],
-        #                                noise_type=para_dict['noise_type'],
-        #                                learn_mode='train',
-        #                                extract_slice=[para_dict['es_lower_limit'], para_dict['es_higher_limit']],
-        #                                transform_data=noise_transform,
-        #                                data_mode='paired',
-        #                                data_num=para_dict['data_num'])
-        
         
         #TODO: make sure normal and nosiy loader release the same order of dataset
         normal_loader = DataLoader(brats_normal_dataset, num_workers=para_dict['num_workers'],
                                    batch_size=para_dict['batch_size'], shuffle=False)
-
-        #noisy_loader = DataLoader(brats_noise_dataset, num_workers=para_dict['num_workers'],
-        #                          batch_size=para_dict['batch_size'], shuffle=False)
         
     else:
         raise NotImplementedError("New Data Has Not Been Implemented")
@@ -206,11 +137,11 @@ if __name__ == '__main__':
                     focal_freq_loss = real_a_freq_loss + real_b_freq_loss
 
                     if para_dict['noisy_loss']:
-                        real_a_noise = torch.tensor(random_noise(real_a, mode='gaussian', 
+                        real_a_noise = torch.tensor(random_noise(real_a.cpu(), mode='gaussian', 
                                                                 mean=para_dict['mu'], 
                                                                 var=para_dict['sigma'], clip=True)).to(device) 
 
-                        real_b_noise = torch.tensor(random_noise(real_b, mode='gaussian', 
+                        real_b_noise = torch.tensor(random_noise(real_b.cpu(), mode='gaussian', 
                                                                 mean=para_dict['mu'], 
                                                                 var=para_dict['sigma'], clip=True)).to(device) 
 
