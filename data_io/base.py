@@ -19,11 +19,6 @@ class ToTensor():
         tensor = (tensor - np.min(tensor)) / (np.max(tensor) - np.min(tensor) + 1e-8)
         return torch.from_numpy(tensor)
 
-class ToKAIDTensor():
-    def __call__(self, tensor):
-        tensor = np.expand_dims(tensor, 0)
-        return torch.from_numpy(tensor)
-
 class BASE(torch.utils.data.Dataset):
     """Dataset utility class.
 
@@ -164,8 +159,6 @@ class BASE(torch.utils.data.Dataset):
             assert 'translate' in list(self.t[0].keys()) 
             assert 'scale' in list(self.t[0].keys()) 
             assert 'size' in list(self.t[0].keys()) 
-        elif self.noise_type == 'kaid':
-            assert 'size' in list(self.t[0].keys()) 
         else:
             raise ValueError('Noise Hyperparameter Setting Incorrect')
 
@@ -213,13 +206,6 @@ class BASE(torch.utils.data.Dataset):
                                                                             scale=self.t[1]['scale'], fillcolor=0), 
                                                    transforms.Resize(size=self.t[1]['size']), 
                                                    ToTensor()])
-        elif self.noise_type == 'kaid':
-            self.transform_a = transforms.Compose([transforms.ToPILImage(), 
-                                                   transforms.Resize(size=self.t[0]['size']),
-                                                   ToKAIDTensor()])
-            self.transform_b = transforms.Compose([transforms.ToPILImage(), 
-                                                   transforms.Resize(size=self.t[1]['size']),
-                                                   ToKAIDTensor()])
         else:
             raise ValueError('Noise Type Setting Incorrect')
                                                    

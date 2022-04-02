@@ -30,6 +30,11 @@ def parse_arguments_kaid():
     parser.add_argument('--fid', action='store_true', default=True)
     parser.add_argument('--train', action='store_true', default=None)
     parser.add_argument('--validate', action='store_true', default=None)
+    #Gaussian Noise
+    parser.add_argument('--noisy-loss', action='store_true', default=None)
+    parser.add_argument('--mu', type=float, default=None)
+    parser.add_argument('--sigma', type=float, default=None)
+
     #segmentation
     parser.add_argument('--segment', action='store_true', default=None, help='segmentation method evaluation or not')
     parser.add_argument('--seg-method', type=str, choices=['2d', '3d'])

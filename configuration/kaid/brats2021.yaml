@@ -2,10 +2,8 @@ dataset: brats2021
 noise_type: gaussian
 seed: 3
 size: 256 
-a_mu: 0.0
-a_sigma: 1.0
-b_mu: 0.0
-b_sigma: 1.0
+mu: 0.0
+sigma: 1.0
 source_domain: t1
 target_domain: t2
 data_path: /disk1/medical/brats2021/training
