@@ -210,11 +210,11 @@ if __name__ == '__main__':
 
                         noise_freq_loss = real_a_noise_freq_loss + real_b_noise_freq_loss
 
-                        real_a_sim_loss = complex_cosine_sim_loss(real_freq_z=real_a_freq_z, noise_freq_z=real_a_noise_freq_z)
-                        real_b_sim_loss = complex_cosine_sim_loss(real_freq_z=real_b_freq_z, noise_freq_z=real_b_noise_freq_z)
-                        sim_loss = real_a_sim_loss + real_b_sim_loss
+                        real_a_freq_sim_loss = complex_cosine_sim_loss(real_freq_z=real_a_freq_z, noise_freq_z=real_a_noise_freq_z)
+                        real_b_freq_sim_loss = complex_cosine_sim_loss(real_freq_z=real_b_freq_z, noise_freq_z=real_b_noise_freq_z)
+                        sim_freq_loss = real_a_freq_sim_loss + real_b_freq_sim_loss
 
-                        loss_total = loss_total + noise_freq_loss + sim_loss
+                        loss_total = loss_total + noise_freq_loss + sim_freq_loss
                         
                     optimizer_complex.zero_grad()
                     loss_total.backward()
@@ -224,13 +224,13 @@ if __name__ == '__main__':
                                 '', i+1, batch_limit, freq_loss.item())
 
                     if para_dict['noisy_loss']:
-                        infor= '{} [Noise Freq Loss: {:.4f}] [Sim Loss: {:.4f}]'.format(infor, noise_freq_loss.item(), sim_loss.item())
+                        infor= '{} [Noise Freq Loss: {:.4f}] [Sim Loss: {:.4f}]'.format(infor, noise_freq_loss.item(), sim_freq_loss.item())
 
                     print(infor, flush=True, end='  ')    
 
                 elif para_dict['method'] == 'combined':
-                    real_a_hat, _ = unet(real_a)
-                    real_b_hat, _ = unet(real_b)
+                    real_a_hat, real_a_z = unet(real_a)
+                    real_b_hat, real_b_z = unet(real_b)
 
                     real_a_recon_loss = criterion_recon(real_a_hat, real_a) 
                     real_b_recon_loss = criterion_recon(real_b_hat, real_b) 
@@ -239,14 +239,54 @@ if __name__ == '__main__':
                     real_a_freq = torch_fft(real_a, normalized_method='ortho')
                     real_b_freq = torch_fft(real_b, normalized_method='ortho')
 
-                    real_a_freq_hat, _ = complex_unet(real_a_freq)
-                    real_b_freq_hat, _ = complex_unet(real_b_freq)
+                    real_a_freq_hat, real_a_freq_z = complex_unet(real_a_freq)
+                    real_b_freq_hat, real_b_freq_z = complex_unet(real_b_freq)
 
                     real_a_freq_loss = euclidean_freq_loss(real_freq=real_a_freq, recon_freq=real_a_freq_hat)
                     real_b_freq_loss = euclidean_freq_loss(real_freq=real_b_freq, recon_freq=real_b_freq_hat)
                     freq_loss = real_a_freq_loss + real_b_freq_loss
 
                     loss_total = recon_loss + freq_loss
+
+                    if para_dict['noisy_loss']:
+                        real_a_noise = torch.tensor(random_noise(real_a.cpu(), mode='gaussian', 
+                                                                mean=para_dict['mu'], 
+                                                                var=para_dict['sigma'], clip=True)).float().to(device) 
+
+                        real_b_noise = torch.tensor(random_noise(real_b.cpu(), mode='gaussian', 
+                                                                mean=para_dict['mu'], 
+                                                                var=para_dict['sigma'], clip=True)).float().to(device) 
+
+                        real_a_noise_hat, real_a_noise_z = unet(real_a_noise) 
+                        real_b_noise_hat, real_b_noise_z = unet(real_b_noise)
+
+                        real_a_noise_recon_loss = criterion_recon(real_a_noise_hat, real_a_noise)
+                        real_b_noise_recon_loss = criterion_recon(real_b_noise_hat, real_b_noise)
+
+                        noisy_recon_loss = real_a_noise_recon_loss + real_b_noise_recon_loss
+                        
+                        real_a_sim_loss = cosine_sim_loss(real_z=real_a_z, noise_z=real_a_noise_z) 
+                        real_b_sim_loss = cosine_sim_loss(real_z=real_b_z, noise_z=real_b_noise_z) 
+
+                        sim_loss = real_a_sim_loss + real_b_sim_loss
+
+                        real_a_noise_freq = torch_fft(real_a_noise, normalized_method='ortho')
+                        real_b_noise_freq = torch_fft(real_b_noise, normalized_method='ortho')
+
+                        real_a_noise_freq_hat, real_a_noise_freq_z = complex_unet(real_a_noise_freq)
+                        real_b_noise_freq_hat, real_b_noise_freq_z = complex_unet(real_b_noise_freq)
+
+                        real_a_noise_freq_loss = euclidean_freq_loss(real_freq=real_a_noise_freq, recon_freq=real_a_noise_freq_hat)
+                        real_b_noise_freq_loss = euclidean_freq_loss(real_freq=real_b_noise_freq, recon_freq=real_b_noise_freq_hat)
+
+                        noise_freq_loss = real_a_noise_freq_loss + real_b_noise_freq_loss
+
+                        real_a_freq_sim_loss = complex_cosine_sim_loss(real_freq_z=real_a_freq_z, noise_freq_z=real_a_noise_freq_z)
+                        real_b_freq_sim_loss = complex_cosine_sim_loss(real_freq_z=real_b_freq_z, noise_freq_z=real_b_noise_freq_z)
+                        sim_freq_loss = real_a_freq_sim_loss + real_b_freq_sim_loss
+                    
+                        loss_total = loss_total + noisy_recon_loss + sim_loss + noise_freq_loss + sim_freq_loss
+ 
 
                     optimizer_complex.zero_grad()
                     optimizer_normal.zero_grad()
@@ -258,6 +298,11 @@ if __name__ == '__main__':
 
                     infor = '\r{}[Batch {}/{}] [Recon Loss: {:.4f}] [Freq Loss: {:.4f}]'.format(
                                 '', i+1, batch_limit, recon_loss.item(), freq_loss.item())
+                    
+                    if para_dict['noisy_loss']:
+                        infor = '{} [Noisy Recon Loss: {:.4f}] [Sim Loss: {:.4f}] [Noisy Freq Loss: {:.4f}] [Sim Freq Loss: {:.4f}]'.format(
+                            infor, noisy_recon_loss.item(), sim_loss.item(), noise_freq_loss.item(), sim_freq_loss.item() 
+                        )
 
                     print(infor, flush=True, end='  ')
                 else:
