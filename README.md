@@ -74,7 +74,7 @@ Sereval modes are described in the new settings of FedMed.
 To reveal the real-world sitation in hosptials, datastream is organized as follows.
 
 
-## Load NIPRS dataset
+## Load NIPRS dataset, and generate error map
 ```bash
 python3 data_io/nirps.py
 ```
