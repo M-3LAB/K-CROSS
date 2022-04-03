@@ -30,8 +30,6 @@ normalized_method: 'ortho'
 test_model: cyclegan
 # diff
 diff: l2
-# segmentation
-segmentation: false
 # train, validation, resume
 train: False 
 validate: False 
