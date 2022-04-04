@@ -11,7 +11,12 @@ from tqdm import tqdm
 
 
 def articial_scoring_system():
-    
+    '''
+    Press the score twice to score successfully, which can be modified repeatedly. 
+    Press enter to save the result to artificial.txt. 
+    If you don't mark, press enter directly, and the original score will be saved into artificial.txt  
+    Press ESC, the system will exit.
+    '''  
     nirps_path = './nirps_dataset'
     regions = ['ixi', 'brats2021']
     modalities = {'ixi': ['t2', 'pd'],
@@ -37,7 +42,7 @@ def articial_scoring_system():
         print('-------- {} / {} ---------'.format(i, len(nirps_dataset)))
         name = batch['name'][0]
 
-        kaid = load_metric_result(name, 'kaid')
+        kaid = load_metric_result(name, 'human')
         img = cv2.imread(name + '/err_map.png')
         cv2.namedWindow('Artificial-Score-System: {}'.format(name), cv2.WINDOW_AUTOSIZE)
         cv2.putText(img, 'src: {}'.format(int(kaid * 10) + 1), (12,60), cv2.FONT_HERSHEY_SIMPLEX, 1.2, (0,255,0), 3) 
