@@ -380,7 +380,10 @@ if __name__ == '__main__':
                 else:
                     raise ValueError
 
-                save_metric_result(result=kaid, file_path=name[0], description='kaid_normal')
+                if para_dict['noisy_loss']:
+                    save_metric_result(result=kaid, file_path=name[0], description='kaid_normal_noisy')
+                else:
+                    save_metric_result(result=kaid, file_path=name[0], description='kaid_normal')
 
             elif para_dict['method'] == 'complex':
 
@@ -392,7 +395,10 @@ if __name__ == '__main__':
 
                 kaid = freq_distance(real_z=gt_freq_z, fake_z=img_freq_z).item()
 
-                save_metric_result(result=kaid, file_path=name[0], description='kaid_complex')
+                if para_dict['noisy_loss']:
+                    save_metric_result(result=kaid, file_path=name[0], description='kaid_complex_noisy')
+                else:
+                    save_metric_result(result=kaid, file_path=name[0], description='kaid_complex')
 
             elif para_dict['method'] == 'combined':
 
@@ -411,7 +417,11 @@ if __name__ == '__main__':
                 else:
                     raise ValueError
 
-                save_metric_result(result=kaid, file_path=name[0], description='kaid_combined')
+                if para_dict['noisy_loss']:
+                    save_metric_result(result=kaid, file_path=name[0], description='kaid_combined_noisy')
+                else:
+                    save_metric_result(result=kaid, file_path=name[0], description='kaid_combined')
+                    
 
             else:
                 raise NotImplementedError
