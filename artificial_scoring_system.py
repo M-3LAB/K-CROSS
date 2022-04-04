@@ -17,6 +17,7 @@ def articial_scoring_system():
     If you don't mark, press enter directly, and the original score will be saved into artificial.txt  
     Press ESC, the system will exit.
     '''  
+
     nirps_path = './nirps_dataset'
     regions = ['ixi', 'brats2021']
     modalities = {'ixi': ['t2', 'pd'],
@@ -27,7 +28,7 @@ def articial_scoring_system():
     nirps_dataset = NIRPS(nirps_path=nirps_path, regions=regions, modalities=modalities, models=models, epochs=epochs)
     nirps_loader = DataLoader(nirps_dataset, batch_size=1, num_workers=1, shuffle=False)
 
-    print('load nirps dataset, size:{}'.format(len(nirps_dataset)))
+    print('load nirps dataset, size: {}'.format(len(nirps_dataset)))
 
     # clear all labeled data
     # for batch in nirps_loader:
@@ -38,7 +39,14 @@ def articial_scoring_system():
 
     # return
 
+    begin_n = int(load_metric_result('documents', 'local'))
     for i, batch in enumerate(nirps_loader):
+        
+        # start
+        if begin_n > 0:
+            begin_n = begin_n - 1
+            continue
+        
         print('-------- {} / {} ---------'.format(i, len(nirps_dataset)))
         name = batch['name'][0]
 
@@ -69,7 +77,8 @@ def articial_scoring_system():
             cv2.putText(img, 'change to: {}'.format(s), (250, 250), cv2.FONT_HERSHEY_SIMPLEX, 1.2, (0, 0, 255), 3) 
             cv2.imshow('Artificial-Score-System: {}'.format(name), img)
             save_metric_result(s / 10., name, 'artificial')
-
+        
+        save_metric_result(i, 'documents', 'local')
         cv2.destroyAllWindows()
 
 
