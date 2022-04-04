@@ -46,19 +46,24 @@ class MetricConsistency():
         if not self.metric_src_results:
             raise ValueError('Load Metric Result Filed!')
 
-    def transform_src_to_std(self, x, type_int=False):
+    def transform_src_to_std(self, x, reverse=False, type_int=False):
         _range = np.max(x) - np.min(x)
-        std = (x - np.min(x)) * 10 / _range
+        std = (x - np.min(x)) * 1 / _range
+        if reverse:
+            std = 1. - std
         if type_int:
             std = std.astype(np.int8)
-
+        
         return list(std)
 
     def get_std_results(self):
         for file in self.metric_src_results:
             std_result = []
-            for metric in file:
-                std_result.append(self.transform_src_to_std(metric, type_int=False))
+            for indicator, value in zip(self.metrics, file):
+                if self.metrics[indicator] == 'down':
+                    std_result.append(self.transform_src_to_std(value, reverse=True, type_int=False))
+                else:
+                    std_result.append(self.transform_src_to_std(value, reverse=False, type_int=False))
             self.metric_std_results.append(std_result)
 
 def vis_metric_consistency(file):
@@ -71,16 +76,16 @@ def vis_metric_consistency(file):
     plt.plot(x, file[0], color='black', linewidth=1, linestyle='-', label='MAE')
     plt.plot(x, file[1], color='blue', linewidth=1, alpha=1, linestyle='-', marker='.', label='PSNR')
     plt.plot(x, file[2], color='green', linewidth=1, alpha=1, linestyle='-', marker='.', label='SSIM')
-    # plt.plot(x, file[3], color='red', linewidth=1, alpha=1, linestyle='-', marker='.', label='KAID')
+    plt.plot(x, file[3], color='red', linewidth=1, alpha=1, linestyle='-', marker='.', label='Human')
 
     plt.xlim(0, xtick)
-    plt.ylim(0, 10)
+    plt.ylim(0, 1)
     plt.xlabel('Epoch', fontsize=12)
     plt.ylabel('Normalized Intensity', fontsize=12)
 
     ax = plt.gca()
     ax.xaxis.set_major_locator(MultipleLocator(5))
-    ax.yaxis.set_major_locator(MultipleLocator(1))
+    ax.yaxis.set_major_locator(MultipleLocator(0.1))
 
     plt.title('Metric Consistency', fontsize=12)
     plt.grid(axis='y', color='0.7', linestyle='--', linewidth=1)
@@ -105,7 +110,7 @@ if __name__ == '__main__':
     # file_name = None
     file_name = ['IXI086-Guys-0728-slice-60']
     # should assign metric, add kaid
-    metrics = ['mae', 'psnr', 'ssim']
+    metrics = {'mae': 'down', 'psnr': 'up', 'ssim': 'up', 'human': 'up'}
 
     metric_dataset = MetricConsistency(nirps_path=nirps_path, region=region, modality=modality, epochs=epochs, file_names=file_name, metrics=metrics)
     # [file_name, metric, epoch]
