@@ -1,4 +1,3 @@
-from ossaudiodev import SNDCTL_SEQ_GETTIME
 from scipy import rand
 from scipy.fft import set_global_backend
 import torch
