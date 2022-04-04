@@ -26,7 +26,6 @@ python3 ./fid_stats/gen_fid_stats.py --dataset 'ixi'  --source-domain 't2' --tar
 --noise-type 'slight'/'severe' [default='normal'] 
 --identity [default=true]
 --diff-privacy [default=true]
---auxiliary-rotation --auxiliary-translation --auxiliary-scaling [default=false]
 ```
 ```bash
 --debug --save-img --single-img-infer 
@@ -78,6 +77,12 @@ To reveal the real-world sitation in hosptials, datastream is organized as follo
 ```bash
 python3 data_io/nirps.py
 ```
+
+## Human judgement
+```bash
+python3 artificial_scoring_system.py
+```
+
 
 ## Metric Consistency
 ```bash

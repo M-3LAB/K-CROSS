@@ -137,8 +137,5 @@ if __name__ == '__main__':
         result = '{:.4f}, {}'.format(score, file)
         with open('{}/{}.txt'.format('documents', 'nirps_dataset_human'), 'a') as f:
             print(result, file=f)
-
-
-        
         
 
