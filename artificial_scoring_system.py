@@ -13,7 +13,7 @@ from tqdm import tqdm
 def articial_scoring_system():
     '''
     Press the score twice to score successfully, which can be modified repeatedly. 
-    Press enter to save the result to artificial.txt. 
+    Press ENTER to save the result to artificial.txt. 
     If you don't mark, press enter directly, and the original score will be saved into artificial.txt  
     Press ESC, the system will exit.
     '''  
