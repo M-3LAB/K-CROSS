@@ -31,6 +31,8 @@ def articial_scoring_system():
     #     if os.path.exists(name + '/artificial.txt'):
     #         os.remove(name + '/artificial.txt')
 
+    # return
+
     for i, batch in enumerate(nirps_loader):
         print('-------- {} / {} ---------'.format(i, len(nirps_dataset)))
         name = batch['name'][0]
