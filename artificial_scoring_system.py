@@ -42,16 +42,16 @@ def articial_scoring_system():
         print('-------- {} / {} ---------'.format(i, len(nirps_dataset)))
         name = batch['name'][0]
 
-        kaid = load_metric_result(name, 'human')
+        human = load_metric_result(name, 'human')
         img = cv2.imread(name + '/err_map.png')
         cv2.namedWindow('Artificial-Score-System: {}'.format(name), cv2.WINDOW_AUTOSIZE)
-        cv2.putText(img, 'src: {}'.format(int(kaid * 10) + 1), (12,60), cv2.FONT_HERSHEY_SIMPLEX, 1.2, (0,255,0), 3) 
+        cv2.putText(img, 'src: {}'.format(int(human * 10) + 1), (12,60), cv2.FONT_HERSHEY_SIMPLEX, 1.2, (0,255,0), 3) 
 
         if os.path.exists(name + '/artificial.txt'):
             arti = load_metric_result(name, 'artificial') 
             cv2.putText(img, 'saved: {}'.format(int(arti * 10)), (12, 250), cv2.FONT_HERSHEY_SIMPLEX, 1.2, (255, 0, 0), 3) 
         else:
-            save_metric_result(int(kaid * 10 + 1) / 10., name, 'artificial')
+            save_metric_result(int(human * 10 + 1) / 10., name, 'artificial')
 
 
         cv2.imshow('Artificial-Score-System: {}'.format(name), img)
