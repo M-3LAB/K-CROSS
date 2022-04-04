@@ -73,12 +73,12 @@ Sereval modes are described in the new settings of FedMed.
 To reveal the real-world sitation in hosptials, datastream is organized as follows.
 
 
-## Load NIPRS dataset, and generate error map
+## Load NIPRS Dataset, Generate Error Map, and Calculate Base Score for Human Judgement
 ```bash
 python3 data_io/nirps.py
 ```
 
-## Human judgement
+## Human Judgement
 ```bash
 python3 artificial_scoring_system.py
 ```
