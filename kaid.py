@@ -363,8 +363,8 @@ if __name__ == '__main__':
                         complex_unet = load_model(model=complex_unet, file_path=checkpoint_path, description='combined_complex')
 
                 # score images of nirps dataset
+                arti_values = []
                 kaid_values = []
-                human_values = []
                 mae_values = []
                 ssim_values = []
                 psnr_values = []
@@ -435,12 +435,12 @@ if __name__ == '__main__':
                     else:
                         raise NotImplementedError
 
-                    human = load_metric_result(name, 'human')
+                    arti = load_metric_result(name, 'artificial')
                     mae = load_metric_result(name, 'mae')
                     psnr = load_metric_result(name, 'psnr')
                     ssim = load_metric_result(name, 'ssim')
 
-                    human_values.append(human)
+                    arti_values.append(arti)
                     mae_values.append(mae)
                     psnr_values.append(psnr)
                     ssim_values.append(ssim)
@@ -451,14 +451,14 @@ if __name__ == '__main__':
                 psnr_values = uniform_result(psnr_values, reverse=False)
                 ssim_values = uniform_result(ssim_values, reverse=False)
 
-                human_consistency = calculate_metric_consistency(kaid_values, human_values) 
-                mae_consistency = calculate_metric_consistency(kaid_values, mae_values) 
-                psnr_consistency = calculate_metric_consistency(kaid_values, psnr_values)
-                ssim_consistency = calculate_metric_consistency(kaid_values, ssim_values) 
+                kaid_consistency = calculate_metric_consistency(kaid_values, arti_values) 
+                mae_consistency = calculate_metric_consistency(mae_values, arti_values) 
+                psnr_consistency = calculate_metric_consistency(psnr_values, arti_values)
+                ssim_consistency = calculate_metric_consistency(ssim_values, arti_values) 
 
 
-                infor = '[Epoch {}/{}] Human: {:.4f} mae: {:.4f} psnr: {:.4f} ssim: {:.4f}'.format(
-                    epoch+1, para_dict['num_epochs'], human_consistency, mae_consistency, psnr_consistency, ssim_consistency)
+                infor = '[Epoch {}/{}] kaid: {:.4f} mae: {:.4f} psnr: {:.4f} ssim: {:.4f}'.format(
+                    epoch+1, para_dict['num_epochs'], kaid_consistency, mae_consistency, psnr_consistency, ssim_consistency)
                 print(infor)
 
                 save_log(infor, file_path, description='metric_result')
