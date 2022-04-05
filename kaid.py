@@ -18,6 +18,11 @@ from loss_function.kaid.focal_freq import FocalFreqLoss, euclidean_freq_loss
 from loss_function.kaid.cosine_sim import cosine_sim_loss, complex_cosine_sim_loss
 from data_io.nirps import NIRPS
 
+import warnings
+warnings.filterwarnings("ignore")
+
+
+
 if __name__ == '__main__':
     args = parse_arguments_kaid()
     with open('./configuration/kaid/{}.yaml'.format(args.dataset), 'r') as f:
@@ -46,7 +51,7 @@ if __name__ == '__main__':
                          'scale':[1.00, 1.00], 
                          'size':(para_dict['size'], para_dict['size'])}]
 
-    #Dataset IO
+    # dataset IO
     if para_dict['dataset'] == 'ixi':
         assert para_dict['source_domain'] in ['t2', 'pd']
         assert para_dict['target_domain'] in ['t2', 'pd']
@@ -61,18 +66,13 @@ if __name__ == '__main__':
                                  data_num=para_dict['data_num'],
                                  dataset_splited=False)
         
-        #TODO: make sure normal and nosiy loader release the same order of dataset
+        # make sure normal and nosiy loader release the same order of dataset
         normal_loader = DataLoader(ixi_normal_dataset, num_workers=para_dict['num_workers'],
                                    batch_size=para_dict['batch_size'], shuffle=False)
 
     elif para_dict['dataset'] == 'brats2021':
         assert para_dict['source_domain'] in ['t1', 't2', 'flair']
         assert para_dict['target_domain'] in ['t1', 't2', 'flair']
-
-        """
-        #TODO: Create a dataset contained the whole part of BraTS 2021, included training and validation 
-        """
-        
         brats_normal_dataset = BraTS2021(root=para_dict['data_path'],
                                          modalities=[para_dict['source_domain'], para_dict['target_domain']],
                                          extract_slice=[para_dict['es_lower_limit'], para_dict['es_higher_limit']],
@@ -82,32 +82,31 @@ if __name__ == '__main__':
                                          data_mode='paired',
                                          data_num=para_dict['data_num'])
 
-        
-        #TODO: make sure normal and nosiy loader release the same order of dataset
+        # make sure normal and nosiy loader release the same order of dataset
         normal_loader = DataLoader(brats_normal_dataset, num_workers=para_dict['num_workers'],
                                    batch_size=para_dict['batch_size'], shuffle=False)
         
     else:
         raise NotImplementedError("New Data Has Not Been Implemented")
 
-    # Debug Mode
-    if para_dict['debug']:
-        batch_limit = 1
-    else:
-        batch_limit = int(para_dict['data_num'] / para_dict['batch_size'])
+    batch_limit = int(para_dict['data_num'] / para_dict['batch_size'])
 
-    # Model
+    # debug mode
+    if para_dict['debug']:
+        para_dict['num_epochs'] = 2
+        batch_limit = 2
+
+    # model
     complex_unet = ComplexUnet().to(device)
     unet = Unet().to(device)
     
-    # Loss
-    #TODO: Add Focal Freq Loss
+    # loss
     criterion_freq = FocalFreqLoss(loss_weight=100.0, alpha=1.0, log_matrix=False,
                                    avg_spectrum=False, batch_matrix=False).to(device) 
 
     criterion_recon = torch.nn.L1Loss().to(device)
 
-    # Optimizer
+    # optimizer
     optimizer_complex = torch.optim.Adam(complex_unet.parameters(), lr=para_dict['lr'],
                                  betas=[para_dict['beta1'], para_dict['beta2']])
     optimizer_normal = torch.optim.Adam(unet.parameters(), lr=para_dict['lr'],
@@ -116,10 +115,11 @@ if __name__ == '__main__':
     checkpoint_path = os.path.join('kaid_ck', para_dict['dataset']) 
     create_folders(tag_path=checkpoint_path)
 
+    # training
     if para_dict['train']:
         for epoch in range(para_dict['num_epochs']):
             for i, batch in enumerate(normal_loader): 
-                if i > batch_limit:
+                if i >= batch_limit:
                     break
                 
                 real_a = batch[para_dict['source_domain']].to(device)
@@ -168,8 +168,8 @@ if __name__ == '__main__':
                     loss_total.backward()
                     optimizer_normal.step()
 
-                    infor = '\r{}[Batch {}/{}] [Recon Loss: {:.4f}] [Focal Freq Loss: {:.4f}]'.format(
-                                '', i+1, batch_limit, recon_loss.item(), focal_freq_loss.item())
+                    infor = '\r{}[Epoch {} / {}] [Batch {}/{}] [Recon Loss: {:.4f}] [Focal Freq Loss: {:.4f}]'.format(
+                                '', epoch+1, para_dict['num_epochs'], i+1, batch_limit, recon_loss.item(), focal_freq_loss.item())
 
                     if para_dict['noisy_loss']:
                         infor = '{} [Noisy Recon Loss: {:.4f}] [Sim Loss: {:.4f}]'.format(infor, noisy_recon_loss, sim_loss)
@@ -220,9 +220,8 @@ if __name__ == '__main__':
                     loss_total.backward()
                     optimizer_complex.step()
 
-                    infor = '\r{}[Batch {}/{}] [Freq Loss: {:.4f}]'.format(
-                                '', i+1, batch_limit, freq_loss.item())
-
+                    infor = '\r{}[Epoch {} / {}] [Batch {}/{}] [Freq Loss: {:.4f}]'.format(
+                                '', epoch+1, para_dict['num_epochs'], i+1, batch_limit, freq_loss.item())
                     if para_dict['noisy_loss']:
                         infor= '{} [Noise Freq Loss: {:.4f}] [Sim Loss: {:.4f}]'.format(infor, noise_freq_loss.item(), sim_freq_loss.item())
 
@@ -296,9 +295,9 @@ if __name__ == '__main__':
                     optimizer_complex.step()
                     optimizer_normal.step()
 
-                    infor = '\r{}[Batch {}/{}] [Recon Loss: {:.4f}] [Freq Loss: {:.4f}]'.format(
-                                '', i+1, batch_limit, recon_loss.item(), freq_loss.item())
-                    
+                    infor = '\r{}[Epoch {} / {}] [Batch {}/{}] [Recon Loss: {:.4f}] [Freq Loss: {:.4f}]'.format(
+                                '', epoch+1, para_dict['num_epochs'], i+1, batch_limit, recon_loss.item(), freq_loss.item())
+
                     if para_dict['noisy_loss']:
                         infor = '{} [Noisy Recon Loss: {:.4f}] [Sim Loss: {:.4f}] [Noisy Freq Loss: {:.4f}] [Sim Freq Loss: {:.4f}]'.format(
                             infor, noisy_recon_loss.item(), sim_loss.item(), noise_freq_loss.item(), sim_freq_loss.item() 
@@ -307,128 +306,162 @@ if __name__ == '__main__':
                     print(infor, flush=True, end='  ')
                 else:
                     raise NotImplementedError('The method has not been implemented yet')
-        
-        if para_dict['method'] == 'normal':
 
-            if para_dict['noisy_loss']:
-                save_model(model=unet, file_path=checkpoint_path, infor='normal_noisy', save_previous=True)
-            else:
-                save_model(model=unet, file_path=checkpoint_path, infor='normal', save_previous=True)
-
-        elif para_dict['method'] == 'complex':
-            if para_dict['noisy_loss']:
-                save_model(model=complex_unet, file_path=checkpoint_path, infor='complex_noisy', save_previous=True)
-            else:
-                save_model(model=complex_unet, file_path=checkpoint_path, infor='complex', save_previous=True)
-
-        elif para_dict['method'] == 'combined':
-            if para_dict['noisy_loss']:
-                save_model(model=complex_unet, file_path=checkpoint_path, infor='combined_complex_noisy', save_previous=True)
-                save_model(model=unet, file_path=checkpoint_path, infor='combined_normal_noisy', save_previous=True)
-            else:
-                save_model(model=complex_unet, file_path=checkpoint_path, infor='combined_complex', save_previous=True)
-                save_model(model=unet, file_path=checkpoint_path, infor='combined_normal', save_previous=True)
-
-    if para_dict['validate']: 
-        nirps_path = para_dict['nirps_path']
-        regions = ['ixi']
-        modalities = {'ixi': ['t2', 'pd']}
-        models = ['cyclegan'] 
-        epochs = [i for i in range(1, 51)]
-
-        nirps_dataset = NIRPS(nirps_path=nirps_path, regions=regions, modalities=modalities, models=models, epochs=epochs)
-        nirps_loader = DataLoader(nirps_dataset, batch_size=1, num_workers=1, shuffle=False)
-        print('load nirps dataset, size: {}'.format(len(nirps_dataset)))
-
-        #load models
-        if para_dict['method'] == 'normal':
-            if para_dict['noisy_loss']:
-                unet = load_model(model=unet, file_path=checkpoint_path, description='normal_noisy')
-            else:
-                unet = load_model(model=unet, file_path=checkpoint_path, description='normal')
-            
-        elif para_dict['method'] == 'complex':
-            if para_dict['noisy_loss']:
-                complex_unet = load_model(model=complex_unet, file_path=checkpoint_path, description='complex_noisy')
-            else:
-                complex_unet = load_model(model=complex_unet, file_path=checkpoint_path, description='complex')
-            
-        elif para_dict['method'] == 'combined':
-            if para_dict['noisy_loss']:
-                unet = load_model(model=unet, file_path=checkpoint_path, description='combined_normal_noisy')
-                complex_unet = load_model(model=complex_unet, file_path=checkpoint_path, description='combined_complex_noisy')
-            else:
-                unet = load_model(model=unet, file_path=checkpoint_path, description='combined_normal')
-                complex_unet = load_model(model=complex_unet, file_path=checkpoint_path, description='combined_complex')
-
-        for batch in nirps_loader:
-
-            img = batch['img'].float().to(device)
-            gt = batch['gt'].float().to(device)
-            name = batch['name']
-
+            # save model 
             if para_dict['method'] == 'normal':
-                img_z = unet.encode(img)
-                gt_z = unet.encode(gt)
-
-                if para_dict['diff'] == 'l1':
-                    kaid = l1_diff(real_z=gt_z, fake_z=img_z).item()
-                elif para_dict['diff'] == 'l2':
-                    kaid = l2_diff(real_z=gt_z, fake_z=img_z).item()
-                elif para_dict['diff'] == 'cos':
-                    kaid = cosine_similiarity(real_z=gt_z, fake_z=img_z).item()
-                else:
-                    raise ValueError
-
                 if para_dict['noisy_loss']:
-                    save_metric_result(result=kaid, file_path=name[0], description='kaid_normal_noisy')
+                    save_model(model=unet, file_path=checkpoint_path, infor='normal_noisy', save_previous=True)
                 else:
-                    save_metric_result(result=kaid, file_path=name[0], description='kaid_normal')
+                    save_model(model=unet, file_path=checkpoint_path, infor='normal', save_previous=True)
 
             elif para_dict['method'] == 'complex':
-
-                img_freq = torch_fft(img, normalized_method='ortho')
-                gt_freq = torch_fft(gt, normalized_method='ortho')
-
-                img_freq_z = complex_unet.encode(img_freq)
-                gt_freq_z = complex_unet.encode(gt_freq)
-
-                kaid = freq_distance(real_z=gt_freq_z, fake_z=img_freq_z).item()
-
                 if para_dict['noisy_loss']:
-                    save_metric_result(result=kaid, file_path=name[0], description='kaid_complex_noisy')
+                    save_model(model=complex_unet, file_path=checkpoint_path, infor='complex_noisy', save_previous=True)
                 else:
-                    save_metric_result(result=kaid, file_path=name[0], description='kaid_complex')
+                    save_model(model=complex_unet, file_path=checkpoint_path, infor='complex', save_previous=True)
 
             elif para_dict['method'] == 'combined':
-
-                img_z = unet.encode(img)
-                gt_z = unet.encode(gt)
-
-                img_freq = torch_fft(img, normalized_method='ortho')
-                gt_freq = torch_fft(gt, normalized_method='ortho')
-                img_freq_z = complex_unet.encode(img_freq)
-                gt_freq_z = complex_unet.encode(gt_freq)
-
-                if para_dict['diff'] == 'l1':
-                    kaid = (l1_diff(real_z=gt_z, fake_z=img_z) + freq_distance(real_z=gt_freq_z, fake_z=img_freq_z)).item() 
-                elif para_dict['diff'] == 'l2':
-                    kaid = (l2_diff(real_z=gt_z, fake_z=img_z) + freq_distance(real_z=gt_freq_z, fake_z=img_freq_z)).item() 
-                else:
-                    raise ValueError
-
                 if para_dict['noisy_loss']:
-                    save_metric_result(result=kaid, file_path=name[0], description='kaid_combined_noisy')
+                    save_model(model=complex_unet, file_path=checkpoint_path, infor='combined_complex_noisy', save_previous=True)
+                    save_model(model=unet, file_path=checkpoint_path, infor='combined_normal_noisy', save_previous=True)
                 else:
-                    save_metric_result(result=kaid, file_path=name[0], description='kaid_combined')
-                    
+                    save_model(model=complex_unet, file_path=checkpoint_path, infor='combined_complex', save_previous=True)
+                    save_model(model=unet, file_path=checkpoint_path, infor='combined_normal', save_previous=True)
 
-            else:
-                raise NotImplementedError
+            # inference
+            if para_dict['validate']: 
+                nirps_path = para_dict['nirps_path']
+                regions = ['ixi', 'brats2021']
+                modalities = {'ixi': ['t2', 'pd'],
+                            'brats2021': ['t1', 't2', 'flair']}
+                models = ['cyclegan'] 
+                epochs = [i for i in range(1, 51)]
 
-    
+                nirps_dataset = NIRPS(nirps_path=nirps_path, regions=regions, modalities=modalities, models=models, epochs=epochs)
+                nirps_loader = DataLoader(nirps_dataset, batch_size=1, num_workers=1, shuffle=False)
+                print('load nirps dataset, size: {}'.format(len(nirps_dataset)))
 
-    
+                # load models
+                if para_dict['method'] == 'normal':
+                    if para_dict['noisy_loss']:
+                        unet = load_model(model=unet, file_path=checkpoint_path, description='normal_noisy')
+                    else:
+                        unet = load_model(model=unet, file_path=checkpoint_path, description='normal')
+            
+                elif para_dict['method'] == 'complex':
+                    if para_dict['noisy_loss']:
+                        complex_unet = load_model(model=complex_unet, file_path=checkpoint_path, description='complex_noisy')
+                    else:
+                        complex_unet = load_model(model=complex_unet, file_path=checkpoint_path, description='complex')
+            
+                elif para_dict['method'] == 'combined':
+                    if para_dict['noisy_loss']:
+                        unet = load_model(model=unet, file_path=checkpoint_path, description='combined_normal_noisy')
+                        complex_unet = load_model(model=complex_unet, file_path=checkpoint_path, description='combined_complex_noisy')
+                    else:
+                        unet = load_model(model=unet, file_path=checkpoint_path, description='combined_normal')
+                        complex_unet = load_model(model=complex_unet, file_path=checkpoint_path, description='combined_complex')
+
+                # score images of nirps dataset
+                kaid_values = []
+                human_values = []
+                mae_values = []
+                ssim_values = []
+                psnr_values = []
+                for batch in nirps_loader:
+                    img = batch['img'].float().to(device)
+                    gt = batch['gt'].float().to(device)
+                    name = batch['name'][0]
+
+                    if para_dict['method'] == 'normal':
+                        img_z = unet.encode(img)
+                        gt_z = unet.encode(gt)
+
+                        if para_dict['diff'] == 'l1':
+                            kaid = l1_diff(real_z=gt_z, fake_z=img_z).item()
+                        elif para_dict['diff'] == 'l2':
+                            kaid = l2_diff(real_z=gt_z, fake_z=img_z).item()
+                        elif para_dict['diff'] == 'cos':
+                            kaid = cosine_similiarity(real_z=gt_z, fake_z=img_z).item()
+                        else:
+                            raise ValueError
+
+                        if para_dict['noisy_loss']:
+                            save_metric_result(result=kaid, file_path=name, description='kaid_normal_noisy')
+                        else:
+                            save_metric_result(result=kaid, file_path=name, description='kaid_normal')
+
+                        kaid_values.append(kaid)
+
+                    elif para_dict['method'] == 'complex':
+                        img_freq = torch_fft(img, normalized_method='ortho')
+                        gt_freq = torch_fft(gt, normalized_method='ortho')
+
+                        img_freq_z = complex_unet.encode(img_freq)
+                        gt_freq_z = complex_unet.encode(gt_freq)
+
+                        kaid = freq_distance(real_z=gt_freq_z, fake_z=img_freq_z).item()
+
+                        if para_dict['noisy_loss']:
+                            save_metric_result(result=kaid, file_path=name, description='kaid_complex_noisy')
+                        else:
+                            save_metric_result(result=kaid, file_path=name, description='kaid_complex')
+
+                        kaid_values.append(kaid)
+
+                    elif para_dict['method'] == 'combined':
+                        img_z = unet.encode(img)
+                        gt_z = unet.encode(gt)
+
+                        img_freq = torch_fft(img, normalized_method='ortho')
+                        gt_freq = torch_fft(gt, normalized_method='ortho')
+                        img_freq_z = complex_unet.encode(img_freq)
+                        gt_freq_z = complex_unet.encode(gt_freq)
+
+                        if para_dict['diff'] == 'l1':
+                            kaid = (l1_diff(real_z=gt_z, fake_z=img_z) + freq_distance(real_z=gt_freq_z, fake_z=img_freq_z)).item() 
+                        elif para_dict['diff'] == 'l2':
+                            kaid = (l2_diff(real_z=gt_z, fake_z=img_z) + freq_distance(real_z=gt_freq_z, fake_z=img_freq_z)).item() 
+                        else:
+                            raise ValueError
+
+                        if para_dict['noisy_loss']:
+                            save_metric_result(result=kaid, file_path=name, description='kaid_combined_noisy')
+                        else:
+                            save_metric_result(result=kaid, file_path=name, description='kaid_combined')
+
+                        kaid_values.append(kaid)
+             
+                    else:
+                        raise NotImplementedError
+
+                    human = load_metric_result(name, 'human')
+                    mae = load_metric_result(name, 'mae')
+                    psnr = load_metric_result(name, 'psnr')
+                    ssim = load_metric_result(name, 'ssim')
+
+                    human_values.append(human)
+                    mae_values.append(mae)
+                    psnr_values.append(psnr)
+                    ssim_values.append(ssim)
+
+                # calculate metric consistency
+                kaid_values = uniform_result(kaid_values, reverse=True)
+                mae_values = uniform_result(mae_values, reverse=True)
+                psnr_values = uniform_result(psnr_values, reverse=False)
+                ssim_values = uniform_result(ssim_values, reverse=False)
+
+                human_consistency = calculate_metric_consistency(kaid_values, human_values) 
+                mae_consistency = calculate_metric_consistency(kaid_values, mae_values) 
+                psnr_consistency = calculate_metric_consistency(kaid_values, psnr_values)
+                ssim_consistency = calculate_metric_consistency(kaid_values, ssim_values) 
+
+
+                infor = '[Epoch {}/{}] Human: {:.4f} mae: {:.4f} psnr: {:.4f} ssim: {:.4f}'.format(
+                    epoch+1, para_dict['num_epochs'], human_consistency, mae_consistency, psnr_consistency, ssim_consistency)
+                print(infor)
+
+                save_log(infor, file_path, description='metric_result')
                 
 
 

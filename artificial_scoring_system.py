@@ -1,13 +1,9 @@
 import cv2
-import numpy as np
 import os
 
 from data_io.nirps import NIRPS
 from torch.utils.data import DataLoader
 from tools.utilize import load_metric_result, save_metric_result
-from tqdm import tqdm
-
-
 
 
 def articial_scoring_system():
