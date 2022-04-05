@@ -182,7 +182,7 @@ def concate_tensor_lists(imgs_list, img, i):
     return imgs_list
 
 def calculate_metric_consistency(metric_a, metric_b):
-    similarity = np.linalg.norm(np.array(metric_a) - np.array(metric_b), ord=2).mean()
+    similarity = np.abs(np.array(metric_a) - np.array(metric_b)).mean()
     
     return similarity
 
