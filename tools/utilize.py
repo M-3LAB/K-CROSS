@@ -13,7 +13,8 @@ __all__ = ['seed_everything', 'parse_device_list', 'allocate_gpus', 'average',
            'merge_config', 'convert_list_float_type', 'create_folders', 'concate_tensor_lists',
            'weights_init_normal', 'LambdaLR', 'load_model', 'merge_config', 'override_config', 'extract_config',
            'record_path', 'save_arg', 'save_log', 'save_script', 'save_image', 'save_model',
-           'save_metric_result', 'load_metric_result']
+           'save_metric_result', 'load_metric_result', 'calculate_metric_consistency', 
+           'uniform_result']
 
 def set_grad(model, flag=True):
     for p in model.parameters():
@@ -179,4 +180,16 @@ def concate_tensor_lists(imgs_list, img, i):
     else: 
         imgs_list = torch.cat((imgs_list, img), dim=0)
     return imgs_list
+
+def calculate_metric_consistency(metric_a, metric_b):
+    similarity = np.linalg.norm(np.array(metric_a) - np.array(metric_b), ord=2).mean()
     
+    return similarity
+
+def uniform_result(x, reverse=False):
+    _range = np.max(x) - np.min(x)
+    std = (x - np.min(x)) * 1 / _range
+    if reverse:
+        std = 1. - std
+
+    return std
