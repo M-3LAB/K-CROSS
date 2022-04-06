@@ -34,7 +34,7 @@ def parse_arguments_kaid():
     # inference 
     parser.add_argument('--nirps-path', type=str, default='./nirps_dataset', help='nirps data path')
     parser.add_argument('--test-model', type=str, default=None, choices=['cyclegan','munit','unit'])
-    parser.add_argument('--infer-range', type=str, default=None, choices=['separate', 'all'])
+    parser.add_argument('--infer-range', type=str, default=None, choices=['all', 'ixi', 'brats2021'])
 
     args = parser.parse_args()
     return args

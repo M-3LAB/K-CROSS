@@ -113,7 +113,7 @@ if __name__ == '__main__':
     optimizer_normal = torch.optim.Adam(unet.parameters(), lr=para_dict['lr'],
                                  betas=[para_dict['beta1'], para_dict['beta2']])
 
-    checkpoint_path = os.path.join('kaid_ck', para_dict['dataset']) 
+    checkpoint_path = os.path.join('kaid_ck', para_dict['dataset'], '{}_{}'.format(para_dict['source_domain'], para_dict['target_domain'])) 
     create_folders(tag_path=checkpoint_path)
 
     # training
@@ -336,14 +336,12 @@ if __name__ == '__main__':
             regions = ['ixi', 'brats2021']
             modalities = {'ixi': ['t2', 'pd'],
                         'brats2021': ['t1', 't2', 'flair']}
-        elif para_dict['infer_range'] == 'separate':
-            if para_dict['dataset'] == 'ixi':
+        elif para_dict['infer_range'] == 'ixi':
                 regions = ['ixi']
                 modalities = {'ixi': ['t2', 'pd']}
-            elif para_dict['dataset'] == 'brats2021':
+        elif para_dict['infer_range'] == 'brats2021':
                 regions = ['brats2021']
                 modalities = {'brats2021': ['t1', 't2', 'flair']}
-        
         else:
             raise NotImplementedError
 
