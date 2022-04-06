@@ -1,3 +1,4 @@
+from tkinter.messagebox import NO
 import torch
 import yaml
 import os
@@ -331,9 +332,22 @@ if __name__ == '__main__':
     # inference
     if para_dict['validate']: 
         nirps_path = para_dict['nirps_path']
-        regions = ['ixi', 'brats2021']
-        modalities = {'ixi': ['t2', 'pd'],
-                    'brats2021': ['t1', 't2', 'flair']}
+        if para_dict['infer_range'] == 'all':
+            regions = ['ixi', 'brats2021']
+            modalities = {'ixi': ['t2', 'pd'],
+                        'brats2021': ['t1', 't2', 'flair']}
+        elif para_dict['infer_range'] == 'separate':
+            if para_dict['dataset'] == 'ixi':
+                regions = ['ixi']
+                modalities = {'ixi': ['t2', 'pd']}
+            elif para_dict['dataset'] == 'brats2021':
+                regions = ['brats2021']
+                modalities = {'brats2021': ['t1', 't2', 'flair']}
+        
+        else:
+            raise NotImplementedError
+
+
         models = ['cyclegan'] 
         epochs = [i for i in range(1, 51)]
 
