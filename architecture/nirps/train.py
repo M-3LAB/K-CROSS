@@ -8,6 +8,8 @@ from data_io.ixi import IXI
 from torch.utils.data import DataLoader
 from architecture.centralized.train import CentralizedTrain
 from architecture.nirps.cyclegan import NIRPSCycleGAN
+from architecture.nirps.munit import NIRPSMunit
+from architecture.nirps.unit import NIRPSUnit
 
 import warnings
 warnings.filterwarnings("ignore")
@@ -100,20 +102,18 @@ class NIRPSTrain(CentralizedTrain):
         if self.para_dict['model'] == 'cyclegan':
             self.trainer = NIRPSCycleGAN(self.para_dict, self.train_loader, self.valid_loader,
                                     self.assigned_loader, self.device, self.file_path)
+        elif self.para_dict['model'] == 'munit':
+            self.trainer = NIRPSMunit(self.para_dict, self.train_loader, self.valid_loader,
+                                    self.assigned_loader, self.device, self.file_path)
+        elif self.para_dict['model'] == 'unit':
+            self.trainer = NIRPSUnit(self.para_dict, self.train_loader, self.valid_loader,
+                                    self.assigned_loader, self.device, self.file_path)
         else:
             raise ValueError('Model is Invalid!')
 
         if self.para_dict['load_model']:
             self.load_models()
             print('load model: {}'.format(self.para_dict['load_model_dir']))
-
-    def save_models(self):
-        if self.para_dict['model'] == 'cyclegan':
-            gener_from_a_to_b, gener_from_b_to_a, discr_from_a_to_b, discr_from_b_to_a = self.trainer.get_model()
-            save_model(gener_from_a_to_b, '{}/checkpoint/g_from_a_to_b'.format(self.file_path), 'epoch_{}'.format(self.epoch+1))
-            save_model(gener_from_b_to_a, '{}/checkpoint/g_from_b_to_a'.format(self.file_path), 'epoch_{}'.format(self.epoch+1))
-        else:
-            raise ValueError('Model is Invalid!')
 
     def work_flow(self):
         # train model
