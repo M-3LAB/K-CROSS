@@ -33,7 +33,7 @@ class ComplexUnet(nn.Module):
         self.d3 = self.down3(self.d2)
         self.d4 = self.down4(self.d3)
         z = self.down5(self.d4)
-        return z 
+        return z, self.d1, self.d2, self.d3, self.d4
     
     def decode(self, z):
         self.u1 = self.up1(z)
