@@ -113,7 +113,7 @@ if __name__ == '__main__':
     optimizer_normal = torch.optim.Adam(unet.parameters(), lr=para_dict['lr'],
                                  betas=[para_dict['beta1'], para_dict['beta2']])
 
-    checkpoint_path = os.path.join('kaid_ck', para_dict['dataset'], '{}_{}'.format(para_dict['source_domain'], para_dict['target_domain'])) 
+    checkpoint_path = os.path.join('kaid_ck_{}_epoch'.format(para_dict['num_epochs']), para_dict['dataset'], '{}_{}'.format(para_dict['source_domain'], para_dict['target_domain'])) 
     create_folders(tag_path=checkpoint_path)
 
     # training
