@@ -18,7 +18,7 @@ def articial_scoring_system():
     regions = ['ixi', 'brats2021']
     modalities = {'ixi': ['t2', 'pd'],
                   'brats2021': ['t1', 't2', 'flair']}
-    models = ['cyclegan'] 
+    models = ['Munit'] 
     epochs = [i for i in range(1, 51)]
 
     nirps_dataset = NIRPS(nirps_path=nirps_path, regions=regions, modalities=modalities, models=models, epochs=epochs)
