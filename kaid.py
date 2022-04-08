@@ -436,13 +436,13 @@ if __name__ == '__main__':
                     img_freq_z, img_freq_d1, img_freq_d2, img_freq_d3, img_freq_d4 = complex_unet.encode(img_freq)
                     gt_freq_z, gt_freq_d1, gt_freq_d2, gt_freq_d3, gt_freq_d4 = complex_unet.encode(gt_freq)
 
-                    kaid_z = freq_distance(real_z=gt_freq_z, fake_z=img_freq_z).item()
-                    kaid_d1 = freq_distance(real_z=gt_freq_d1, fake_z=img_freq_d1).item()
-                    kaid_d2 = freq_distance(real_z=gt_freq_d1, fake_z=img_freq_d1).item()
-                    kaid_d1 = freq_distance(real_z=gt_freq_d1, fake_z=img_freq_d1).item()
-                    kaid_d1 = freq_distance(real_z=gt_freq_d1, fake_z=img_freq_d1).item()
+                    kaid_freq_z = freq_distance(real_z=gt_freq_z, fake_z=img_freq_z).item()
+                    kaid_freq_d1 = freq_distance(real_z=gt_freq_d1, fake_z=img_freq_d1).item()
+                    kaid_freq_d2 = freq_distance(real_z=gt_freq_d1, fake_z=img_freq_d1).item()
+                    kaid_freq_d3 = freq_distance(real_z=gt_freq_d1, fake_z=img_freq_d1).item()
+                    kaid_freq_d4 = freq_distance(real_z=gt_freq_d1, fake_z=img_freq_d1).item()
 
-                    kaid = (kaid_z + kaid_d1 + kaid_d2 + kaid_d3 + kaid_d4) * 0.2
+                    kaid = (kaid_freq_z + kaid_freq_d1 + kaid_freq_d2 + kaid_freq_d3 + kaid_freq_d4) * 0.2
 
                 if para_dict['noisy_loss']:
                     save_metric_result(result=kaid, file_path=name, description='kaid_complex_noisy')
@@ -456,10 +456,10 @@ if __name__ == '__main__':
                 gt_freq = torch_fft(gt, normalized_method='ortho')
                 
                 if para_dict['latent_size'] == 'one_z':
-                    img_z = unet.encode(img)
-                    gt_z = unet.encode(gt)
-                    img_freq_z = complex_unet.encode(img_freq)
-                    gt_freq_z = complex_unet.encode(gt_freq)
+                    img_z, _, _, _, _ = unet.encode(img)
+                    gt_z, _, _, _, _ = unet.encode(gt)
+                    img_freq_z, _, _, _, _ = complex_unet.encode(img_freq)
+                    gt_freq_z, _, _, _, _ = complex_unet.encode(gt_freq)
 
                     if para_dict['diff'] == 'l1':
                         kaid = (l1_diff(real_z=gt_z, fake_z=img_z) + freq_distance(real_z=gt_freq_z, fake_z=img_freq_z)).item() 
@@ -469,7 +469,29 @@ if __name__ == '__main__':
                         raise ValueError
 
                 elif para_dict['latent_size'] == 'all_z':
-                    pass
+                    img_z, img_d1, img_d2, img_d3, img_d4 = unet.encode(img)
+                    gt_z, gt_d1, gt_d2, gt_d3, gt_d4 = unet.encode(gt)
+
+                    kaid_z = l2_diff(real_z=gt_z, fake_z=img_z).item()
+                    kaid_d1 = l2_diff(real_z=gt_d1, fake_z=img_d1).item()
+                    kaid_d2 = l2_diff(real_z=gt_d2, fake_z=img_d2).item()
+                    kaid_d3 = l2_diff(real_z=gt_d3, fake_z=img_d3).item()
+                    kaid_d4 = l2_diff(real_z=gt_d4, fake_z=img_d4).item()
+
+                    kaid_natural = (kaid_z + kaid_d1 + kaid_d2 + kaid_d3 + kaid_d4) * 0.2
+
+                    img_freq_z, img_freq_d1, img_freq_d2, img_freq_d3, img_freq_d4 = complex_unet.encode(img_freq)
+                    gt_freq_z, gt_freq_d1, gt_freq_d2, gt_freq_d3, gt_freq_d4 = complex_unet.encode(gt_freq)
+
+                    kaid_freq_z = freq_distance(real_z=gt_freq_z, fake_z=img_freq_z).item()
+                    kaid_freq_d1 = freq_distance(real_z=gt_freq_d1, fake_z=img_freq_d1).item()
+                    kaid_freq_d2 = freq_distance(real_z=gt_freq_d1, fake_z=img_freq_d1).item()
+                    kaid_freq_d3 = freq_distance(real_z=gt_freq_d1, fake_z=img_freq_d1).item()
+                    kaid_freq_d4 = freq_distance(real_z=gt_freq_d1, fake_z=img_freq_d1).item()
+
+                    kaid_freq = (kaid_freq_z + kaid_freq_d1 + kaid_freq_d2 + kaid_freq_d3 + kaid_freq_d4) * 0.2
+
+                    kaid = kaid_natural + kaid_freq
 
                 if para_dict['noisy_loss']:
                     save_metric_result(result=kaid, file_path=name, description='kaid_combined_noisy')
