@@ -15,10 +15,10 @@ def articial_scoring_system():
     '''  
 
     nirps_path = './nirps_dataset'
-    regions = ['ixi', 'brats2021']
-    modalities = {'ixi': ['t2', 'pd'],
+    regions = ['brats2021']
+    modalities = {
                   'brats2021': ['t1', 't2', 'flair']}
-    models = ['Munit'] 
+    models = ['Unit'] 
     epochs = [i for i in range(1, 51)]
 
     nirps_dataset = NIRPS(nirps_path=nirps_path, regions=regions, modalities=modalities, models=models, epochs=epochs)
@@ -36,6 +36,8 @@ def articial_scoring_system():
     # return
 
     begin_n = int(load_metric_result('documents', 'local'))
+    print('please CHECK begin number {} in ./documents/local.txt'.format(begin_n))
+
     for i, batch in enumerate(nirps_loader):
         
         # start
@@ -70,9 +72,10 @@ def articial_scoring_system():
 
             s =  int(s) - 48
             print(s)
-            cv2.putText(img, 'change to: {}'.format(s), (250, 250), cv2.FONT_HERSHEY_SIMPLEX, 1.2, (0, 0, 255), 3) 
-            cv2.imshow('Artificial-Score-System: {}'.format(name), img)
-            save_metric_result(s / 10., name, 'artificial')
+            if s >= 0 and s <= 9:
+                cv2.putText(img, 'change to: {}'.format(s), (250, 250), cv2.FONT_HERSHEY_SIMPLEX, 1.2, (0, 0, 255), 3) 
+                cv2.imshow('Artificial-Score-System: {}'.format(name), img)
+                save_metric_result(s / 10., name, 'artificial')
         
         save_metric_result(i, 'documents', 'local')
         cv2.destroyAllWindows()
