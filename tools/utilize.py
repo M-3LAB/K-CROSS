@@ -162,7 +162,7 @@ def load_model(model, file_path, description):
 
     #model_path = glob.glob('{}/checkpoint/{}/*.pth'.format(file_path, description))[0]
     model_path = f'{file_path}/{description}.pth' 
-    checkpoint = torch.load(model_path)
+    checkpoint = torch.load(model_path, map_location='cpu')
     model.load_state_dict(checkpoint['model_state_dict'])
 
     return model

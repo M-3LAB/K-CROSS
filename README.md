@@ -75,7 +75,7 @@ To reveal the real-world sitation in hosptials, datastream is organized as follo
 
 ## Load NIPRS Dataset, Generate Error Map, and Calculate Base Score for Human Judgement
 ```bash
-python3 data_io/nirps.py
+python3 generate_nirps_err_map.py
 ```
 
 ## Human Judgement
