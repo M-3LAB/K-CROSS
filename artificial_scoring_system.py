@@ -16,9 +16,9 @@ def articial_scoring_system():
 
     nirps_path = './nirps_dataset'
     regions = ['ixi', 'brats2021']
-    modalities = {'ixi': ['t2', 'pd'],
+    modalities = {'ixi': ['pd', 't2'],
                   'brats2021': ['t1', 't2', 'flair']}
-    models = ['cyclegan'] 
+    models = ['Cyclegan', 'Munit', 'Unit'] 
     epochs = [i for i in range(1, 51)]
 
     nirps_dataset = NIRPS(nirps_path=nirps_path, regions=regions, modalities=modalities, models=models, epochs=epochs)
@@ -29,15 +29,14 @@ def articial_scoring_system():
     # clear all labeled data
     # for batch in nirps_loader:
     #     name = batch['name'][0]
-
     #     if os.path.exists(name + '/artificial.txt'):
     #         os.remove(name + '/artificial.txt')
-
     # return
 
     begin_n = int(load_metric_result('documents', 'local'))
+    print('please CHECK begin number {} in ./documents/local.txt'.format(begin_n))
+
     for i, batch in enumerate(nirps_loader):
-        
         # start
         if begin_n > 0:
             begin_n = begin_n - 1
@@ -57,7 +56,6 @@ def articial_scoring_system():
         else:
             save_metric_result(int(human * 10 + 1) / 10., name, 'artificial')
 
-
         cv2.imshow('Artificial-Score-System: {}'.format(name), img)
 
         # press ENTER to continue
@@ -70,14 +68,24 @@ def articial_scoring_system():
 
             s =  int(s) - 48
             print(s)
-            cv2.putText(img, 'change to: {}'.format(s), (250, 250), cv2.FONT_HERSHEY_SIMPLEX, 1.2, (0, 0, 255), 3) 
-            cv2.imshow('Artificial-Score-System: {}'.format(name), img)
-            save_metric_result(s / 10., name, 'artificial')
+            if s >= 0 and s <= 9:
+                cv2.putText(img, 'change to: {}'.format(s), (250, 250), cv2.FONT_HERSHEY_SIMPLEX, 1.2, (0, 0, 255), 3) 
+                cv2.imshow('Artificial-Score-System: {}'.format(name), img)
+                save_metric_result(s / 10., name, 'artificial')
         
         save_metric_result(i, 'documents', 'local')
         cv2.destroyAllWindows()
 
+    # check anomaly score
+    for i, batch in enumerate(nirps_loader):
+        name = batch['name'][0]
 
+        if os.path.exists(name + '/artificial.txt'):
+            arti = load_metric_result(name, 'artificial') 
+            if arti > 9 or arti < 0:
+                print(name)
+        else:
+            print(name)
 
 if __name__ == '__main__':
     articial_scoring_system()

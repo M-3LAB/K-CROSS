@@ -2,6 +2,8 @@ __pycache__/
 work_dir/
 ./history
 fid_stats/stats_npz/
-nirps_dataset/
+# nirps_dataset/
 *.png
+kaid_ck/
 kaid_ck_30_epoch/
+kaid*.txt
