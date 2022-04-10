@@ -29,7 +29,7 @@ if __name__ == '__main__':
     with open('./configuration/kaid/{}.yaml'.format(args.dataset), 'r') as f:
         para_dict = yaml.load(f, Loader=yaml.SafeLoader)
     para_dict = merge_config(para_dict, args)
-    print(para_dict)
+    # print(para_dict)
 
     file_path = record_path(para_dict)
     if para_dict['save_log']:
@@ -350,7 +350,7 @@ if __name__ == '__main__':
 
         nirps_dataset = NIRPS(nirps_path=nirps_path, regions=regions, modalities=modalities, models=dataset_name, epochs=epochs)
         nirps_loader = DataLoader(nirps_dataset, batch_size=1, num_workers=1, shuffle=False)
-        print('load nirps dataset, size: {}'.format(len(nirps_dataset)))
+        # print('load nirps dataset, size: {}'.format(len(nirps_dataset)))
 
         # load models
         if para_dict['method'] == 'normal':
@@ -521,6 +521,9 @@ if __name__ == '__main__':
         print(infor)
 
         save_log(infor, file_path, description='metric_result')
+
+        with open('{}/log_kaid_{}_{}_epochs.txt'.format(para_dict['work_dir'], para_dict['uniform_mode'], para_dict['dataset_epochs']), 'a') as f:
+            print(infor, file=f)
                 
 
 
