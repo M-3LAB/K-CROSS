@@ -19,7 +19,7 @@ def parse_arguments_kaid():
     parser.add_argument('--debug', action='store_true', default=False)
     parser.add_argument('--normalized-method', type=str, default=None, choices=['forward', 'backward', 'ortho'])
     parser.add_argument('--num-epochs', type=int, default=30)
-    parser.add_argument('--diff-method', type=str, default=None, choices=['l1', 'l2', 'cos', 'freq'])
+    parser.add_argument('--diff', type=str, default=None, choices=['l1', 'l2', 'cos', 'freq'])
     parser.add_argument('--lr', type=float, default=None, help='learning rate')
     parser.add_argument('--fid', action='store_true', default=True)
     parser.add_argument('--train', action='store_true', default=False)

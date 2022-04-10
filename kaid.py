@@ -346,8 +346,10 @@ if __name__ == '__main__':
             raise NotImplementedError
 
 
-        models = ['cyclegan'] 
-        epochs = [i for i in range(1, 51)]
+        #models = ['cyclegan'] 
+        #models = ['munit'] 
+        models = ['unit'] 
+        epochs = [i for i in range(1, 40)]
 
         nirps_dataset = NIRPS(nirps_path=nirps_path, regions=regions, modalities=modalities, models=models, epochs=epochs)
         nirps_loader = DataLoader(nirps_dataset, batch_size=1, num_workers=1, shuffle=False)
