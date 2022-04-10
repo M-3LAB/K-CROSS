@@ -23,8 +23,9 @@ def parse_arguments_kaid():
     parser.add_argument('--lr', type=float, default=None, help='learning rate')
     parser.add_argument('--fid', action='store_true', default=True)
     parser.add_argument('--train', action='store_true', default=False)
-    parser.add_argument('--validate', action='store_true', default=False)
-    #Gaussian Noise
+    parser.add_argument('--validate', action='store_true', default=True)
+    parser.add_argument('--uniform-mode', type=str, default=None, choices=['regression', 'ranking'])
+    # Gaussian Noise
     parser.add_argument('--noisy-loss', action='store_true', default=None)
     parser.add_argument('--mu', type=float, default=None)
     parser.add_argument('--sigma', type=float, default=None)

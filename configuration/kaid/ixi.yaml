@@ -35,6 +35,7 @@ train: False
 validate: False 
 # method
 method: 'normal'
+uniform_mode: ranking
 #nirps_path
 nirps_path: '/disk1/medical/nirps_dataset'
 #noisy loss

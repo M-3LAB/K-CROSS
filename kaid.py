@@ -286,7 +286,6 @@ if __name__ == '__main__':
                         sim_freq_loss = real_a_freq_sim_loss + real_b_freq_sim_loss
                     
                         loss_total = loss_total + noisy_recon_loss + sim_loss + noise_freq_loss + sim_freq_loss
- 
 
                     optimizer_complex.zero_grad()
                     optimizer_normal.zero_grad()
@@ -349,7 +348,7 @@ if __name__ == '__main__':
         #models = ['cyclegan'] 
         #models = ['munit'] 
         models = ['unit'] 
-        epochs = [i for i in range(1, 40)]
+        epochs = [i for i in range(1, 41)]
 
         nirps_dataset = NIRPS(nirps_path=nirps_path, regions=regions, modalities=modalities, models=models, epochs=epochs)
         nirps_loader = DataLoader(nirps_dataset, batch_size=1, num_workers=1, shuffle=False)
@@ -516,15 +515,10 @@ if __name__ == '__main__':
             ssim_values.append(ssim)
 
         # calculate metric consistency
-        kaid_values = uniform_result(kaid_values, reverse=True)
-        mae_values = uniform_result(mae_values, reverse=True)
-        psnr_values = uniform_result(psnr_values, reverse=False)
-        ssim_values = uniform_result(ssim_values, reverse=False)
-
-        kaid_consistency = calculate_metric_consistency(kaid_values, arti_values) 
-        mae_consistency = calculate_metric_consistency(mae_values, arti_values) 
-        psnr_consistency = calculate_metric_consistency(psnr_values, arti_values)
-        ssim_consistency = calculate_metric_consistency(ssim_values, arti_values) 
+        kaid_consistency = calculate_metric_consistency(kaid_values, arti_values, reverse=True, uniform_mode=para_dict['uniform_mode']) 
+        mae_consistency = calculate_metric_consistency(mae_values, arti_values, reverse=True, uniform_mode=para_dict['uniform_mode']) 
+        psnr_consistency = calculate_metric_consistency(psnr_values, arti_values, reverse=False, uniform_mode=para_dict['uniform_mode'])
+        ssim_consistency = calculate_metric_consistency(ssim_values, arti_values, reverse=False, uniform_mode=para_dict['uniform_mode']) 
 
 
         infor = '[Epoch {}/{}] kaid: {:.4f} mae: {:.4f} psnr: {:.4f} ssim: {:.4f}'.format(
