@@ -31,14 +31,14 @@ if __name__ == '__main__':
     para_dict = merge_config(para_dict, args)
     # print(para_dict)
 
-    file_path = record_path(para_dict)
-    if para_dict['save_log']:
-        save_arg(para_dict, file_path)
-        save_script(__file__, file_path)
+    # file_path = record_path(para_dict)
+    # if para_dict['save_log']:
+    #     save_arg(para_dict, file_path)
+    #     save_script(__file__, file_path)
 
-    with open('./work_dir/log_running.txt'.format(file_path), 'a') as f:
-        print('---> {}'.format(file_path), file=f)
-        print(para_dict, file=f)
+    # with open('./work_dir/log_running.txt'.format(file_path), 'a') as f:
+    #     print('---> {}'.format(file_path), file=f)
+    #     print(para_dict, file=f)
 
     device, device_ids = parse_device_list(para_dict['gpu_ids'], 
                                            int(para_dict['gpu_id'])) 
@@ -520,7 +520,7 @@ if __name__ == '__main__':
             1, para_dict['num_epochs'], kaid_consistency, mae_consistency, psnr_consistency, ssim_consistency)
         print(infor)
 
-        save_log(infor, file_path, description='metric_result')
+        # save_log(infor, file_path, description='metric_result')
 
         with open('{}/log_kaid_{}_{}_epochs.txt'.format(para_dict['work_dir'], para_dict['uniform_mode'], para_dict['dataset_epochs']), 'a') as f:
             print(infor, file=f)
