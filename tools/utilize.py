@@ -226,6 +226,8 @@ def calculate_metric_consistency(metric_a, metric_b, reverse=False, uniform_mode
         metric_a = uniform_result(metric_a, reverse=reverse)
     elif uniform_mode== 'ranking':
         metric_a = rank_result(metric_a, metric_b, reverse=reverse)
+    else:
+        raise NotImplementedError
 
     return calculate_consistency(metric_a, metric_b)
     

@@ -344,13 +344,11 @@ if __name__ == '__main__':
         else:
             raise NotImplementedError
 
+        # dataset_name = ['cyclegan', 'munit', 'unit'] 
+        dataset_name = [para_dict['dataset_name']]
+        epochs = [i+1 for i in range(0, para_dict['dataset_epochs'])]
 
-        #models = ['cyclegan'] 
-        #models = ['munit'] 
-        models = ['unit'] 
-        epochs = [i for i in range(1, 41)]
-
-        nirps_dataset = NIRPS(nirps_path=nirps_path, regions=regions, modalities=modalities, models=models, epochs=epochs)
+        nirps_dataset = NIRPS(nirps_path=nirps_path, regions=regions, modalities=modalities, models=dataset_name, epochs=epochs)
         nirps_loader = DataLoader(nirps_dataset, batch_size=1, num_workers=1, shuffle=False)
         print('load nirps dataset, size: {}'.format(len(nirps_dataset)))
 
@@ -426,14 +424,12 @@ if __name__ == '__main__':
                 gt_freq = torch_fft(gt, normalized_method='ortho')
 
                 if para_dict['latent_size'] == 'one_z':
-
                     img_freq_z, _, _, _, _ = complex_unet.encode(img_freq)
                     gt_freq_z, _, _, _, _ = complex_unet.encode(gt_freq)
 
                     kaid = freq_distance(real_z=gt_freq_z, fake_z=img_freq_z).item()
 
                 elif para_dict['latent_size'] == 'all_z':
-
                     img_freq_z, img_freq_d1, img_freq_d2, img_freq_d3, img_freq_d4 = complex_unet.encode(img_freq)
                     gt_freq_z, gt_freq_d1, gt_freq_d2, gt_freq_d3, gt_freq_d4 = complex_unet.encode(gt_freq)
 
@@ -519,7 +515,6 @@ if __name__ == '__main__':
         mae_consistency = calculate_metric_consistency(mae_values, arti_values, reverse=True, uniform_mode=para_dict['uniform_mode']) 
         psnr_consistency = calculate_metric_consistency(psnr_values, arti_values, reverse=False, uniform_mode=para_dict['uniform_mode'])
         ssim_consistency = calculate_metric_consistency(ssim_values, arti_values, reverse=False, uniform_mode=para_dict['uniform_mode']) 
-
 
         infor = '[Epoch {}/{}] kaid: {:.4f} mae: {:.4f} psnr: {:.4f} ssim: {:.4f}'.format(
             1, para_dict['num_epochs'], kaid_consistency, mae_consistency, psnr_consistency, ssim_consistency)

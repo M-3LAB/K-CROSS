@@ -35,6 +35,8 @@ train: False
 validate: False 
 method: 'normal'
 uniform_mode: ranking
+dataset_name: cyclegan
+dataset_epochs: 50
 #nirps_path
 nirps_path: '/disk1/medical/nirps_dataset'
 #noisy loss
@@ -42,4 +44,4 @@ noisy_loss: False
 mu: 0.0
 sigma: 0.05 
 infer_range: all
-latent_size: one_z
+latent_size: all_z
