@@ -1,0 +1,261 @@
+python kaid.py -d ixi -s pd -t t2 --validate --uniform-mode ranking --dataset-name cyclegan --method normal --infer-range ixi --dataset-epochs 50 -g 3
+[Epoch 1/30] kaid: 0.2902 mae: 0.3136 psnr: 0.2710 ssim: 0.3132
+python kaid.py -d ixi -s pd -t t2 --validate --uniform-mode ranking --dataset-name cyclegan --method complex --infer-range ixi --dataset-epochs 50 -g 3
+[Epoch 1/30] kaid: 0.2680 mae: 0.3136 psnr: 0.2710 ssim: 0.3132
+python kaid.py -d ixi -s pd -t t2 --validate --uniform-mode ranking --dataset-name cyclegan --method combined --infer-range ixi --dataset-epochs 50 -g 3
+[Epoch 1/30] kaid: 0.2846 mae: 0.3136 psnr: 0.2710 ssim: 0.3132
+python kaid.py -d brats2021 -s t1 -t flair --validate --uniform-mode ranking --dataset-name cyclegan --method normal --infer-range ixi --dataset-epochs 50 -g 3
+[Epoch 1/30] kaid: 0.2872 mae: 0.3136 psnr: 0.2710 ssim: 0.3132
+python kaid.py -d brats2021 -s t1 -t flair --validate --uniform-mode ranking --dataset-name cyclegan --method complex --infer-range ixi --dataset-epochs 50 -g 3
+[Epoch 1/30] kaid: 0.2802 mae: 0.3136 psnr: 0.2710 ssim: 0.3132
+python kaid.py -d brats2021 -s t1 -t flair --validate --uniform-mode ranking --dataset-name cyclegan --method combined --infer-range ixi --dataset-epochs 50 -g 3
+[Epoch 1/30] kaid: 0.2864 mae: 0.3136 psnr: 0.2710 ssim: 0.3132
+python kaid.py -d brats2021 -s t2 -t flair --validate --uniform-mode ranking --dataset-name cyclegan --method normal --infer-range ixi --dataset-epochs 50 -g 3
+[Epoch 1/30] kaid: 0.2950 mae: 0.3136 psnr: 0.2710 ssim: 0.3132
+python kaid.py -d brats2021 -s t2 -t flair --validate --uniform-mode ranking --dataset-name cyclegan --method complex --infer-range ixi --dataset-epochs 50 -g 3
+[Epoch 1/30] kaid: 0.2744 mae: 0.3136 psnr: 0.2710 ssim: 0.3132
+python kaid.py -d brats2021 -s t2 -t flair --validate --uniform-mode ranking --dataset-name cyclegan --method combined --infer-range ixi --dataset-epochs 50 -g 3
+[Epoch 1/30] kaid: 0.2854 mae: 0.3136 psnr: 0.2710 ssim: 0.3132
+python kaid.py -d brats2021 -s t1 -t t2 --validate --uniform-mode ranking --dataset-name cyclegan --method normal --infer-range ixi --dataset-epochs 50 -g 3
+[Epoch 1/30] kaid: 0.2920 mae: 0.3136 psnr: 0.2710 ssim: 0.3132
+python kaid.py -d brats2021 -s t1 -t t2 --validate --uniform-mode ranking --dataset-name cyclegan --method complex --infer-range ixi --dataset-epochs 50 -g 3
+[Epoch 1/30] kaid: 0.2730 mae: 0.3136 psnr: 0.2710 ssim: 0.3132
+python kaid.py -d brats2021 -s t1 -t t2 --validate --uniform-mode ranking --dataset-name cyclegan --method combined --infer-range ixi --dataset-epochs 50 -g 3
+[Epoch 1/30] kaid: 0.2930 mae: 0.3136 psnr: 0.2710 ssim: 0.3132
+python kaid.py -d ixi -s pd -t t2 --validate --uniform-mode ranking --dataset-name cyclegan --method normal --infer-range brats2021 --dataset-epochs 50 -g 3
+[Epoch 1/30] kaid: 0.3160 mae: 0.2997 psnr: 0.1840 ssim: 0.1696
+python kaid.py -d ixi -s pd -t t2 --validate --uniform-mode ranking --dataset-name cyclegan --method complex --infer-range brats2021 --dataset-epochs 50 -g 3
+[Epoch 1/30] kaid: 0.3069 mae: 0.2997 psnr: 0.1840 ssim: 0.1696
+python kaid.py -d ixi -s pd -t t2 --validate --uniform-mode ranking --dataset-name cyclegan --method combined --infer-range brats2021 --dataset-epochs 50 -g 3
+[Epoch 1/30] kaid: 0.3092 mae: 0.2997 psnr: 0.1840 ssim: 0.1696
+python kaid.py -d brats2021 -s t1 -t flair --validate --uniform-mode ranking --dataset-name cyclegan --method normal --infer-range brats2021 --dataset-epochs 50 -g 3
+[Epoch 1/30] kaid: 0.3109 mae: 0.2997 psnr: 0.1840 ssim: 0.1696
+python kaid.py -d brats2021 -s t1 -t flair --validate --uniform-mode ranking --dataset-name cyclegan --method complex --infer-range brats2021 --dataset-epochs 50 -g 3
+[Epoch 1/30] kaid: 0.3153 mae: 0.2997 psnr: 0.1840 ssim: 0.1696
+python kaid.py -d brats2021 -s t1 -t flair --validate --uniform-mode ranking --dataset-name cyclegan --method combined --infer-range brats2021 --dataset-epochs 50 -g 3
+[Epoch 1/30] kaid: 0.3133 mae: 0.2997 psnr: 0.1840 ssim: 0.1696
+python kaid.py -d brats2021 -s t2 -t flair --validate --uniform-mode ranking --dataset-name cyclegan --method normal --infer-range brats2021 --dataset-epochs 50 -g 3
+[Epoch 1/30] kaid: 0.3116 mae: 0.2997 psnr: 0.1840 ssim: 0.1696
+python kaid.py -d brats2021 -s t2 -t flair --validate --uniform-mode ranking --dataset-name cyclegan --method complex --infer-range brats2021 --dataset-epochs 50 -g 3
+[Epoch 1/30] kaid: 0.3156 mae: 0.2997 psnr: 0.1840 ssim: 0.1696
+python kaid.py -d brats2021 -s t2 -t flair --validate --uniform-mode ranking --dataset-name cyclegan --method combined --infer-range brats2021 --dataset-epochs 50 -g 3
+[Epoch 1/30] kaid: 0.3181 mae: 0.2997 psnr: 0.1840 ssim: 0.1696
+python kaid.py -d brats2021 -s t1 -t t2 --validate --uniform-mode ranking --dataset-name cyclegan --method normal --infer-range brats2021 --dataset-epochs 50 -g 3
+[Epoch 1/30] kaid: 0.3115 mae: 0.2997 psnr: 0.1840 ssim: 0.1696
+python kaid.py -d brats2021 -s t1 -t t2 --validate --uniform-mode ranking --dataset-name cyclegan --method complex --infer-range brats2021 --dataset-epochs 50 -g 3
+[Epoch 1/30] kaid: 0.3143 mae: 0.2997 psnr: 0.1840 ssim: 0.1696
+python kaid.py -d brats2021 -s t1 -t t2 --validate --uniform-mode ranking --dataset-name cyclegan --method combined --infer-range brats2021 --dataset-epochs 50 -g 3
+[Epoch 1/30] kaid: 0.3157 mae: 0.2997 psnr: 0.1840 ssim: 0.1696
+python kaid.py -d ixi -s pd -t t2 --validate --uniform-mode ranking --dataset-name cyclegan --method normal --infer-range all --dataset-epochs 50 -g 3
+[Epoch 1/30] kaid: 0.3160 mae: 0.3098 psnr: 0.2306 ssim: 0.2214
+python kaid.py -d ixi -s pd -t t2 --validate --uniform-mode ranking --dataset-name cyclegan --method complex --infer-range all --dataset-epochs 50 -g 3
+[Epoch 1/30] kaid: 0.3014 mae: 0.3098 psnr: 0.2306 ssim: 0.2214
+python kaid.py -d ixi -s pd -t t2 --validate --uniform-mode ranking --dataset-name cyclegan --method combined --infer-range all --dataset-epochs 50 -g 3
+[Epoch 1/30] kaid: 0.3114 mae: 0.3098 psnr: 0.2306 ssim: 0.2214
+python kaid.py -d brats2021 -s t1 -t flair --validate --uniform-mode ranking --dataset-name cyclegan --method normal --infer-range all --dataset-epochs 50 -g 3
+[Epoch 1/30] kaid: 0.3210 mae: 0.3098 psnr: 0.2306 ssim: 0.2214
+python kaid.py -d brats2021 -s t1 -t flair --validate --uniform-mode ranking --dataset-name cyclegan --method complex --infer-range all --dataset-epochs 50 -g 3
+[Epoch 1/30] kaid: 0.3199 mae: 0.3098 psnr: 0.2306 ssim: 0.2214
+python kaid.py -d brats2021 -s t1 -t flair --validate --uniform-mode ranking --dataset-name cyclegan --method combined --infer-range all --dataset-epochs 50 -g 3
+[Epoch 1/30] kaid: 0.3144 mae: 0.3098 psnr: 0.2306 ssim: 0.2214
+python kaid.py -d brats2021 -s t2 -t flair --validate --uniform-mode ranking --dataset-name cyclegan --method normal --infer-range all --dataset-epochs 50 -g 3
+[Epoch 1/30] kaid: 0.3110 mae: 0.3098 psnr: 0.2306 ssim: 0.2214
+python kaid.py -d brats2021 -s t2 -t flair --validate --uniform-mode ranking --dataset-name cyclegan --method complex --infer-range all --dataset-epochs 50 -g 3
+[Epoch 1/30] kaid: 0.3189 mae: 0.3098 psnr: 0.2306 ssim: 0.2214
+python kaid.py -d brats2021 -s t2 -t flair --validate --uniform-mode ranking --dataset-name cyclegan --method combined --infer-range all --dataset-epochs 50 -g 3
+[Epoch 1/30] kaid: 0.3091 mae: 0.3098 psnr: 0.2306 ssim: 0.2214
+python kaid.py -d brats2021 -s t1 -t t2 --validate --uniform-mode ranking --dataset-name cyclegan --method normal --infer-range all --dataset-epochs 50 -g 3
+[Epoch 1/30] kaid: 0.3156 mae: 0.3098 psnr: 0.2306 ssim: 0.2214
+python kaid.py -d brats2021 -s t1 -t t2 --validate --uniform-mode ranking --dataset-name cyclegan --method complex --infer-range all --dataset-epochs 50 -g 3
+[Epoch 1/30] kaid: 0.3197 mae: 0.3098 psnr: 0.2306 ssim: 0.2214
+python kaid.py -d brats2021 -s t1 -t t2 --validate --uniform-mode ranking --dataset-name cyclegan --method combined --infer-range all --dataset-epochs 50 -g 3
+[Epoch 1/30] kaid: 0.3104 mae: 0.3098 psnr: 0.2306 ssim: 0.2214
+python kaid.py -d ixi -s pd -t t2 --validate --uniform-mode ranking --dataset-name munit --method normal --infer-range ixi --dataset-epochs 50 -g 3
+[Epoch 1/30] kaid: 0.1900 mae: 0.1836 psnr: 0.1896 ssim: 0.2018
+python kaid.py -d ixi -s pd -t t2 --validate --uniform-mode ranking --dataset-name munit --method complex --infer-range ixi --dataset-epochs 50 -g 3
+[Epoch 1/30] kaid: 0.1746 mae: 0.1836 psnr: 0.1896 ssim: 0.2018
+python kaid.py -d ixi -s pd -t t2 --validate --uniform-mode ranking --dataset-name munit --method combined --infer-range ixi --dataset-epochs 50 -g 3
+[Epoch 1/30] kaid: 0.1742 mae: 0.1836 psnr: 0.1896 ssim: 0.2018
+python kaid.py -d brats2021 -s t1 -t flair --validate --uniform-mode ranking --dataset-name munit --method normal --infer-range ixi --dataset-epochs 50 -g 3
+[Epoch 1/30] kaid: 0.1786 mae: 0.1836 psnr: 0.1896 ssim: 0.2018
+python kaid.py -d brats2021 -s t1 -t flair --validate --uniform-mode ranking --dataset-name munit --method complex --infer-range ixi --dataset-epochs 50 -g 3
+[Epoch 1/30] kaid: 0.1706 mae: 0.1836 psnr: 0.1896 ssim: 0.2018
+python kaid.py -d brats2021 -s t1 -t flair --validate --uniform-mode ranking --dataset-name munit --method combined --infer-range ixi --dataset-epochs 50 -g 3
+[Epoch 1/30] kaid: 0.1900 mae: 0.1836 psnr: 0.1896 ssim: 0.2018
+python kaid.py -d brats2021 -s t2 -t flair --validate --uniform-mode ranking --dataset-name munit --method normal --infer-range ixi --dataset-epochs 50 -g 3
+[Epoch 1/30] kaid: 0.1736 mae: 0.1836 psnr: 0.1896 ssim: 0.2018
+python kaid.py -d brats2021 -s t2 -t flair --validate --uniform-mode ranking --dataset-name munit --method complex --infer-range ixi --dataset-epochs 50 -g 3
+[Epoch 1/30] kaid: 0.1828 mae: 0.1836 psnr: 0.1896 ssim: 0.2018
+python kaid.py -d brats2021 -s t2 -t flair --validate --uniform-mode ranking --dataset-name munit --method combined --infer-range ixi --dataset-epochs 50 -g 3
+[Epoch 1/30] kaid: 0.1902 mae: 0.1836 psnr: 0.1896 ssim: 0.2018
+python kaid.py -d brats2021 -s t1 -t t2 --validate --uniform-mode ranking --dataset-name munit --method normal --infer-range ixi --dataset-epochs 50 -g 3
+[Epoch 1/30] kaid: 0.1872 mae: 0.1836 psnr: 0.1896 ssim: 0.2018
+python kaid.py -d brats2021 -s t1 -t t2 --validate --uniform-mode ranking --dataset-name munit --method complex --infer-range ixi --dataset-epochs 50 -g 3
+[Epoch 1/30] kaid: 0.1822 mae: 0.1836 psnr: 0.1896 ssim: 0.2018
+python kaid.py -d brats2021 -s t1 -t t2 --validate --uniform-mode ranking --dataset-name munit --method combined --infer-range ixi --dataset-epochs 50 -g 3
+[Epoch 1/30] kaid: 0.1886 mae: 0.1836 psnr: 0.1896 ssim: 0.2018
+python kaid.py -d ixi -s pd -t t2 --validate --uniform-mode ranking --dataset-name munit --method normal --infer-range brats2021 --dataset-epochs 50 -g 3
+[Epoch 1/30] kaid: 0.2281 mae: 0.2463 psnr: 0.2505 ssim: 0.2436
+python kaid.py -d ixi -s pd -t t2 --validate --uniform-mode ranking --dataset-name munit --method complex --infer-range brats2021 --dataset-epochs 50 -g 3
+[Epoch 1/30] kaid: 0.2265 mae: 0.2463 psnr: 0.2505 ssim: 0.2436
+python kaid.py -d ixi -s pd -t t2 --validate --uniform-mode ranking --dataset-name munit --method combined --infer-range brats2021 --dataset-epochs 50 -g 3
+[Epoch 1/30] kaid: 0.2269 mae: 0.2463 psnr: 0.2505 ssim: 0.2436
+python kaid.py -d brats2021 -s t1 -t flair --validate --uniform-mode ranking --dataset-name munit --method normal --infer-range brats2021 --dataset-epochs 50 -g 3
+[Epoch 1/30] kaid: 0.2333 mae: 0.2463 psnr: 0.2505 ssim: 0.2436
+python kaid.py -d brats2021 -s t1 -t flair --validate --uniform-mode ranking --dataset-name munit --method complex --infer-range brats2021 --dataset-epochs 50 -g 3
+[Epoch 1/30] kaid: 0.2299 mae: 0.2463 psnr: 0.2505 ssim: 0.2436
+python kaid.py -d brats2021 -s t1 -t flair --validate --uniform-mode ranking --dataset-name munit --method combined --infer-range brats2021 --dataset-epochs 50 -g 3
+[Epoch 1/30] kaid: 0.2259 mae: 0.2463 psnr: 0.2505 ssim: 0.2436
+python kaid.py -d brats2021 -s t2 -t flair --validate --uniform-mode ranking --dataset-name munit --method normal --infer-range brats2021 --dataset-epochs 50 -g 3
+[Epoch 1/30] kaid: 0.2332 mae: 0.2463 psnr: 0.2505 ssim: 0.2436
+python kaid.py -d brats2021 -s t2 -t flair --validate --uniform-mode ranking --dataset-name munit --method complex --infer-range brats2021 --dataset-epochs 50 -g 3
+[Epoch 1/30] kaid: 0.2212 mae: 0.2463 psnr: 0.2505 ssim: 0.2436
+python kaid.py -d brats2021 -s t2 -t flair --validate --uniform-mode ranking --dataset-name munit --method combined --infer-range brats2021 --dataset-epochs 50 -g 3
+[Epoch 1/30] kaid: 0.2369 mae: 0.2463 psnr: 0.2505 ssim: 0.2436
+python kaid.py -d brats2021 -s t1 -t t2 --validate --uniform-mode ranking --dataset-name munit --method normal --infer-range brats2021 --dataset-epochs 50 -g 3
+[Epoch 1/30] kaid: 0.2348 mae: 0.2463 psnr: 0.2505 ssim: 0.2436
+python kaid.py -d brats2021 -s t1 -t t2 --validate --uniform-mode ranking --dataset-name munit --method complex --infer-range brats2021 --dataset-epochs 50 -g 3
+[Epoch 1/30] kaid: 0.2284 mae: 0.2463 psnr: 0.2505 ssim: 0.2436
+python kaid.py -d brats2021 -s t1 -t t2 --validate --uniform-mode ranking --dataset-name munit --method combined --infer-range brats2021 --dataset-epochs 50 -g 3
+[Epoch 1/30] kaid: 0.2347 mae: 0.2463 psnr: 0.2505 ssim: 0.2436
+python kaid.py -d ixi -s pd -t t2 --validate --uniform-mode ranking --dataset-name munit --method normal --infer-range all --dataset-epochs 50 -g 3
+[Epoch 1/30] kaid: 0.2210 mae: 0.2205 psnr: 0.2210 ssim: 0.2239
+python kaid.py -d ixi -s pd -t t2 --validate --uniform-mode ranking --dataset-name munit --method complex --infer-range all --dataset-epochs 50 -g 3
+[Epoch 1/30] kaid: 0.2194 mae: 0.2205 psnr: 0.2210 ssim: 0.2239
+python kaid.py -d ixi -s pd -t t2 --validate --uniform-mode ranking --dataset-name munit --method combined --infer-range all --dataset-epochs 50 -g 3
+[Epoch 1/30] kaid: 0.2207 mae: 0.2205 psnr: 0.2210 ssim: 0.2239
+python kaid.py -d brats2021 -s t1 -t flair --validate --uniform-mode ranking --dataset-name munit --method normal --infer-range all --dataset-epochs 50 -g 3
+[Epoch 1/30] kaid: 0.2152 mae: 0.2205 psnr: 0.2210 ssim: 0.2239
+python kaid.py -d brats2021 -s t1 -t flair --validate --uniform-mode ranking --dataset-name munit --method complex --infer-range all --dataset-epochs 50 -g 3
+[Epoch 1/30] kaid: 0.2166 mae: 0.2205 psnr: 0.2210 ssim: 0.2239
+python kaid.py -d brats2021 -s t1 -t flair --validate --uniform-mode ranking --dataset-name munit --method combined --infer-range all --dataset-epochs 50 -g 3
+[Epoch 1/30] kaid: 0.2122 mae: 0.2205 psnr: 0.2210 ssim: 0.2239
+python kaid.py -d brats2021 -s t2 -t flair --validate --uniform-mode ranking --dataset-name munit --method normal --infer-range all --dataset-epochs 50 -g 3
+[Epoch 1/30] kaid: 0.2112 mae: 0.2205 psnr: 0.2210 ssim: 0.2239
+python kaid.py -d brats2021 -s t2 -t flair --validate --uniform-mode ranking --dataset-name munit --method complex --infer-range all --dataset-epochs 50 -g 3
+[Epoch 1/30] kaid: 0.2212 mae: 0.2205 psnr: 0.2210 ssim: 0.2239
+python kaid.py -d brats2021 -s t2 -t flair --validate --uniform-mode ranking --dataset-name munit --method combined --infer-range all --dataset-epochs 50 -g 3
+[Epoch 1/30] kaid: 0.2189 mae: 0.2205 psnr: 0.2210 ssim: 0.2239
+python kaid.py -d brats2021 -s t1 -t t2 --validate --uniform-mode ranking --dataset-name munit --method normal --infer-range all --dataset-epochs 50 -g 3
+[Epoch 1/30] kaid: 0.2153 mae: 0.2205 psnr: 0.2210 ssim: 0.2239
+python kaid.py -d brats2021 -s t1 -t t2 --validate --uniform-mode ranking --dataset-name munit --method complex --infer-range all --dataset-epochs 50 -g 3
+[Epoch 1/30] kaid: 0.2211 mae: 0.2205 psnr: 0.2210 ssim: 0.2239
+python kaid.py -d brats2021 -s t1 -t t2 --validate --uniform-mode ranking --dataset-name munit --method combined --infer-range all --dataset-epochs 50 -g 3
+[Epoch 1/30] kaid: 0.2146 mae: 0.2205 psnr: 0.2210 ssim: 0.2239
+python kaid.py -d ixi -s pd -t t2 --validate --uniform-mode ranking --dataset-name unit --method normal --infer-range ixi --dataset-epochs 50 -g 3
+[Epoch 1/30] kaid: 0.2226 mae: 0.2302 psnr: 0.2424 ssim: 0.2504
+python kaid.py -d ixi -s pd -t t2 --validate --uniform-mode ranking --dataset-name unit --method complex --infer-range ixi --dataset-epochs 50 -g 3
+[Epoch 1/30] kaid: 0.2130 mae: 0.2302 psnr: 0.2424 ssim: 0.2504
+python kaid.py -d ixi -s pd -t t2 --validate --uniform-mode ranking --dataset-name unit --method combined --infer-range ixi --dataset-epochs 50 -g 3
+[Epoch 1/30] kaid: 0.2236 mae: 0.2302 psnr: 0.2424 ssim: 0.2504
+python kaid.py -d brats2021 -s t1 -t flair --validate --uniform-mode ranking --dataset-name unit --method normal --infer-range ixi --dataset-epochs 50 -g 3
+[Epoch 1/30] kaid: 0.2170 mae: 0.2302 psnr: 0.2424 ssim: 0.2504
+python kaid.py -d brats2021 -s t1 -t flair --validate --uniform-mode ranking --dataset-name unit --method complex --infer-range ixi --dataset-epochs 50 -g 3
+[Epoch 1/30] kaid: 0.2164 mae: 0.2302 psnr: 0.2424 ssim: 0.2504
+python kaid.py -d brats2021 -s t1 -t flair --validate --uniform-mode ranking --dataset-name unit --method combined --infer-range ixi --dataset-epochs 50 -g 3
+[Epoch 1/30] kaid: 0.2228 mae: 0.2302 psnr: 0.2424 ssim: 0.2504
+python kaid.py -d brats2021 -s t2 -t flair --validate --uniform-mode ranking --dataset-name unit --method normal --infer-range ixi --dataset-epochs 50 -g 3
+[Epoch 1/30] kaid: 0.2198 mae: 0.2302 psnr: 0.2424 ssim: 0.2504
+python kaid.py -d brats2021 -s t2 -t flair --validate --uniform-mode ranking --dataset-name unit --method complex --infer-range ixi --dataset-epochs 50 -g 3
+[Epoch 1/30] kaid: 0.2092 mae: 0.2302 psnr: 0.2424 ssim: 0.2504
+python kaid.py -d brats2021 -s t2 -t flair --validate --uniform-mode ranking --dataset-name unit --method combined --infer-range ixi --dataset-epochs 50 -g 3
+[Epoch 1/30] kaid: 0.2222 mae: 0.2302 psnr: 0.2424 ssim: 0.2504
+python kaid.py -d brats2021 -s t1 -t t2 --validate --uniform-mode ranking --dataset-name unit --method normal --infer-range ixi --dataset-epochs 50 -g 3
+python kaid.py -d brats2021 -s t1 -t t2 --validate --uniform-mode ranking --dataset-name unit --method complex --infer-range ixi --dataset-epochs 50 -g 3
+python kaid.py -d brats2021 -s t1 -t t2 --validate --uniform-mode ranking --dataset-name unit --method combined --infer-range ixi --dataset-epochs 50 -g 3
+python kaid.py -d ixi -s pd -t t2 --validate --uniform-mode ranking --dataset-name unit --method normal --infer-range brats2021 --dataset-epochs 50 -g 3
+python kaid.py -d ixi -s pd -t t2 --validate --uniform-mode ranking --dataset-name unit --method complex --infer-range brats2021 --dataset-epochs 50 -g 3
+python kaid.py -d ixi -s pd -t t2 --validate --uniform-mode ranking --dataset-name unit --method combined --infer-range brats2021 --dataset-epochs 50 -g 3
+python kaid.py -d brats2021 -s t1 -t flair --validate --uniform-mode ranking --dataset-name unit --method normal --infer-range brats2021 --dataset-epochs 50 -g 3
+python kaid.py -d brats2021 -s t1 -t flair --validate --uniform-mode ranking --dataset-name unit --method complex --infer-range brats2021 --dataset-epochs 50 -g 3
+python kaid.py -d brats2021 -s t1 -t flair --validate --uniform-mode ranking --dataset-name unit --method combined --infer-range brats2021 --dataset-epochs 50 -g 3
+python kaid.py -d brats2021 -s t2 -t flair --validate --uniform-mode ranking --dataset-name unit --method normal --infer-range brats2021 --dataset-epochs 50 -g 3
+python kaid.py -d brats2021 -s t2 -t flair --validate --uniform-mode ranking --dataset-name unit --method complex --infer-range brats2021 --dataset-epochs 50 -g 3
+python kaid.py -d brats2021 -s t2 -t flair --validate --uniform-mode ranking --dataset-name unit --method combined --infer-range brats2021 --dataset-epochs 50 -g 3
+python kaid.py -d brats2021 -s t1 -t t2 --validate --uniform-mode ranking --dataset-name unit --method normal --infer-range brats2021 --dataset-epochs 50 -g 3
+python kaid.py -d brats2021 -s t1 -t t2 --validate --uniform-mode ranking --dataset-name unit --method complex --infer-range brats2021 --dataset-epochs 50 -g 3
+python kaid.py -d brats2021 -s t1 -t t2 --validate --uniform-mode ranking --dataset-name unit --method combined --infer-range brats2021 --dataset-epochs 50 -g 3
+python kaid.py -d ixi -s pd -t t2 --validate --uniform-mode ranking --dataset-name unit --method normal --infer-range all --dataset-epochs 50 -g 3
+python kaid.py -d ixi -s pd -t t2 --validate --uniform-mode ranking --dataset-name unit --method complex --infer-range all --dataset-epochs 50 -g 3
+python kaid.py -d ixi -s pd -t t2 --validate --uniform-mode ranking --dataset-name unit --method combined --infer-range all --dataset-epochs 50 -g 3
+python kaid.py -d brats2021 -s t1 -t flair --validate --uniform-mode ranking --dataset-name unit --method normal --infer-range all --dataset-epochs 50 -g 3
+python kaid.py -d brats2021 -s t1 -t flair --validate --uniform-mode ranking --dataset-name unit --method complex --infer-range all --dataset-epochs 50 -g 3
+python kaid.py -d brats2021 -s t1 -t flair --validate --uniform-mode ranking --dataset-name unit --method combined --infer-range all --dataset-epochs 50 -g 3
+python kaid.py -d brats2021 -s t2 -t flair --validate --uniform-mode ranking --dataset-name unit --method normal --infer-range all --dataset-epochs 50 -g 3
+python kaid.py -d brats2021 -s t2 -t flair --validate --uniform-mode ranking --dataset-name unit --method complex --infer-range all --dataset-epochs 50 -g 3
+python kaid.py -d brats2021 -s t2 -t flair --validate --uniform-mode ranking --dataset-name unit --method combined --infer-range all --dataset-epochs 50 -g 3
+python kaid.py -d brats2021 -s t1 -t t2 --validate --uniform-mode ranking --dataset-name unit --method normal --infer-range all --dataset-epochs 50 -g 3
+python kaid.py -d brats2021 -s t1 -t t2 --validate --uniform-mode ranking --dataset-name unit --method complex --infer-range all --dataset-epochs 50 -g 3
+python kaid.py -d brats2021 -s t1 -t t2 --validate --uniform-mode ranking --dataset-name unit --method combined --infer-range all --dataset-epochs 50 -g 3
+python kaid.py -d ixi -s pd -t t2 --validate --uniform-mode ranking --dataset-name unit --method normal --infer-range ixi --dataset-epochs 50 -g 2
+[Epoch 1/30] kaid: 0.2226 mae: 0.2302 psnr: 0.2424 ssim: 0.2504
+python kaid.py -d ixi -s pd -t t2 --validate --uniform-mode ranking --dataset-name unit --method complex --infer-range ixi --dataset-epochs 50 -g 2
+[Epoch 1/30] kaid: 0.2130 mae: 0.2302 psnr: 0.2424 ssim: 0.2504
+python kaid.py -d ixi -s pd -t t2 --validate --uniform-mode ranking --dataset-name unit --method combined --infer-range ixi --dataset-epochs 50 -g 2
+[Epoch 1/30] kaid: 0.2236 mae: 0.2302 psnr: 0.2424 ssim: 0.2504
+python kaid.py -d brats2021 -s t1 -t flair --validate --uniform-mode ranking --dataset-name unit --method normal --infer-range ixi --dataset-epochs 50 -g 2
+[Epoch 1/30] kaid: 0.2170 mae: 0.2302 psnr: 0.2424 ssim: 0.2504
+python kaid.py -d brats2021 -s t1 -t flair --validate --uniform-mode ranking --dataset-name unit --method complex --infer-range ixi --dataset-epochs 50 -g 2
+[Epoch 1/30] kaid: 0.2164 mae: 0.2302 psnr: 0.2424 ssim: 0.2504
+python kaid.py -d brats2021 -s t1 -t flair --validate --uniform-mode ranking --dataset-name unit --method combined --infer-range ixi --dataset-epochs 50 -g 2
+[Epoch 1/30] kaid: 0.2228 mae: 0.2302 psnr: 0.2424 ssim: 0.2504
+python kaid.py -d brats2021 -s t2 -t flair --validate --uniform-mode ranking --dataset-name unit --method normal --infer-range ixi --dataset-epochs 50 -g 2
+[Epoch 1/30] kaid: 0.2198 mae: 0.2302 psnr: 0.2424 ssim: 0.2504
+python kaid.py -d brats2021 -s t2 -t flair --validate --uniform-mode ranking --dataset-name unit --method complex --infer-range ixi --dataset-epochs 50 -g 2
+[Epoch 1/30] kaid: 0.2092 mae: 0.2302 psnr: 0.2424 ssim: 0.2504
+python kaid.py -d brats2021 -s t2 -t flair --validate --uniform-mode ranking --dataset-name unit --method combined --infer-range ixi --dataset-epochs 50 -g 2
+[Epoch 1/30] kaid: 0.2222 mae: 0.2302 psnr: 0.2424 ssim: 0.2504
+python kaid.py -d brats2021 -s t1 -t t2 --validate --uniform-mode ranking --dataset-name unit --method normal --infer-range ixi --dataset-epochs 50 -g 2
+[Epoch 1/30] kaid: 0.2278 mae: 0.2302 psnr: 0.2424 ssim: 0.2504
+python kaid.py -d brats2021 -s t1 -t t2 --validate --uniform-mode ranking --dataset-name unit --method complex --infer-range ixi --dataset-epochs 50 -g 2
+[Epoch 1/30] kaid: 0.2124 mae: 0.2302 psnr: 0.2424 ssim: 0.2504
+python kaid.py -d brats2021 -s t1 -t t2 --validate --uniform-mode ranking --dataset-name unit --method combined --infer-range ixi --dataset-epochs 50 -g 2
+[Epoch 1/30] kaid: 0.2198 mae: 0.2302 psnr: 0.2424 ssim: 0.2504
+python kaid.py -d ixi -s pd -t t2 --validate --uniform-mode ranking --dataset-name unit --method normal --infer-range brats2021 --dataset-epochs 50 -g 2
+[Epoch 1/30] kaid: 0.2265 mae: 0.2396 psnr: 0.2468 ssim: 0.2513
+python kaid.py -d ixi -s pd -t t2 --validate --uniform-mode ranking --dataset-name unit --method complex --infer-range brats2021 --dataset-epochs 50 -g 2
+[Epoch 1/30] kaid: 0.2235 mae: 0.2396 psnr: 0.2468 ssim: 0.2513
+python kaid.py -d ixi -s pd -t t2 --validate --uniform-mode ranking --dataset-name unit --method combined --infer-range brats2021 --dataset-epochs 50 -g 2
+[Epoch 1/30] kaid: 0.2215 mae: 0.2396 psnr: 0.2468 ssim: 0.2513
+python kaid.py -d brats2021 -s t1 -t flair --validate --uniform-mode ranking --dataset-name unit --method normal --infer-range brats2021 --dataset-epochs 50 -g 2
+[Epoch 1/30] kaid: 0.2215 mae: 0.2396 psnr: 0.2468 ssim: 0.2513
+python kaid.py -d brats2021 -s t1 -t flair --validate --uniform-mode ranking --dataset-name unit --method complex --infer-range brats2021 --dataset-epochs 50 -g 2
+[Epoch 1/30] kaid: 0.2217 mae: 0.2396 psnr: 0.2468 ssim: 0.2513
+python kaid.py -d brats2021 -s t1 -t flair --validate --uniform-mode ranking --dataset-name unit --method combined --infer-range brats2021 --dataset-epochs 50 -g 2
+[Epoch 1/30] kaid: 0.2201 mae: 0.2396 psnr: 0.2468 ssim: 0.2513
+python kaid.py -d brats2021 -s t2 -t flair --validate --uniform-mode ranking --dataset-name unit --method normal --infer-range brats2021 --dataset-epochs 50 -g 2
+[Epoch 1/30] kaid: 0.2263 mae: 0.2396 psnr: 0.2468 ssim: 0.2513
+python kaid.py -d brats2021 -s t2 -t flair --validate --uniform-mode ranking --dataset-name unit --method complex --infer-range brats2021 --dataset-epochs 50 -g 2
+[Epoch 1/30] kaid: 0.2251 mae: 0.2396 psnr: 0.2468 ssim: 0.2513
+python kaid.py -d brats2021 -s t2 -t flair --validate --uniform-mode ranking --dataset-name unit --method combined --infer-range brats2021 --dataset-epochs 50 -g 2
+[Epoch 1/30] kaid: 0.2263 mae: 0.2396 psnr: 0.2468 ssim: 0.2513
+python kaid.py -d brats2021 -s t1 -t t2 --validate --uniform-mode ranking --dataset-name unit --method normal --infer-range brats2021 --dataset-epochs 50 -g 2
+[Epoch 1/30] kaid: 0.2265 mae: 0.2396 psnr: 0.2468 ssim: 0.2513
+python kaid.py -d brats2021 -s t1 -t t2 --validate --uniform-mode ranking --dataset-name unit --method complex --infer-range brats2021 --dataset-epochs 50 -g 2
+[Epoch 1/30] kaid: 0.2233 mae: 0.2396 psnr: 0.2468 ssim: 0.2513
+python kaid.py -d brats2021 -s t1 -t t2 --validate --uniform-mode ranking --dataset-name unit --method combined --infer-range brats2021 --dataset-epochs 50 -g 2
+[Epoch 1/30] kaid: 0.2275 mae: 0.2396 psnr: 0.2468 ssim: 0.2513
+python kaid.py -d ixi -s pd -t t2 --validate --uniform-mode ranking --dataset-name unit --method normal --infer-range all --dataset-epochs 50 -g 2
+[Epoch 1/30] kaid: 0.2749 mae: 0.2708 psnr: 0.2384 ssim: 0.2329
+python kaid.py -d ixi -s pd -t t2 --validate --uniform-mode ranking --dataset-name unit --method complex --infer-range all --dataset-epochs 50 -g 2
+[Epoch 1/30] kaid: 0.2630 mae: 0.2708 psnr: 0.2384 ssim: 0.2329
+python kaid.py -d ixi -s pd -t t2 --validate --uniform-mode ranking --dataset-name unit --method combined --infer-range all --dataset-epochs 50 -g 2
+[Epoch 1/30] kaid: 0.2749 mae: 0.2708 psnr: 0.2384 ssim: 0.2329
+python kaid.py -d brats2021 -s t1 -t flair --validate --uniform-mode ranking --dataset-name unit --method normal --infer-range all --dataset-epochs 50 -g 2
+[Epoch 1/30] kaid: 0.2823 mae: 0.2708 psnr: 0.2384 ssim: 0.2329
+python kaid.py -d brats2021 -s t1 -t flair --validate --uniform-mode ranking --dataset-name unit --method complex --infer-range all --dataset-epochs 50 -g 2
+[Epoch 1/30] kaid: 0.2772 mae: 0.2708 psnr: 0.2384 ssim: 0.2329
+python kaid.py -d brats2021 -s t1 -t flair --validate --uniform-mode ranking --dataset-name unit --method combined --infer-range all --dataset-epochs 50 -g 2
+[Epoch 1/30] kaid: 0.2822 mae: 0.2708 psnr: 0.2384 ssim: 0.2329
+python kaid.py -d brats2021 -s t2 -t flair --validate --uniform-mode ranking --dataset-name unit --method normal --infer-range all --dataset-epochs 50 -g 2
+[Epoch 1/30] kaid: 0.2803 mae: 0.2708 psnr: 0.2384 ssim: 0.2329
+python kaid.py -d brats2021 -s t2 -t flair --validate --uniform-mode ranking --dataset-name unit --method complex --infer-range all --dataset-epochs 50 -g 2
+[Epoch 1/30] kaid: 0.2802 mae: 0.2708 psnr: 0.2384 ssim: 0.2329
+python kaid.py -d brats2021 -s t2 -t flair --validate --uniform-mode ranking --dataset-name unit --method combined --infer-range all --dataset-epochs 50 -g 2
+[Epoch 1/30] kaid: 0.2829 mae: 0.2708 psnr: 0.2384 ssim: 0.2329
+python kaid.py -d brats2021 -s t1 -t t2 --validate --uniform-mode ranking --dataset-name unit --method normal --infer-range all --dataset-epochs 50 -g 2
+[Epoch 1/30] kaid: 0.2808 mae: 0.2708 psnr: 0.2384 ssim: 0.2329
+python kaid.py -d brats2021 -s t1 -t t2 --validate --uniform-mode ranking --dataset-name unit --method complex --infer-range all --dataset-epochs 50 -g 2
+[Epoch 1/30] kaid: 0.2813 mae: 0.2708 psnr: 0.2384 ssim: 0.2329
+python kaid.py -d brats2021 -s t1 -t t2 --validate --uniform-mode ranking --dataset-name unit --method combined --infer-range all --dataset-epochs 50 -g 2
+[Epoch 1/30] kaid: 0.2829 mae: 0.2708 psnr: 0.2384 ssim: 0.2329

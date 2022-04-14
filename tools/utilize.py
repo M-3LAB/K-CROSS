@@ -1,4 +1,6 @@
 from distutils.command.config import config
+import re
+from cv2 import filterHomographyDecompByVisibleRefpoints
 import torch
 import numpy as np
 import random
@@ -9,12 +11,14 @@ import shutil
 import glob
 import torchvision
 
+from collections import Counter
+
 __all__ = ['seed_everything', 'parse_device_list', 'allocate_gpus', 'average', 
            'merge_config', 'convert_list_float_type', 'create_folders', 'concate_tensor_lists',
            'weights_init_normal', 'LambdaLR', 'load_model', 'merge_config', 'override_config', 'extract_config',
            'record_path', 'save_arg', 'save_log', 'save_script', 'save_image', 'save_model',
            'save_metric_result', 'load_metric_result', 'calculate_metric_consistency', 
-           'uniform_result']
+           'uniform_result', 'rank_result']
 
 def set_grad(model, flag=True):
     for p in model.parameters():
@@ -181,7 +185,7 @@ def concate_tensor_lists(imgs_list, img, i):
         imgs_list = torch.cat((imgs_list, img), dim=0)
     return imgs_list
 
-def calculate_metric_consistency(metric_a, metric_b):
+def calculate_consistency(metric_a, metric_b):
     similarity = np.abs(np.array(metric_a) - np.array(metric_b)).mean()
     
     return similarity
@@ -193,3 +197,38 @@ def uniform_result(x, reverse=False):
         std = 1. - std
 
     return std
+
+def rank_result(x, gt, reverse=False):
+    assert len(x) == len(gt), 'Input Must Be Equal to GT!'
+    recounted = Counter(gt)
+    # print(recounted)
+    level = sorted(recounted)
+    index = np.argsort(x)
+
+    pairwise = []
+    start = 0
+    for l in level:
+        end = start + recounted[l]
+        pairwise.append([start, end])
+        start = end
+
+    std = []
+    for v in index:
+        for i, p in enumerate(pairwise):
+            if v in range(p[0], p[1]):
+                std.append(i / len(level))
+                break
+    assert len(std) == len(x), 'Rank Error!'
+
+    return std
+
+def calculate_metric_consistency(metric_a, metric_b, reverse=False, uniform_mode='ranking'):
+    if uniform_mode == 'regression':
+        metric_a = uniform_result(metric_a, reverse=reverse)
+    elif uniform_mode== 'ranking':
+        metric_a = rank_result(metric_a, metric_b, reverse=reverse)
+    else:
+        raise NotImplementedError
+
+    return calculate_consistency(metric_a, metric_b)
+    

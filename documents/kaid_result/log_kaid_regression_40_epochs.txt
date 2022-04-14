@@ -1,0 +1,72 @@
+python kaid.py -d ixi -s pd -t t2 --validate --uniform-mode regression --dataset-name unit --method normal --infer-range ixi --dataset-epochs 40 -g 1
+[Epoch 1/30] kaid: 0.2316 mae: 0.3301 psnr: 0.2169 ssim: 0.3614
+python kaid.py -d ixi -s pd -t t2 --validate --uniform-mode regression --dataset-name unit --method complex --infer-range ixi --dataset-epochs 40 -g 1
+[Epoch 1/30] kaid: 0.2375 mae: 0.3301 psnr: 0.2169 ssim: 0.3614
+python kaid.py -d ixi -s pd -t t2 --validate --uniform-mode regression --dataset-name unit --method combined --infer-range ixi --dataset-epochs 40 -g 1
+[Epoch 1/30] kaid: 0.2430 mae: 0.3301 psnr: 0.2169 ssim: 0.3614
+python kaid.py -d brats2021 -s t1 -t flair --validate --uniform-mode regression --dataset-name unit --method normal --infer-range ixi --dataset-epochs 40 -g 1
+[Epoch 1/30] kaid: 0.2499 mae: 0.3301 psnr: 0.2169 ssim: 0.3614
+python kaid.py -d brats2021 -s t1 -t flair --validate --uniform-mode regression --dataset-name unit --method complex --infer-range ixi --dataset-epochs 40 -g 1
+[Epoch 1/30] kaid: 0.2140 mae: 0.3301 psnr: 0.2169 ssim: 0.3614
+python kaid.py -d brats2021 -s t1 -t flair --validate --uniform-mode regression --dataset-name unit --method combined --infer-range ixi --dataset-epochs 40 -g 1
+[Epoch 1/30] kaid: 0.2245 mae: 0.3301 psnr: 0.2169 ssim: 0.3614
+python kaid.py -d brats2021 -s t2 -t flair --validate --uniform-mode regression --dataset-name unit --method normal --infer-range ixi --dataset-epochs 40 -g 1
+[Epoch 1/30] kaid: 0.2300 mae: 0.3301 psnr: 0.2169 ssim: 0.3614
+python kaid.py -d brats2021 -s t2 -t flair --validate --uniform-mode regression --dataset-name unit --method complex --infer-range ixi --dataset-epochs 40 -g 1
+[Epoch 1/30] kaid: 0.2267 mae: 0.3301 psnr: 0.2169 ssim: 0.3614
+python kaid.py -d brats2021 -s t2 -t flair --validate --uniform-mode regression --dataset-name unit --method combined --infer-range ixi --dataset-epochs 40 -g 1
+[Epoch 1/30] kaid: 0.2171 mae: 0.3301 psnr: 0.2169 ssim: 0.3614
+python kaid.py -d brats2021 -s t1 -t t2 --validate --uniform-mode regression --dataset-name unit --method normal --infer-range ixi --dataset-epochs 40 -g 1
+[Epoch 1/30] kaid: 0.2375 mae: 0.3301 psnr: 0.2169 ssim: 0.3614
+python kaid.py -d brats2021 -s t1 -t t2 --validate --uniform-mode regression --dataset-name unit --method complex --infer-range ixi --dataset-epochs 40 -g 1
+[Epoch 1/30] kaid: 0.2214 mae: 0.3301 psnr: 0.2169 ssim: 0.3614
+python kaid.py -d brats2021 -s t1 -t t2 --validate --uniform-mode regression --dataset-name unit --method combined --infer-range ixi --dataset-epochs 40 -g 1
+[Epoch 1/30] kaid: 0.2176 mae: 0.3301 psnr: 0.2169 ssim: 0.3614
+python kaid.py -d ixi -s pd -t t2 --validate --uniform-mode regression --dataset-name unit --method normal --infer-range brats2021 --dataset-epochs 40 -g 1
+[Epoch 1/30] kaid: 0.2728 mae: 0.3544 psnr: 0.2089 ssim: 0.4965
+python kaid.py -d ixi -s pd -t t2 --validate --uniform-mode regression --dataset-name unit --method complex --infer-range brats2021 --dataset-epochs 40 -g 1
+[Epoch 1/30] kaid: 0.3153 mae: 0.3544 psnr: 0.2089 ssim: 0.4965
+python kaid.py -d ixi -s pd -t t2 --validate --uniform-mode regression --dataset-name unit --method combined --infer-range brats2021 --dataset-epochs 40 -g 1
+[Epoch 1/30] kaid: 0.2838 mae: 0.3544 psnr: 0.2089 ssim: 0.4965
+python kaid.py -d brats2021 -s t1 -t flair --validate --uniform-mode regression --dataset-name unit --method normal --infer-range brats2021 --dataset-epochs 40 -g 1
+[Epoch 1/30] kaid: 0.3001 mae: 0.3544 psnr: 0.2089 ssim: 0.4965
+python kaid.py -d brats2021 -s t1 -t flair --validate --uniform-mode regression --dataset-name unit --method complex --infer-range brats2021 --dataset-epochs 40 -g 1
+[Epoch 1/30] kaid: 0.2678 mae: 0.3544 psnr: 0.2089 ssim: 0.4965
+python kaid.py -d brats2021 -s t1 -t flair --validate --uniform-mode regression --dataset-name unit --method combined --infer-range brats2021 --dataset-epochs 40 -g 1
+[Epoch 1/30] kaid: 0.2716 mae: 0.3544 psnr: 0.2089 ssim: 0.4965
+python kaid.py -d brats2021 -s t2 -t flair --validate --uniform-mode regression --dataset-name unit --method normal --infer-range brats2021 --dataset-epochs 40 -g 1
+[Epoch 1/30] kaid: 0.2737 mae: 0.3544 psnr: 0.2089 ssim: 0.4965
+python kaid.py -d brats2021 -s t2 -t flair --validate --uniform-mode regression --dataset-name unit --method complex --infer-range brats2021 --dataset-epochs 40 -g 1
+[Epoch 1/30] kaid: 0.2906 mae: 0.3544 psnr: 0.2089 ssim: 0.4965
+python kaid.py -d brats2021 -s t2 -t flair --validate --uniform-mode regression --dataset-name unit --method combined --infer-range brats2021 --dataset-epochs 40 -g 1
+[Epoch 1/30] kaid: 0.2574 mae: 0.3544 psnr: 0.2089 ssim: 0.4965
+python kaid.py -d brats2021 -s t1 -t t2 --validate --uniform-mode regression --dataset-name unit --method normal --infer-range brats2021 --dataset-epochs 40 -g 1
+[Epoch 1/30] kaid: 0.2808 mae: 0.3544 psnr: 0.2089 ssim: 0.4965
+python kaid.py -d brats2021 -s t1 -t t2 --validate --uniform-mode regression --dataset-name unit --method complex --infer-range brats2021 --dataset-epochs 40 -g 1
+[Epoch 1/30] kaid: 0.2895 mae: 0.3544 psnr: 0.2089 ssim: 0.4965
+python kaid.py -d brats2021 -s t1 -t t2 --validate --uniform-mode regression --dataset-name unit --method combined --infer-range brats2021 --dataset-epochs 40 -g 1
+[Epoch 1/30] kaid: 0.2585 mae: 0.3544 psnr: 0.2089 ssim: 0.4965
+python kaid.py -d ixi -s pd -t t2 --validate --uniform-mode regression --dataset-name unit --method normal --infer-range all --dataset-epochs 40 -g 1
+[Epoch 1/30] kaid: 0.2684 mae: 0.4006 psnr: 0.2304 ssim: 0.4466
+python kaid.py -d ixi -s pd -t t2 --validate --uniform-mode regression --dataset-name unit --method complex --infer-range all --dataset-epochs 40 -g 1
+[Epoch 1/30] kaid: 0.2747 mae: 0.4006 psnr: 0.2304 ssim: 0.4466
+python kaid.py -d ixi -s pd -t t2 --validate --uniform-mode regression --dataset-name unit --method combined --infer-range all --dataset-epochs 40 -g 1
+[Epoch 1/30] kaid: 0.2850 mae: 0.4006 psnr: 0.2304 ssim: 0.4466
+python kaid.py -d brats2021 -s t1 -t flair --validate --uniform-mode regression --dataset-name unit --method normal --infer-range all --dataset-epochs 40 -g 1
+[Epoch 1/30] kaid: 0.2734 mae: 0.4006 psnr: 0.2304 ssim: 0.4466
+python kaid.py -d brats2021 -s t1 -t flair --validate --uniform-mode regression --dataset-name unit --method complex --infer-range all --dataset-epochs 40 -g 1
+[Epoch 1/30] kaid: 0.2310 mae: 0.4006 psnr: 0.2304 ssim: 0.4466
+python kaid.py -d brats2021 -s t1 -t flair --validate --uniform-mode regression --dataset-name unit --method combined --infer-range all --dataset-epochs 40 -g 1
+[Epoch 1/30] kaid: 0.2345 mae: 0.4006 psnr: 0.2304 ssim: 0.4466
+python kaid.py -d brats2021 -s t2 -t flair --validate --uniform-mode regression --dataset-name unit --method normal --infer-range all --dataset-epochs 40 -g 1
+[Epoch 1/30] kaid: 0.2384 mae: 0.4006 psnr: 0.2304 ssim: 0.4466
+python kaid.py -d brats2021 -s t2 -t flair --validate --uniform-mode regression --dataset-name unit --method complex --infer-range all --dataset-epochs 40 -g 1
+[Epoch 1/30] kaid: 0.2592 mae: 0.4006 psnr: 0.2304 ssim: 0.4466
+python kaid.py -d brats2021 -s t2 -t flair --validate --uniform-mode regression --dataset-name unit --method combined --infer-range all --dataset-epochs 40 -g 1
+[Epoch 1/30] kaid: 0.2244 mae: 0.4006 psnr: 0.2304 ssim: 0.4466
+python kaid.py -d brats2021 -s t1 -t t2 --validate --uniform-mode regression --dataset-name unit --method normal --infer-range all --dataset-epochs 40 -g 1
+[Epoch 1/30] kaid: 0.2407 mae: 0.4006 psnr: 0.2304 ssim: 0.4466
+python kaid.py -d brats2021 -s t1 -t t2 --validate --uniform-mode regression --dataset-name unit --method complex --infer-range all --dataset-epochs 40 -g 1
+[Epoch 1/30] kaid: 0.2374 mae: 0.4006 psnr: 0.2304 ssim: 0.4466
+python kaid.py -d brats2021 -s t1 -t t2 --validate --uniform-mode regression --dataset-name unit --method combined --infer-range all --dataset-epochs 40 -g 1
+[Epoch 1/30] kaid: 0.2234 mae: 0.4006 psnr: 0.2304 ssim: 0.4466
