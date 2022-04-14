@@ -2,9 +2,9 @@ import os
 from tools.utilize import *
 
 # validation
-epochs = [50]
-uniform_mode = 'regression'
-dataset_names = ['cyclegan', 'munit', 'unit']
+epochs = [40]
+uniform_mode = 'ranking'
+dataset_names = ['unit']
 infer_ranges = ['ixi', 'brats2021', 'all']
 models = [['ixi', 'pd', 't2'], ['brats2021', 't1', 'flair'], ['brats2021', 't2', 'flair'], ['brats2021', 't1', 't2']]
 methods = ['normal', 'complex', 'combined']
@@ -18,6 +18,6 @@ for epoch in epochs:
                     run_script = 'python kaid.py -d {} -s {} -t {} --validate --uniform-mode {} --dataset-name {} --method {} --infer-range {} --dataset-epochs {} -g {}'.format(
                         modalties[0], modalties[1], modalties[2], uniform_mode, name, method, infer_range, epoch, gpu)
                     print(run_script)
-                    with open('{}/log_kaid_{}_{}_epochs.txt'.format('work_dir', uniform_mode, epochs[0]), 'a') as f:
+                    with open('{}/log_kaid_{}_{}_epoch.txt'.format('work_dir', uniform_mode, epoch), 'a') as f:
                         print(run_script, file=f)
                     os.system(run_script)

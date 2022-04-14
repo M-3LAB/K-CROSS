@@ -201,6 +201,7 @@ def uniform_result(x, reverse=False):
 def rank_result(x, gt, reverse=False):
     assert len(x) == len(gt), 'Input Must Be Equal to GT!'
     recounted = Counter(gt)
+    # print(recounted)
     level = sorted(recounted)
     index = np.argsort(x)
 

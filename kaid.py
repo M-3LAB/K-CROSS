@@ -8,6 +8,7 @@ from torch.utils.data import DataLoader
 from data_io.ixi import IXI
 from data_io.brats import BraTS2021
 from tools.utilize import *
+from tools.visualize import *
 
 from configuration.kaid.config import parse_arguments_kaid
 from loss_function.kaid.distance import l1_diff, l2_diff, cosine_similiarity, freq_distance
@@ -29,16 +30,16 @@ if __name__ == '__main__':
     with open('./configuration/kaid/{}.yaml'.format(args.dataset), 'r') as f:
         para_dict = yaml.load(f, Loader=yaml.SafeLoader)
     para_dict = merge_config(para_dict, args)
-    # print(para_dict)
+    print(para_dict)
 
-    # file_path = record_path(para_dict)
-    # if para_dict['save_log']:
-    #     save_arg(para_dict, file_path)
-    #     save_script(__file__, file_path)
+    file_path = record_path(para_dict)
+    if para_dict['save_log']:
+        save_arg(para_dict, file_path)
+        save_script(__file__, file_path)
 
-    # with open('./work_dir/log_running.txt'.format(file_path), 'a') as f:
-    #     print('---> {}'.format(file_path), file=f)
-    #     print(para_dict, file=f)
+    with open('./work_dir/log_running.txt'.format(file_path), 'a') as f:
+        print('---> {}'.format(file_path), file=f)
+        print(para_dict, file=f)
 
     device, device_ids = parse_device_list(para_dict['gpu_ids'], 
                                            int(para_dict['gpu_id'])) 
@@ -341,11 +342,26 @@ if __name__ == '__main__':
         elif para_dict['infer_range'] == 'brats2021':
                 regions = ['brats2021']
                 modalities = {'brats2021': ['t1', 't2', 'flair']}
+        elif para_dict['infer_range'] == 'ixi-pd':
+                regions = ['ixi']
+                modalities = {'ixi': ['pd']}
+        elif para_dict['infer_range'] == 'ixi-t2':
+                regions = ['ixi']
+                modalities = {'ixi': ['t2']}
+        elif para_dict['infer_range'] == 'brats-t1':
+                regions = ['brats2021']
+                modalities = {'brats2021': ['t1']}
+        elif para_dict['infer_range'] == 'brats-t2':
+                regions = ['brats2021']
+                modalities = {'brats2021': ['t2']}
+        elif para_dict['infer_range'] == 'brats-flair':
+                regions = ['brats2021']
+                modalities = {'brats2021': ['flair']}
         else:
             raise NotImplementedError
 
-        # dataset_name = ['cyclegan', 'munit', 'unit'] 
-        dataset_name = [para_dict['dataset_name']]
+        dataset_name = ['cyclegan', 'munit', 'unit'] 
+        # dataset_name = [para_dict['dataset_name']]
         epochs = [i+1 for i in range(0, para_dict['dataset_epochs'])]
 
         nirps_dataset = NIRPS(nirps_path=nirps_path, regions=regions, modalities=modalities, models=dataset_name, epochs=epochs)
@@ -520,9 +536,9 @@ if __name__ == '__main__':
             1, para_dict['num_epochs'], kaid_consistency, mae_consistency, psnr_consistency, ssim_consistency)
         print(infor)
 
-        # save_log(infor, file_path, description='metric_result')
+        save_log(infor, file_path, description='metric_result')
 
-        with open('{}/log_kaid_{}_{}_epochs.txt'.format(para_dict['work_dir'], para_dict['uniform_mode'], para_dict['dataset_epochs']), 'a') as f:
+        with open('{}/log_kaid_{}_{}_epoch.txt'.format(para_dict['work_dir'], para_dict['uniform_mode'], para_dict['dataset_epochs']), 'a') as f:
             print(infor, file=f)
                 
 

@@ -1,6 +1,14 @@
 import fractions
+from pydoc import visiblename
+from re import I
 import numpy as np
 import cv2
+import sys
+sys.path.append('./')
+from data_io.nirps import NIRPS
+from torch.utils.data import DataLoader
+from tools.utilize import load_metric_result, save_metric_result
+from tqdm import tqdm
 
 import matplotlib.pyplot as plt
 import matplotlib
@@ -9,7 +17,8 @@ from data_preprocess.common import *
 import torch
 
 __all__ = ['plot_sample', 'slices_reader', 'np_normalize', 'np_scaling_kspace', 'np_to_bchw',
-           'bchw_to_np', 'torch_normalize', 'compute_err', 'plot_err_map', 'plot_err_map2']
+           'bchw_to_np', 'torch_normalize', 'compute_err', 'plot_err_map', 'plot_err_map2',
+           'vis_kspace', 'calculate_kspace']
 
 def plot_sample(real_a, fake_a, real_b, fake_b, step, img_path, descript='Epoch'):
     plt.figure(figsize=(5, 4))
@@ -145,11 +154,61 @@ def plot_err_map2(img, gt, diff, img_path, descript='Error Map'):
     # plt.clim(0, 1)
     plt.savefig(img_path, bbox_inches='tight')
     plt.close()
- 
+
+def calculate_kspace(real):
+    freq = torch.fft.fft2(real)
+    amp = freq.imag
+    pharse = freq.angle()
+    freq = torch.fft.fftshift(freq)
+    img = torch.fft.ifft2(freq)
+
+    return freq, img
+
+def vis_kspace(img, freq, img_path, descript='kspce'):
+    plt.figure(figsize=(6, 4))
+    plt.subplot(1, 2, 1)
+    plt.imshow(img)
+    plt.xticks([])
+    plt.yticks([])
+    plt.title('real')
+
+    plt.subplot(1, 2, 2)
+    plt.imshow(freq)
+    plt.xticks([])
+    plt.yticks([])
+    plt.title('freq')
+
+    # plt.colorbar(fraction=0.02, pad=0.05)
+    # plt.clim(0, 1)
+    plt.savefig(img_path, bbox_inches='tight')
+    plt.close()
+
+
 if __name__ == '__main__':
 
-    img = cv2.imread('./work_dir/centralized/brats2021/Sat Mar 26 00:30:35 2022/images/epoch_15/BraTS2021_00114-slice-67/fake_a.png', cv2.IMREAD_GRAYSCALE)
-    gt = cv2.imread('./work_dir/centralized/brats2021/Sat Mar 26 00:30:35 2022/images/epoch_15/BraTS2021_00114-slice-67/real_a.png', cv2.IMREAD_GRAYSCALE)
-    img_path = './tools/err_map.png'
-    diff = compute_err(img, gt)
-    plot_err_map(diff, img_path)
+    # img = cv2.imread('./work_dir/centralized/brats2021/Sat Mar 26 00:30:35 2022/images/epoch_15/BraTS2021_00114-slice-67/fake_a.png', cv2.IMREAD_GRAYSCALE)
+    # gt = cv2.imread('./work_dir/centralized/brats2021/Sat Mar 26 00:30:35 2022/images/epoch_15/BraTS2021_00114-slice-67/real_a.png', cv2.IMREAD_GRAYSCALE)
+    # img_path = './tools/err_map.png'
+    # diff = compute_err(img, gt)
+    # plot_err_map(diff, img_path)
+
+    nirps_path = './nirps_dataset'
+    regions = ['brats2021']
+    modalities = {
+                  'brats2021': ['t1', 't2', 'flair']}
+    models = ['Munit'] 
+    epochs = [i for i in range(1, 3)]
+
+    nirps_dataset = NIRPS(nirps_path=nirps_path, regions=regions, modalities=modalities, models=models, epochs=epochs)
+    nirps_loader = DataLoader(nirps_dataset, batch_size=1, num_workers=1, shuffle=False)
+
+    print('load nirps dataset, size:{}'.format(len(nirps_dataset)))
+    for batch in nirps_loader:
+        fake = batch['img'][0][0, :, :].numpy()
+        real = batch['gt'][0][0, :, :].numpy()
+        name = batch['name'][0]
+
+        real_freq, real_img = calculate_kspace(real)
+        fake_freq, fake_img = calculate_kspace(fake)
+        vis_kspace(real, real_freq, '{}/real_freq.png'.format(name))
+        vis_kspace(fake, fake_freq, '{}/fake_freq.png'.format(name))
