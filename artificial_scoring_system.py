@@ -33,48 +33,48 @@ def articial_scoring_system():
     #         os.remove(name + '/artificial.txt')
     # return
 
-    begin_n = int(load_metric_result('documents', 'local'))
-    print('please CHECK begin number {} in ./documents/local.txt'.format(begin_n))
+    # begin_n = int(load_metric_result('documents', 'local'))
+    # print('please CHECK begin number {} in ./documents/local.txt'.format(begin_n))
 
-    for i, batch in enumerate(nirps_loader):
-        # start
-        if begin_n > 0:
-            begin_n = begin_n - 1
-            continue
+    # for i, batch in enumerate(nirps_loader):
+    #     # start
+    #     if begin_n > 0:
+    #         begin_n = begin_n - 1
+    #         continue
         
-        print('-------- {} / {} ---------'.format(i, len(nirps_dataset)))
-        name = batch['name'][0]
+    #     print('-------- {} / {} ---------'.format(i, len(nirps_dataset)))
+    #     name = batch['name'][0]
 
-        human = load_metric_result(name, 'human')
-        img = cv2.imread(name + '/err_map.png')
-        cv2.namedWindow('Artificial-Score-System: {}'.format(name), cv2.WINDOW_AUTOSIZE)
-        cv2.putText(img, 'src: {}'.format(int(human * 10) + 1), (12,60), cv2.FONT_HERSHEY_SIMPLEX, 1.2, (0,255,0), 3) 
+    #     human = load_metric_result(name, 'human')
+    #     img = cv2.imread(name + '/err_map.png')
+    #     cv2.namedWindow('Artificial-Score-System: {}'.format(name), cv2.WINDOW_AUTOSIZE)
+    #     cv2.putText(img, 'src: {}'.format(int(human * 10) + 1), (12,60), cv2.FONT_HERSHEY_SIMPLEX, 1.2, (0,255,0), 3) 
 
-        if os.path.exists(name + '/artificial.txt'):
-            arti = load_metric_result(name, 'artificial') 
-            cv2.putText(img, 'saved: {}'.format(int(arti * 10)), (12, 250), cv2.FONT_HERSHEY_SIMPLEX, 1.2, (255, 0, 0), 3) 
-        else:
-            save_metric_result(int(human * 10 + 1) / 10., name, 'artificial')
+    #     if os.path.exists(name + '/artificial.txt'):
+    #         arti = load_metric_result(name, 'artificial') 
+    #         cv2.putText(img, 'saved: {}'.format(int(arti * 10)), (12, 250), cv2.FONT_HERSHEY_SIMPLEX, 1.2, (255, 0, 0), 3) 
+    #     else:
+    #         save_metric_result(int(human * 10 + 1) / 10., name, 'artificial')
 
-        cv2.imshow('Artificial-Score-System: {}'.format(name), img)
+    #     cv2.imshow('Artificial-Score-System: {}'.format(name), img)
 
-        # press ENTER to continue
-        while(cv2.waitKey(0) != 13):
-            # wait keyboard [1, 2, 3, ..., 0]
-            s = cv2.waitKey(0)
-            # press ESC, return
-            if s == 27:
-                return 
+    #     # press ENTER to continue
+    #     while(cv2.waitKey(0) != 13):
+    #         # wait keyboard [1, 2, 3, ..., 0]
+    #         s = cv2.waitKey(0)
+    #         # press ESC, return
+    #         if s == 27:
+    #             return 
 
-            s =  int(s) - 48
-            print(s)
-            if s >= 0 and s <= 9:
-                cv2.putText(img, 'change to: {}'.format(s), (250, 250), cv2.FONT_HERSHEY_SIMPLEX, 1.2, (0, 0, 255), 3) 
-                cv2.imshow('Artificial-Score-System: {}'.format(name), img)
-                save_metric_result(s / 10., name, 'artificial')
+    #         s =  int(s) - 48
+    #         print(s)
+    #         if s >= 0 and s <= 9:
+    #             cv2.putText(img, 'change to: {}'.format(s), (250, 250), cv2.FONT_HERSHEY_SIMPLEX, 1.2, (0, 0, 255), 3) 
+    #             cv2.imshow('Artificial-Score-System: {}'.format(name), img)
+    #             save_metric_result(s / 10., name, 'artificial')
         
-        save_metric_result(i, 'documents', 'local')
-        cv2.destroyAllWindows()
+    #     save_metric_result(i, 'documents', 'local')
+    #     cv2.destroyAllWindows()
 
     # check anomaly score
     for i, batch in enumerate(nirps_loader):
@@ -82,8 +82,10 @@ def articial_scoring_system():
 
         if os.path.exists(name + '/artificial.txt'):
             arti = load_metric_result(name, 'artificial') 
-            if arti > 9 or arti < 0:
-                print(name)
+            if arti > 0.9 or arti < 0:
+                print(arti, name)
+                if arti == 1.0:
+                    save_metric_result(0.9, name, 'artificial')
         else:
             print(name)
 

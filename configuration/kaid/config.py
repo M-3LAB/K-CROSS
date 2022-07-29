@@ -23,8 +23,11 @@ def parse_arguments_kaid():
     parser.add_argument('--lr', type=float, default=None, help='learning rate')
     parser.add_argument('--fid', action='store_true', default=True)
     parser.add_argument('--train', action='store_true', default=False)
-    parser.add_argument('--validate', action='store_true', default=False)
-    #Gaussian Noise
+    parser.add_argument('--validate', action='store_true', default=True)
+    parser.add_argument('--uniform-mode', type=str, default=None, choices=['regression', 'ranking'])
+    parser.add_argument('--dataset-name', type=str, default=None, choices=['cyclegan','munit','unit'])
+    parser.add_argument('--dataset-epochs', type=int, default=50)
+    # Gaussian Noise
     parser.add_argument('--noisy-loss', action='store_true', default=None)
     parser.add_argument('--mu', type=float, default=None)
     parser.add_argument('--sigma', type=float, default=None)
@@ -34,7 +37,7 @@ def parse_arguments_kaid():
     # inference 
     parser.add_argument('--nirps-path', type=str, default='./nirps_dataset', help='nirps data path')
     parser.add_argument('--test-model', type=str, default=None, choices=['cyclegan','munit','unit'])
-    parser.add_argument('--infer-range', type=str, default=None, choices=['all', 'ixi', 'brats2021'])
+    parser.add_argument('--infer-range', type=str, default='ixi-pd', choices=['all', 'ixi', 'brats2021', 'ixi-pd', 'ixi-t2', 'brats-t1', 'brats-t2', 'brats-flair'])
     parser.add_argument('--latent-size', type=str, default=None, choices=['one_z', 'all_z'])
 
     args = parser.parse_args()

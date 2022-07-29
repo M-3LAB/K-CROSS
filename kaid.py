@@ -8,6 +8,7 @@ from torch.utils.data import DataLoader
 from data_io.ixi import IXI
 from data_io.brats import BraTS2021
 from tools.utilize import *
+from tools.visualize import *
 
 from configuration.kaid.config import parse_arguments_kaid
 from loss_function.kaid.distance import l1_diff, l2_diff, cosine_similiarity, freq_distance
@@ -286,7 +287,6 @@ if __name__ == '__main__':
                         sim_freq_loss = real_a_freq_sim_loss + real_b_freq_sim_loss
                     
                         loss_total = loss_total + noisy_recon_loss + sim_loss + noise_freq_loss + sim_freq_loss
- 
 
                     optimizer_complex.zero_grad()
                     optimizer_normal.zero_grad()
@@ -342,18 +342,31 @@ if __name__ == '__main__':
         elif para_dict['infer_range'] == 'brats2021':
                 regions = ['brats2021']
                 modalities = {'brats2021': ['t1', 't2', 'flair']}
+        elif para_dict['infer_range'] == 'ixi-pd':
+                regions = ['ixi']
+                modalities = {'ixi': ['pd']}
+        elif para_dict['infer_range'] == 'ixi-t2':
+                regions = ['ixi']
+                modalities = {'ixi': ['t2']}
+        elif para_dict['infer_range'] == 'brats-t1':
+                regions = ['brats2021']
+                modalities = {'brats2021': ['t1']}
+        elif para_dict['infer_range'] == 'brats-t2':
+                regions = ['brats2021']
+                modalities = {'brats2021': ['t2']}
+        elif para_dict['infer_range'] == 'brats-flair':
+                regions = ['brats2021']
+                modalities = {'brats2021': ['flair']}
         else:
             raise NotImplementedError
 
+        dataset_name = ['cyclegan', 'munit', 'unit'] 
+        # dataset_name = [para_dict['dataset_name']]
+        epochs = [i+1 for i in range(0, para_dict['dataset_epochs'])]
 
-        #models = ['cyclegan'] 
-        #models = ['munit'] 
-        models = ['unit'] 
-        epochs = [i for i in range(1, 40)]
-
-        nirps_dataset = NIRPS(nirps_path=nirps_path, regions=regions, modalities=modalities, models=models, epochs=epochs)
+        nirps_dataset = NIRPS(nirps_path=nirps_path, regions=regions, modalities=modalities, models=dataset_name, epochs=epochs)
         nirps_loader = DataLoader(nirps_dataset, batch_size=1, num_workers=1, shuffle=False)
-        print('load nirps dataset, size: {}'.format(len(nirps_dataset)))
+        # print('load nirps dataset, size: {}'.format(len(nirps_dataset)))
 
         # load models
         if para_dict['method'] == 'normal':
@@ -427,14 +440,12 @@ if __name__ == '__main__':
                 gt_freq = torch_fft(gt, normalized_method='ortho')
 
                 if para_dict['latent_size'] == 'one_z':
-
                     img_freq_z, _, _, _, _ = complex_unet.encode(img_freq)
                     gt_freq_z, _, _, _, _ = complex_unet.encode(gt_freq)
 
                     kaid = freq_distance(real_z=gt_freq_z, fake_z=img_freq_z).item()
 
                 elif para_dict['latent_size'] == 'all_z':
-
                     img_freq_z, img_freq_d1, img_freq_d2, img_freq_d3, img_freq_d4 = complex_unet.encode(img_freq)
                     gt_freq_z, gt_freq_d1, gt_freq_d2, gt_freq_d3, gt_freq_d4 = complex_unet.encode(gt_freq)
 
@@ -516,22 +527,19 @@ if __name__ == '__main__':
             ssim_values.append(ssim)
 
         # calculate metric consistency
-        kaid_values = uniform_result(kaid_values, reverse=True)
-        mae_values = uniform_result(mae_values, reverse=True)
-        psnr_values = uniform_result(psnr_values, reverse=False)
-        ssim_values = uniform_result(ssim_values, reverse=False)
-
-        kaid_consistency = calculate_metric_consistency(kaid_values, arti_values) 
-        mae_consistency = calculate_metric_consistency(mae_values, arti_values) 
-        psnr_consistency = calculate_metric_consistency(psnr_values, arti_values)
-        ssim_consistency = calculate_metric_consistency(ssim_values, arti_values) 
-
+        kaid_consistency = calculate_metric_consistency(kaid_values, arti_values, reverse=True, uniform_mode=para_dict['uniform_mode']) 
+        mae_consistency = calculate_metric_consistency(mae_values, arti_values, reverse=True, uniform_mode=para_dict['uniform_mode']) 
+        psnr_consistency = calculate_metric_consistency(psnr_values, arti_values, reverse=False, uniform_mode=para_dict['uniform_mode'])
+        ssim_consistency = calculate_metric_consistency(ssim_values, arti_values, reverse=False, uniform_mode=para_dict['uniform_mode']) 
 
         infor = '[Epoch {}/{}] kaid: {:.4f} mae: {:.4f} psnr: {:.4f} ssim: {:.4f}'.format(
             1, para_dict['num_epochs'], kaid_consistency, mae_consistency, psnr_consistency, ssim_consistency)
         print(infor)
 
         save_log(infor, file_path, description='metric_result')
+
+        with open('{}/log_kaid_{}_{}_epoch.txt'.format(para_dict['work_dir'], para_dict['uniform_mode'], para_dict['dataset_epochs']), 'a') as f:
+            print(infor, file=f)
                 
 
 
