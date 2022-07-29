@@ -3,8 +3,8 @@ seed: 3
 size: 256 
 source_domain: pd
 target_domain: t2
-data_path: /disk1/medical/ixi
-valid_path: /disk1/medical/ixi
+data_path: /disk4/xgy/medical/ixi
+valid_path: /disk4/xgy/medical/ixi
 batch_size: 8 
 es_higher_limit: 80 
 es_lower_limit: 50
